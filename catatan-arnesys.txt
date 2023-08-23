@@ -1,0 +1,84 @@
+= Perangkat Utama
+- temperatur udara
+- kelembaban udara
+- tekanan udara
+- kecepatan udara
+- curah hujan
+
+= Perangkat Pendukung
+- kelembaban tanah
+- pH tanah
+- temperatur tanah
+- Nitrogen tanah (N)
+- Phosphor tanah (P)
+- Kalium tanah (K)
+
+Fitur Aplikasi (mobile dan website)
+- login
+- tambah perangkat utama
+- monitoring realtime semua parameter perangkat utama dan perangkat pendukung
+- output prediksi hama beberapa hari sebelumnya dan kemudian
+- output prediksi cuaca beberapa hari sebelumnya dan kemudian
+- saran
+
+=====================================================
+
+Tampilan Aplikasi Website
+1. Portal *Done* ===
+2. Login *Done* ===
+3. Dashboard (Hari & Jam, Jumlah lahan, Jumlah client) *Done* ===
+4. Tambah Client *Done* ===
+5. Tambah Field *Done* ===
+
+6. Kelola Lahan (Field) *Done* ===
+-- List client
+
+7. Detail Client *Done* ===
+-- List lahan
+
+8. Detail Lahan Perangkat Utama *Done* ===
+-- Grafik Cuaca
+-- Grafik Hama atau Penyakit
+-- Monitoring Cuaca
+
+9. Detail Lahan per Perangkat Pendukung *Done* ===
+-- Grafik Suhu
+-- Grafik Kelembaban
+-- Grafik pH
+-- Monitoring Tanah
+
+=====================================================
+
+Tampilan Aplikasi Mobile
+1. Splash screen *Done* ===
+2. Onboarding *Done* ===
+3. Login *Done* ===
+
+4. Dashboard *Done* ===
+-- Monitoring Cuaca (Hari, Suhu, Kelembaban, Tekanan, Kecepatan)
+-- Monitoring Tanah (Suhu, Kelembaban, pH, N.P.K)  
+-- Informasi cuaca
+-- Informasi hama atau penyakit
+-- Saran aktivitas
+
+5. Pengelolaan Field *Done* ===
+
+6. Detail Lahan Perangkat Utama *Done* ===
+-- Grafik Cuaca
+-- Grafik Hama atau Penyakit
+-- Monitoring Cuaca
+
+7. Detail Lahan per Perangkat Pendukung *Done* ===
+-- Grafik Suhu
+-- Grafik Kelembaban
+-- Grafik pH
+-- Monitoring Tanah
+
+9. Pengaturan *Done* ===
+
+======================================================
+
+Client
+Field
+Data monitoring perangkat utama
+Data monitoring perangkat pendukung
