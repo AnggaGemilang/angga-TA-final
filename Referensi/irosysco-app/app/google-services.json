@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "241119058913",
+    "project_id": "irosysco",
+    "storage_bucket": "irosysco.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:241119058913:android:63ad0a3d22c50f5d7650a0",
+        "android_client_info": {
+          "package_name": "com.agrapana.irosysco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "241119058913-a2ftgbfklbecjajbta32uu8cm0utr4tq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1TH3OS5s1jESNi8pVLZZkblOLiHKYaV8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "241119058913-a2ftgbfklbecjajbta32uu8cm0utr4tq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

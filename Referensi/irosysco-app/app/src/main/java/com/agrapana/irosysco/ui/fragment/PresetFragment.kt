@@ -1,0 +1,141 @@
+package com.agrapana.irosysco.ui.fragment
+
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import com.agrapana.irosysco.R
+import com.agrapana.irosysco.config.MQTT_HOST
+import com.agrapana.irosysco.databinding.FragmentPresetBinding
+import com.agrapana.irosysco.helper.MqttClientHelper
+import com.agrapana.irosysco.model.Common
+import com.agrapana.irosysco.ui.activity.SettingActivity
+import com.agrapana.irosysco.ui.activity.TurnOnActivity
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import com.google.gson.Gson
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
+import org.eclipse.paho.client.mqttv3.MqttMessage
+
+class PresetFragment : Fragment() {
+
+    private lateinit var binding: FragmentPresetBinding
+
+    private var commonMsg = Common()
+
+    private val mqttClient by lazy {
+        MqttClientHelper(requireContext())
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPresetBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.inflateMenu(R.menu.action_nav2)
+        binding.toolbar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.add -> {
+                    val dialog = AddConfigurationFragment()
+                    val bundle = Bundle()
+                    bundle.putString("status", "tambah")
+                    dialog.arguments = bundle
+                    activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
+                }
+                R.id.power -> {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("Are You Sure?")
+                    builder.setMessage("This can be perform the machine")
+                    builder.setPositiveButton("YES") { _, _ ->
+                        setMqttCallBack()
+                    }
+                    builder.setNegativeButton("NO") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    val alert = builder.create()
+                    alert.show()
+                    binding.loadingPanel.visibility = View.VISIBLE
+                }
+                R.id.about -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Versi Aplikasi")
+                        .setMessage("Beta 1.0.0")
+                        .setCancelable(true)
+                        .setPositiveButton("OK", null)
+                        .create()
+                        .show()
+                }
+                R.id.setting -> {
+                    startActivity(Intent(context, SettingActivity::class.java))
+                }
+            }
+            true
+        }
+
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Fruit"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Microgreen"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Ornamental"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Vegetable"))
+        binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
+        replaceFragment(PresetDataFragment("Fruit"))
+
+        binding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                when (tab.position) {
+                    0 -> replaceFragment(PresetDataFragment("Fruit"))
+                    1 -> replaceFragment(PresetDataFragment("Microgreen"))
+                    2 -> replaceFragment(PresetDataFragment("Ornamental"))
+                    3 -> replaceFragment(PresetDataFragment("Vegetable"))
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
+    }
+
+    private fun setMqttCallBack() {
+        mqttClient.setCallback(object : MqttCallbackExtended {
+            override fun connectComplete(b: Boolean, s: String) {
+                Log.w("Debug", "Connection to host connected:\n'$MQTT_HOST'")
+                mqttClient.subscribe("arceniter/common")
+            }
+            override fun connectionLost(throwable: Throwable) {
+                Log.w("Debug", "Connection to host lost:\n'$MQTT_HOST'")
+            }
+            @Throws(Exception::class)
+            override fun messageArrived(topic: String, mqttMessage: MqttMessage) {
+                Log.w("Debug", "Message received from host '$MQTT_HOST': $mqttMessage")
+                if(topic == "arceniter/common"){
+                    commonMsg = Gson().fromJson(mqttMessage.toString(), Common::class.java)
+                    commonMsg.power = "off"
+                    mqttClient.publish("arceniter/common", Gson().toJson(commonMsg))
+                    mqttClient.destroy()
+                    startActivity(Intent(context, TurnOnActivity::class.java))
+                }
+            }
+            override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {
+                Log.w("Debug", "Message published to host '$MQTT_HOST'")
+            }
+        })
+    }
+
+    private fun replaceFragment(fragment: Fragment?) {
+        val fm = requireActivity().supportFragmentManager
+        val ft = fm.beginTransaction()
+        ft.replace(R.id.frame_container, fragment!!)
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        ft.commit()
+    }
+
+}

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Agracentrys</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="pref_uploads">
+        <item>Only when on Wi-Fi</item>
+        <item>On any network</item>
+    </string-array>
+
+    <string-array name="val_component_state">
+        <item>Latest</item>
+        <item>Hour</item>
+        <item>Day</item>
+    </string-array>
+
+</resources>
