@@ -1,6 +1,5 @@
-void waterTank();
-void fertilizerTank();
-void timeNow();
+void soilMoisture();
+void waterLevel();
 
 void setup() {
   Serial.begin(9600);
