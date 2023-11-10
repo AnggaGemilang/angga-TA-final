@@ -1,7 +1,7 @@
 #include <ArduinoJson.h>
 
-#define soilMoisturePin A0
-#define waterLevelPin A3
+#define SOIL_MOISTURE_PIN A0
+#define WATER_LEVEL_PIN A3
 
 StaticJsonDocument<200> doc;
 
