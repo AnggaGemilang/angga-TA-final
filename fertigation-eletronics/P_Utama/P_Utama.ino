@@ -6,11 +6,15 @@
 #define TANK_SURFACE_AREA 81
 #define TANK_HEIGHT 26
 #define TANK_MAX_VOLUME 2106
+#define LCD_COLUMNS 16
+#define LCD_ROWS 2
 
 #include "RTClib.h"
 #include "string.h"
+#include <LiquidCrystal_I2C.h>
 
-RTC_DS3231 rtc;
+// RTC_DS3231 rtc;
+LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
 
 void waterTank();
 void fertilizerTank();
@@ -18,27 +22,59 @@ String timeNow();
 
 void setup() {
   Serial.begin(9600);
+  lcd_i2c.init();
+  lcd_i2c.backlight();
+  
   pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
   pinMode(WATER_TRIG_PIN, OUTPUT);
   pinMode(WATER_ECHO_PIN, INPUT);
 
-  if (!rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    while(1);
-  }
+  lcd_i2c.clear();              // clear display
+  lcd_i2c.setCursor(3, 0);      // move cursor to   (0, 0)
+  lcd_i2c.print("Welcome To");       // print message at (0, 0)
+  lcd_i2c.setCursor(0, 1);      // move cursor to   (2, 1)
+  lcd_i2c.print("*** KoTA 203 ***"); // print message at (2, 1)
+  delay(2000);                  // display the above for two seconds
 
-  rtc.adjust(DateTime(__DATE__, __TIME__));
+//  if (!rtc.begin()) {
+//    Serial.println("Couldn't find RTC");
+//    while(1);
+//  }
+
+//  rtc.adjust(DateTime(__DATE__, __TIME__));
 }
 
 void loop() {
+
+  lcd_i2c.clear();
+  lcd_i2c.setCursor(0, 0);
+  lcd_i2c.print("Moisture(1): 20%");
+  lcd_i2c.setCursor(0, 1);
+  lcd_i2c.print("Water(2): 20 cm");
+  delay(2000);
+
+  lcd_i2c.clear();
+  lcd_i2c.setCursor(0, 0);
+  lcd_i2c.print("Moisture(2): 20%");
+  lcd_i2c.setCursor(0, 1);
+  lcd_i2c.print("Water(2): 20 cm");
+  delay(2000);
+
+  lcd_i2c.clear();
+  lcd_i2c.setCursor(0, 0);
+  lcd_i2c.print("Water: 20");
+  lcd_i2c.setCursor(0, 1);
+  lcd_i2c.print("Fertilizer: 20%");
+  delay(2000);
+  
   // fertilizerTank();
   // waterTank();
 
-  DateTime now = rtc.now();
+  // DateTime now = rtc.now();
 
-  Serial.print("Waktu: ");
-  Serial.println(timeNow());
+  // Serial.print("Waktu: ");
+  // Serial.println(timeNow());
 
   delay(1000);
 }
