@@ -7,9 +7,14 @@
 #define TANK_HEIGHT 26
 #define TANK_MAX_VOLUME 2106
 
+#include "RTClib.h"
+#include "string.h"
+
+RTC_DS3231 rtc;
+
 void waterTank();
 void fertilizerTank();
-void timeNow();
+String timeNow();
 
 void setup() {
   Serial.begin(9600);
@@ -17,9 +22,23 @@ void setup() {
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
   pinMode(WATER_TRIG_PIN, OUTPUT);
   pinMode(WATER_ECHO_PIN, INPUT);
+
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while(1);
+  }
+
+  rtc.adjust(DateTime(__DATE__, __TIME__));
 }
 
 void loop() {
   // fertilizerTank();
-  waterTank();
+  // waterTank();
+
+  DateTime now = rtc.now();
+
+  Serial.print("Waktu: ");
+  Serial.println(timeNow());
+
+  delay(1000);
 }

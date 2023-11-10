@@ -25,5 +25,4 @@ void waterTank() {
   Serial.print("volume (mL): ");
   Serial.print(volume);
   Serial.println(" mL");  
-  delay(1000);
 }
