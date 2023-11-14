@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.agrapana.irosysco">
+    package="com.agrapana.fertigation">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -24,23 +24,23 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.CameraWebviewActivity"
+            android:name="com.agrapana.fertigation.ui.activity.CameraWebviewActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Irosysco.Webview" />
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.SettingActivity"
+            android:name="com.agrapana.fertigation.ui.activity.SettingActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Irosysco.Setting" />
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.TurnOnActivity"
+            android:name="com.agrapana.fertigation.ui.activity.TurnOnActivity"
             android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Irosysco.TurnOn" />
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.DetailActivity"
+            android:name="com.agrapana.fertigation.ui.activity.DetailActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Irosysco.Detail" >
@@ -48,13 +48,13 @@
         </activity>
 
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.OnboardingActivity"
+            android:name="com.agrapana.fertigation.ui.activity.OnboardingActivity"
             android:exported="true"
             android:noHistory="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Irosysco.OnboardingScreen" />
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.SplashScreenActivity"
+            android:name="com.agrapana.fertigation.ui.activity.SplashScreenActivity"
             android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -68,7 +68,7 @@
         </activity>
 
         <activity
-            android:name="com.agrapana.irosysco.ui.activity.MainActivity"
+            android:name="com.agrapana.fertigation.ui.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Irosysco.Main">

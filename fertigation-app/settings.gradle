@@ -17,5 +17,5 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "Irosysco"
+rootProject.name = "Fertigation App"
 include ':app'

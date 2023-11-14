@@ -8,6 +8,9 @@
 #define TANK_MAX_VOLUME 2106
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
+#define PUMP_RELAY 13
+#define VALVE_RELAY_1 14
+#define VALVE_RELAY_2 15
 
 #include "RTClib.h"
 #include "string.h"
@@ -27,6 +30,7 @@ void setup() {
   
   pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
+  pinMode(PUMP_RELAY, OUTPUT);
   pinMode(WATER_TRIG_PIN, OUTPUT);
   pinMode(WATER_ECHO_PIN, INPUT);
 
@@ -47,12 +51,16 @@ void setup() {
 
 void loop() {
 
+  digitalWrite(PUMP_RELAY, HIGH);
+
   lcd_i2c.clear();
   lcd_i2c.setCursor(0, 0);
   lcd_i2c.print("Moisture(1): 20%");
   lcd_i2c.setCursor(0, 1);
   lcd_i2c.print("Water(2): 20 cm");
   delay(2000);
+
+  digitalWrite(PUMP_RELAY, LOW);
 
   lcd_i2c.clear();
   lcd_i2c.setCursor(0, 0);
