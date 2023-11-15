@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fertigation App</string>
+    <string name="app_name">Agracentrys</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="pref_uploads">
@@ -8,42 +8,9 @@
     </string-array>
 
     <string-array name="val_component_state">
-        <item>Choose State</item>
-        <item>On</item>
-        <item>Off</item>
-    </string-array>
-
-    <string-array name="val_component_state2">
-        <item>Choose State</item>
-        <item>Open</item>
-        <item>Close</item>
-    </string-array>
-
-    <string-array name="val_component_state3">
-        <item>Choose State</item>
-        <item>On</item>
-        <item>Off</item>
-        <item>Per 30 Minute</item>
-    </string-array>
-
-    <string-array name="val_component_nutrition">
-        <item>Choose Nutrition</item>
-        <item>-</item>
-        <item>+</item>
-    </string-array>
-
-    <string-array name="val_component_mode">
-        <item>Choose Mode</item>
-        <item>Seedling</item>
-        <item>Grow</item>
-    </string-array>
-
-    <string-array name="val_plant_category">
-        <item>Choose Plant Category</item>
-        <item>Fruit</item>
-        <item>Microgreen</item>
-        <item>Ornamental</item>
-        <item>Vegetable</item>
+        <item>Latest</item>
+        <item>Hour</item>
+        <item>Day</item>
     </string-array>
 
 </resources>

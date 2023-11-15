@@ -41,7 +41,7 @@ class SplashScreenActivity : AppCompatActivity() {
                 progressStatus++
                 binding!!.progressBar.progress = progressStatus
                 try {
-                    Thread.sleep(30)
+                    Thread.sleep(15)
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
@@ -49,8 +49,12 @@ class SplashScreenActivity : AppCompatActivity() {
             Handler(Looper.getMainLooper()).post {
                 val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
                 val firstState: Boolean = prefs.getBoolean("firstStart", true)
+                val loginState: Boolean = prefs.getBoolean("loginStart", true)
+
                 if(firstState){
                     startActivity(Intent(this, OnboardingActivity::class.java))
+                } else if (loginState) {
+                    startActivity(Intent(this, LoginActivity::class.java))
                 } else {
                     startActivity(Intent(this, MainActivity::class.java))
                 }

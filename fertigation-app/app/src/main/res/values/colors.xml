@@ -3,6 +3,8 @@
     <color name="main_color">#E5E0B8</color>
     <color name="text_color">#5F604D</color>
 
+    <color name="brown">#3C3C3C</color>
+
     <color name="green_75">#2B503F</color>
     <color name="green_50">#517866</color>
     <color name="green_40">#517866</color>
@@ -34,6 +36,7 @@
 
     <color name="black">#FF000000</color>
     <color name="black_20">#17414141</color>
+    <color name="black_40">#4D000000</color>
 
     <color name="white">#FFFFFFFF</color>
     <color name="white_75">#9FFFFFFF</color>

@@ -7,5 +7,7 @@ data class OnboardingData(
     var width: Int,
     var height: Int,
     var marginStart: Int,
-    var marginTop: Int
+    var marginTop: Int,
+    var marginRight: Int,
+    var marginBottom: Int
 )

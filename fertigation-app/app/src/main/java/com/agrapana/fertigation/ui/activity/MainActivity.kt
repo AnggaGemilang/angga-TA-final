@@ -7,11 +7,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityMainBinding
-import com.agrapana.fertigation.ui.fragment.AddPlantFragment
+import com.agrapana.fertigation.ui.fragment.FieldFragment
 import com.agrapana.fertigation.ui.fragment.HomeFragment
-import com.agrapana.fertigation.ui.fragment.PlantListFragment
-import com.agrapana.fertigation.ui.fragment.PresetFragment
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         val w = window
         w.setFlags(
@@ -31,29 +30,17 @@ class MainActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
-        binding.bottomNavigationBar.background = null
-        binding.bottomNavigationBar.menu.getItem(3).isEnabled = false
-
-        binding.fab.setOnClickListener {
-            AddPlantFragment().show(supportFragmentManager, "BottomSheetDialog")
-        }
-
         val homeFragment = HomeFragment()
+        val fieldFragment = FieldFragment()
         makeCurrentFragment(homeFragment)
-
-        val plantListFragment = PlantListFragment()
-        val presetFragment = PresetFragment()
 
         binding.bottomNavigationBar.setOnNavigationItemSelectedListener() {
             when(it.itemId){
                 R.id.home -> {
                     makeCurrentFragment(homeFragment)
                 }
-                R.id.lists -> {
-                    makeCurrentFragment(plantListFragment)
-                }
-                R.id.presets -> {
-                    makeCurrentFragment(presetFragment)
+                R.id.fields -> {
+                    makeCurrentFragment(fieldFragment)
                 }
             }
             true

@@ -31,7 +31,7 @@
         android:minHeight="15dp"
         android:progressBackgroundTint="@color/grey_50"
         android:progressTint="@color/grey_75"
-        android:theme="@style/Theme.Irosysco.SplashScreen"
+        android:theme="@style/Theme.Arnesys.SplashScreen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"

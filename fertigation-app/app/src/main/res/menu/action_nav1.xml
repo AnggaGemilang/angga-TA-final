@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/power"
-        android:title="Power"
+        android:id="@+id/notification"
+        android:title="Notification"
         app:showAsAction="always"
-        android:icon="@drawable/ic_baseline_power_settings_new_24" />
+        android:icon="@drawable/baseline_notifications_24" />
     <item
         android:id="@+id/about"
         android:title="About"
@@ -13,5 +13,9 @@
     <item
         android:id="@+id/setting"
         android:title="Setting"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/logout"
+        android:title="Log Out"
         app:showAsAction="never" />
 </menu>

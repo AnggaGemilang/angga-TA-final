@@ -22,43 +22,47 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Irosysco"
         android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true"
         tools:targetApi="31">
+
         <activity
-            android:name="com.agrapana.fertigation.ui.activity.CameraWebviewActivity"
+            android:name="com.agrapana.fertigation.ui.activity.DetailSupportDeviceActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.Webview" />
+            android:theme="@style/Theme.Arnesys.Detail" />
+
+        <activity
+            android:name="com.agrapana.fertigation.ui.activity.DetailMainDeviceActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Arnesys.Detail" />
+
+        <activity
+            android:name="com.agrapana.fertigation.ui.activity.LoginActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Arnesys.LoginScreen" />
+
         <activity
             android:name="com.agrapana.fertigation.ui.activity.SettingActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.Setting" />
-        <activity
-            android:name="com.agrapana.fertigation.ui.activity.TurnOnActivity"
-            android:exported="true"
-            android:noHistory="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.TurnOn" />
-        <activity
-            android:name="com.agrapana.fertigation.ui.activity.DetailActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.Detail" >
-
-        </activity>
+            android:theme="@style/Theme.Arnesys.Setting" />
 
         <activity
             android:name="com.agrapana.fertigation.ui.activity.OnboardingActivity"
             android:exported="true"
-            android:noHistory="false"
+            android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.OnboardingScreen" />
+            android:theme="@style/Theme.Arnesys.OnboardingScreen" />
+
         <activity
             android:name="com.agrapana.fertigation.ui.activity.SplashScreenActivity"
             android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.SplashScreen">
+            android:theme="@style/Theme.Arnesys.SplashScreen" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,11 +75,8 @@
             android:name="com.agrapana.fertigation.ui.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Irosysco.Main">
+            android:theme="@style/Theme.Arnesys.Main" />
 
-        </activity>
-
-        <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
 
 </manifest>

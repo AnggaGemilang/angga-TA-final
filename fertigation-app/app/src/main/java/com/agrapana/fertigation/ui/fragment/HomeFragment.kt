@@ -1,55 +1,54 @@
 package com.agrapana.fertigation.ui.fragment
 
-import android.app.ProgressDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.view.Window
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
-import com.bumptech.glide.Glide
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.agrapana.fertigation.*
-import com.agrapana.fertigation.config.MQTT_HOST
+import com.agrapana.fertigation.adapter.FieldFilterAdapter
 import com.agrapana.fertigation.databinding.FragmentHomeBinding
-import com.agrapana.fertigation.helper.MqttClientHelper
-import com.agrapana.fertigation.model.*
-import com.agrapana.fertigation.ui.activity.DetailActivity
+import com.agrapana.fertigation.helper.ChangeFieldListener
+import com.agrapana.fertigation.model.AIInput
+import com.agrapana.fertigation.model.MonitoringSupportDevice
+import com.agrapana.fertigation.model.Suggestion
+import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
-import com.agrapana.fertigation.ui.activity.TurnOnActivity
-import com.agrapana.fertigation.viewmodel.PlantViewModel
-import com.google.gson.Gson
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended
-import org.eclipse.paho.client.mqttv3.MqttMessage
-import java.text.SimpleDateFormat
+import com.agrapana.fertigation.viewmodel.FieldViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
-class HomeFragment : Fragment() {
+
+class HomeFragment: Fragment(), ChangeFieldListener {
 
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var viewModel: PlantViewModel
-    private var commonMsg = Common()
-    private var controllingMsg = Controlling()
-    private var thumbnailMsg = Thumbnail()
-    private var monitoringMsg = Monitoring()
+    private lateinit var prefs: SharedPreferences
+    private lateinit var recyclerViewAdapter: FieldFilterAdapter
+    private lateinit var viewModel: FieldViewModel
+    private lateinit var window: Window
 
-    private val mqttClient by lazy {
-        MqttClientHelper(requireContext())
-    }
+    private var messageSupportDevice: MonitoringSupportDevice? = null
+    private var clientId: String? = null
+    private var fieldId: String? = null
+    private var pestPredictionResult: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProviders.of(this)[PlantViewModel::class.java]
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -57,28 +56,52 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.inflateMenu(R.menu.action_nav3)
-        binding.toolbar.menu.getItem(1).isVisible = false
+
+        window = requireActivity().window
+        prefs = this.activity?.getSharedPreferences("prefs",
+            AppCompatActivity.MODE_PRIVATE
+        )!!
+        clientId = prefs.getString("client_id", "")
+
+        val name: String? = prefs.getString("name", "")
+        val nameParts = name!!.trim().split("\\s+".toRegex())
+        binding.greeting.text = "Hello there, ${nameParts[0]}"
+
+        binding.btnPest.setOnClickListener {
+            val dialog = SeekPestsFragment(pestPredictionResult)
+            activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
+        }
+
+        binding.toolbar.inflateMenu(R.menu.action_nav1)
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
-                R.id.power -> {
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("Are You Sure?")
-                    builder.setMessage("This can be perform the machine")
-                    builder.setPositiveButton("YES") { _, _ ->
-                        binding.loadingPanel.visibility = View.VISIBLE
-                        commonMsg.power = "off"
-                        mqttClient.publish("arceniter/common", Gson().toJson(commonMsg))
-                        startActivity(Intent(context, TurnOnActivity::class.java))
+                R.id.notification -> {
+                    val suggestionList = ArrayList<Suggestion>()
+
+                    if(messageSupportDevice != null){
+                        if(messageSupportDevice?.monitoring?.soilNitrogen!! < 4){
+                            suggestionList.add(Suggestion("Kekurangan Nitrogen", "Memberikan pupuk organic, seperti kotoran sapi, kotoran hewan, serbuk gergaji, atau menambahkan bakteri salah satunya azotobacter, Anabaena, dll."))
+                        }
+
+                        if(messageSupportDevice?.monitoring?.soilPhosphor!! < 4){
+                            suggestionList.add(Suggestion("Kekurangan Phosphor", "Memberikan abu sekam padi 30%"))
+                        }
+
+                        if(messageSupportDevice?.monitoring?.soilKalium!! < 5){
+                            suggestionList.add(Suggestion("Kekurangan Kalium", "Memberikan abu kayu, cangkang telur (disemprotkan pada daun), atau tepung tulang"))
+                        }
+
+                        if(messageSupportDevice?.monitoring?.soilPh!! < 5){
+                            suggestionList.add(Suggestion("Kekurangan pH", "Memberikan abu kayu, atau dengan mikroorganisme seperti EM4"))
+                        }
+
+                        if(messageSupportDevice?.monitoring?.soilPh!! > 8){
+                            suggestionList.add(Suggestion("Kelebihan pH", "Memberikan belerang, sulfur atau serbuk kayu"))
+                        }
+
+                        val dialog = SuggestionFragment(suggestionList)
+                        activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
                     }
-                    builder.setNegativeButton("NO") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    val alert = builder.create()
-                    alert.show()
-                }
-                R.id.detail -> {
-                    startActivity(Intent(requireContext(), DetailActivity::class.java))
                 }
                 R.id.about -> {
                     AlertDialog.Builder(requireContext())
@@ -92,138 +115,149 @@ class HomeFragment : Fragment() {
                 R.id.setting -> {
                     startActivity(Intent(context, SettingActivity::class.java))
                 }
+                R.id.logout -> {
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("Are You Sure?")
+                    builder.setMessage("You can't get in to your account")
+                    builder.setPositiveButton("YES") { _, _ ->
+                        val editor: SharedPreferences.Editor? = prefs.edit()
+                        editor?.putBoolean("loginStart", true)
+                        editor?.putString("client_id", null)
+                        editor?.apply()
+                        startActivity(Intent(activity, LoginActivity::class.java))
+                    }
+                    builder.setNegativeButton("NO") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    val alert = builder.create()
+                    alert.show()
+                }
             }
             true
         }
+
         val dtf = DateTimeFormatter.ofPattern("dd MMM")
         val localDate = LocalDate.now()
         binding.txtTanggalHome.text = dtf.format(localDate)
-        setMqttCallBack()
-    }
 
-    private fun setMqttCallBack() {
-        mqttClient.setCallback(object : MqttCallbackExtended {
-            override fun connectComplete(b: Boolean, s: String) {
-                Log.w("Debug", "Connection to host connected:\n'$MQTT_HOST'")
-                mqttClient.subscribe("irosysco/common")
-                mqttClient.subscribe("irosysco/thumbnail")
-                mqttClient.subscribe("irosysco/monitoring")
-            }
-            override fun connectionLost(throwable: Throwable) {
-                Log.w("Debug", "Connection to host lost:\n'$MQTT_HOST'")
-            }
-            @Throws(Exception::class)
-            override fun messageArrived(topic: String, mqttMessage: MqttMessage) {
-                Log.w("Debug", "Message received from host '$MQTT_HOST': $mqttMessage")
-                if(topic == "irosysco/common"){
-                    commonMsg = Gson().fromJson(mqttMessage.toString(), Common::class.java)
-                    val data = commonMsg.plant_name.split("#").toTypedArray()
-                    binding.plantName.text = data[0].capitalize()
-                    binding.startedPlanting.text = commonMsg.started_planting
-                    if(commonMsg.is_planting == "no"){
-                        binding.keteranganTidakAda.visibility = View.VISIBLE
-                        binding.keteranganAda.visibility = View.GONE
-                        binding.valTemperature.text = "N/A"
-                        binding.valPh.text = "N/A"
-                        binding.valGas.text = "N/A"
-                        binding.valNutrition.text = "N/A"
-                        binding.valNutritionVolume.text = "N/A"
-                        binding.valGrowthLamp.text = "N/A"
-                    } else {
-                        binding.toolbar.menu.getItem(1).isVisible = true
-                        binding.keteranganTidakAda.visibility = View.GONE
-                        binding.keteranganAda.visibility = View.VISIBLE
-                        binding.valTemperature.text = monitoringMsg.temperature.toString() + "°C"
-                        binding.valPh.text = monitoringMsg.ph + " Ph"
-                        binding.valGas.text = monitoringMsg.gas.toString() + " ppm`"
-                        binding.valNutrition.text = monitoringMsg.nutrition.toString() + " ppm"
-                        binding.valNutritionVolume.text = monitoringMsg.nutrition_volume.toString() + " %"
-                        binding.valGrowthLamp.text = monitoringMsg.growth_lamp.capitalize()
-
-                        val cal = Calendar.getInstance()
-                        val s = SimpleDateFormat("dd-M-yyyy, hh:mm")
-                        cal.add(Calendar.DAY_OF_YEAR, Integer.parseInt(data[1]))
-
-                        if(s.format(Date(cal.timeInMillis)) == commonMsg.started_planting){
-                            val progressDialog = ProgressDialog(requireContext())
-                            progressDialog.setTitle("Please Wait")
-                            progressDialog.setMessage("System is working . . .")
-                            progressDialog.show()
-
-                            val plant = Plant()
-                            plant.imgUrl = thumbnailMsg.imgURL
-                            plant.category = commonMsg.category
-                            plant.plantType = commonMsg.plant_name
-                            plant.mode = controllingMsg.mode
-                            plant.plantStarted = commonMsg.started_planting
-                            val sdf = SimpleDateFormat("dd-M-yyyy, hh:mm")
-                            plant.plantEnded = sdf.format(Date())
-                            plant.status = "Done"
-
-                            val dbPlants = viewModel.getDBReference()
-                            plant.id = dbPlants.push().key.toString()
-                            dbPlants.child(plant.id).setValue(plant).addOnCompleteListener {
-                                if(it.isSuccessful) {
-                                    progressDialog.dismiss()
-                                    Toast.makeText(requireContext(), "Preset has done", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-
-                            commonMsg.is_planting = "no"
-                            commonMsg.started_planting = ""
-                            commonMsg.plant_name = ""
-                            commonMsg.category = ""
-
-                            Log.d("dadang dong", commonMsg.toString())
-
-                            mqttClient.publish("irosysco/common", Gson().toJson(commonMsg))
-
-                            val thumbnail = Thumbnail()
-                            thumbnail.imgURL = ""
-                            thumbnail.ref = thumbnailMsg.ref
-                            mqttClient.publish("irosysco/thumbnail", Gson().toJson(thumbnail))
-                        }
-                    }
-                } else if (topic == "irosysco/monitoring"){
-                    monitoringMsg = Gson().fromJson(mqttMessage.toString(), Monitoring::class.java)
-                } else if (topic == "irosysco/thumbnail"){
-                    thumbnailMsg = Gson().fromJson(mqttMessage.toString(), Thumbnail::class.java)
-                    Glide.with(this@HomeFragment)
-                        .load(thumbnailMsg.imgURL)
-                        .into(binding.image)
+        binding.scrollView.setOnScrollChangeListener(
+            NestedScrollView.OnScrollChangeListener {
+                    _, _, scrollY, _, _ ->
+                if(scrollY > 451){
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
                 }
-                binding.plantNamePlaceholder.visibility = View.GONE
-                binding.imagePlaceholder.visibility = View.GONE
-                binding.startedPlantingPlaceholder.visibility = View.GONE
-                binding.valTemperaturePlaceholder.visibility = View.GONE
-                binding.valGasPlaceholder.visibility = View.GONE
-                binding.valPhPlaceholder.visibility = View.GONE
-                binding.valVolumePlaceholder.visibility = View.GONE
-                binding.valNutritionPlaceholder.visibility = View.GONE
-                binding.valGasPlaceholder.visibility = View.GONE
-                binding.valGrowthLampPlaceholder.visibility = View.GONE
-                binding.plantName.visibility = View.VISIBLE
-                binding.image.visibility = View.VISIBLE
-                binding.startedPlanting.visibility = View.VISIBLE
-                binding.valTemperature.visibility = View.VISIBLE
-                binding.valGas.visibility = View.VISIBLE
-                binding.valPh.visibility = View.VISIBLE
-                binding.valGas.visibility = View.VISIBLE
-                binding.valGrowthLamp.visibility = View.VISIBLE
-                binding.valNutritionVolume.visibility = View.VISIBLE
-                binding.valNutrition.visibility = View.VISIBLE
-            }
-            override fun deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken) {
-                Log.w("Debug", "Message published to host '$MQTT_HOST'")
-            }
-        })
+            })
+
+        initRecyclerView()
+        initViewModel()
     }
 
-    override fun onDestroy() {
-//        if (mqttClient.isConnected()) {
-//            mqttClient.destroy()
-//        }
-        super.onDestroy()
+    private fun initRecyclerView() {
+        val linearLayoutManager = LinearLayoutManager(
+            activity, LinearLayoutManager.HORIZONTAL, false
+        )
+        binding.recyclerView.layoutManager = linearLayoutManager
+        recyclerViewAdapter = FieldFilterAdapter(activity!!)
+        recyclerViewAdapter.changeFieldListener = this
+        binding.recyclerView.adapter = recyclerViewAdapter
+        recyclerViewAdapter.notifyDataSetChanged()
     }
 
+    private fun initViewModel() {
+        viewModel = ViewModelProvider(this)[FieldViewModel::class.java]
+        viewModel.getAllField(clientId!!)
+        viewModel.getLoadFieldObservable().observe(activity!!) {
+            if(it?.data != null){
+                binding.valFilterFieldPlaceholder.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+                recyclerViewAdapter.setFieldList(it.data)
+            }
+        }
+    }
+
+    override fun onChangeField(id: String?) {
+        fieldId = id
+    }
+
+    private fun hideAdditionalField(){
+        binding.valPest.visibility = View.GONE
+        binding.valPestPlaceholder.visibility = View.VISIBLE
+        binding.valWeather.visibility = View.GONE
+        binding.valWeatherPlaceholder.visibility = View.VISIBLE
+    }
+
+    private fun showAdditionalField(){
+        binding.valPestPlaceholder.visibility = View.GONE
+        binding.valPest.visibility = View.VISIBLE
+        binding.valWeatherPlaceholder.visibility = View.GONE
+        binding.valWeather.visibility = View.VISIBLE
+    }
+
+    private fun hideMainField(){
+
+        // Monitoring Atas
+
+        binding.valWindTemperaturePlaceholder.visibility = View.VISIBLE
+        binding.valWindHumidityPlaceholder.visibility = View.VISIBLE
+        binding.valWindSpeedPlaceholder.visibility = View.VISIBLE
+        binding.valPressurePlaceholder.visibility = View.VISIBLE
+        binding.valLightPlaceholder.visibility = View.VISIBLE
+        binding.valWindTemperature.visibility = View.GONE
+        binding.valWindHumidity.visibility = View.GONE
+        binding.valWindSpeed.visibility = View.GONE
+        binding.valPressure.visibility = View.GONE
+        binding.valLight.visibility = View.GONE
+
+        // Monitoring Bawah
+
+        binding.valTemperaturePlaceholder.visibility = View.VISIBLE
+        binding.valSoilMoisturePlaceholder.visibility = View.VISIBLE
+        binding.valSoilPhPlaceholder.visibility = View.VISIBLE
+        binding.valSoilNitrogenPlaceholder.visibility = View.VISIBLE
+        binding.valSoilPhosphorPlaceholder.visibility = View.VISIBLE
+        binding.valSoilKaliumPlaceholder.visibility = View.VISIBLE
+        binding.valSoilTemperature.visibility = View.GONE
+        binding.valSoilMoisture.visibility = View.GONE
+        binding.valSoilPh.visibility = View.GONE
+        binding.valSoilNitrogen.visibility = View.GONE
+        binding.valSoilPhosphor.visibility = View.GONE
+        binding.valSoilKalium.visibility = View.GONE
+    }
+
+    private fun showMainField(){
+
+        // Monitoring Atas
+
+        binding.valWindTemperaturePlaceholder.visibility = View.GONE
+        binding.valWindHumidityPlaceholder.visibility = View.GONE
+        binding.valWindSpeedPlaceholder.visibility = View.GONE
+        binding.valPressurePlaceholder.visibility = View.GONE
+        binding.valLightPlaceholder.visibility = View.GONE
+        binding.valWindTemperature.visibility = View.VISIBLE
+        binding.valWindHumidity.visibility = View.VISIBLE
+        binding.valWindSpeed.visibility = View.VISIBLE
+        binding.valPressure.visibility = View.VISIBLE
+        binding.valLight.visibility = View.VISIBLE
+
+        // Monitoring Bawah
+
+        binding.valTemperaturePlaceholder.visibility = View.GONE
+        binding.valSoilMoisturePlaceholder.visibility = View.GONE
+        binding.valSoilPhPlaceholder.visibility = View.GONE
+        binding.valSoilNitrogenPlaceholder.visibility = View.GONE
+        binding.valSoilPhosphorPlaceholder.visibility = View.GONE
+        binding.valSoilKaliumPlaceholder.visibility = View.GONE
+        binding.valSoilTemperature.visibility = View.VISIBLE
+        binding.valSoilMoisture.visibility = View.VISIBLE
+        binding.valSoilPh.visibility = View.VISIBLE
+        binding.valSoilNitrogen.visibility = View.VISIBLE
+        binding.valSoilPhosphor.visibility = View.VISIBLE
+        binding.valSoilKalium.visibility = View.VISIBLE
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
 }

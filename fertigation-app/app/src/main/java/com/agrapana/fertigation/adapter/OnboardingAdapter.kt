@@ -39,8 +39,14 @@ class OnboardingAdapter(private var context: Context, private var onBoardingData
         (imageView.layoutParams as ConstraintLayout.LayoutParams).apply {
             marginStart=onBoardingDataList[position].marginStart
             topMargin=onBoardingDataList[position].marginTop
+            rightMargin=onBoardingDataList[position].marginRight
         }
+
         title.text = onBoardingDataList[position].title
+        (title.layoutParams as ConstraintLayout.LayoutParams).apply {
+            topMargin=onBoardingDataList[position].marginBottom
+        }
+
         desc.text = onBoardingDataList[position].desc
 
         container.addView(view)
