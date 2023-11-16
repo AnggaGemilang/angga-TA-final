@@ -98,6 +98,6 @@ class RegisterActivity : AppCompatActivity(), AuthListener {
     }
 
     override fun onFailure(message: String) {
-        Toast.makeText(this, "Register Failed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

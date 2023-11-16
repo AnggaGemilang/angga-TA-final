@@ -8,16 +8,19 @@ import com.agrapana.fertigation.helper.AuthListener
 import com.agrapana.fertigation.model.AuthResponse
 import com.agrapana.fertigation.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class AuthViewModel : ViewModel() {
 
     private val firebaseAuth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
-    val authResponse = MutableLiveData<AuthResponse?>()
-
+    private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
+    private val authResponse = MutableLiveData<AuthResponse?>()
     var authListener: AuthListener? = null
 
     fun onLogin(email: String, password: String){
@@ -26,10 +29,21 @@ class AuthViewModel : ViewModel() {
         } else {
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                 if(it.isSuccessful){
-                    Log.d("hasil", it.toString())
-//                    authListener?.onSuccess(it.result.user.toString())
+                    dbUsers.child(firebaseAuth.currentUser!!.uid).addListenerForSingleValueEvent(
+                        object: ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                authResponse.value = AuthResponse(
+                                    snapshot.key,
+                                    snapshot.child("name").value.toString(),
+                                    snapshot.child("role").value.toString()
+                                )
+                                authListener?.onSuccess(authResponse)
+                            }
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+                        })
                 } else {
-                    authListener?.onFailure(it.exception.toString())
+                    authListener?.onFailure("Account Not Found")
                     Log.d("hasil", it.exception.toString())
                 }
             }
@@ -47,7 +61,6 @@ class AuthViewModel : ViewModel() {
         } else {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if(task.isSuccessful){
-                    val dbUsers = FirebaseDatabase.getInstance().getReference("users")
                     val user = User(name, email, "Owner")
                     dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener {
                         if(it.isSuccessful) {
