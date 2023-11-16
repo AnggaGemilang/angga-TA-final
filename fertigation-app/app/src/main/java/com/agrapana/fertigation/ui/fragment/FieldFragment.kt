@@ -62,6 +62,13 @@ class FieldFragment : Fragment() {
         binding.toolbar.inflateMenu(R.menu.action_nav2)
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
+                R.id.add -> {
+                    val dialog = AddFieldFragment()
+                    val bundle = Bundle()
+                    bundle.putString("status", "tambah")
+                    dialog.arguments = bundle
+                    activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
+                }
                 R.id.about -> {
                     AlertDialog.Builder(requireContext())
                         .setTitle("App Version")

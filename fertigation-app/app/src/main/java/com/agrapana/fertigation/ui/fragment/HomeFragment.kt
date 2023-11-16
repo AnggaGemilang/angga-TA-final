@@ -25,12 +25,12 @@ import com.agrapana.fertigation.model.MonitoringSupportDevice
 import com.agrapana.fertigation.model.Suggestion
 import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
+import com.agrapana.fertigation.ui.activity.WorkerActivity
 import com.agrapana.fertigation.viewmodel.FieldViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 class HomeFragment: Fragment(), ChangeFieldListener {
 
@@ -75,7 +75,7 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.worker -> {
-
+                    startActivity(Intent(context, WorkerActivity::class.java))
                 }
                 R.id.about -> {
                     AlertDialog.Builder(requireContext())

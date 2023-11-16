@@ -26,9 +26,16 @@ class PresetFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.inflateMenu(R.menu.action_nav4)
+        binding.toolbar.inflateMenu(R.menu.action_nav2)
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
+                R.id.add -> {
+                    val dialog = AddPresetFragment()
+                    val bundle = Bundle()
+                    bundle.putString("status", "tambah")
+                    dialog.arguments = bundle
+                    activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
+                }
                 R.id.about -> {
                     AlertDialog.Builder(requireContext())
                         .setTitle("Versi Aplikasi")
