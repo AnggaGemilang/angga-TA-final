@@ -33,6 +33,10 @@ class LoginActivity : AppCompatActivity(), AuthListener {
             val password = binding.etPassword.text.toString()
             viewModel.onLoginButtonClick(email, password)
         }
+
+        binding.btnRegister.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
     }
 
     override fun onSuccess(response: LiveData<AuthResponse?>) {

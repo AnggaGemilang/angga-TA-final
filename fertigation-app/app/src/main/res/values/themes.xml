@@ -28,6 +28,14 @@
         <item name="android:windowTranslucentStatus">false</item>
     </style>
 
+    <style name="Theme.Arnesys.RegisterScreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brown</item>
+        <item name="colorPrimaryVariant">@color/brown</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
     <style name="Theme.Arnesys.LoginScreen" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/brown</item>
         <item name="colorPrimaryVariant">@color/brown</item>

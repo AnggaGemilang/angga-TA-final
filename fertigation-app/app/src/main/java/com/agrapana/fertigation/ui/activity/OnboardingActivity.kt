@@ -27,12 +27,12 @@ class OnboardingActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         val onboardingData: MutableList<OnboardingData> = ArrayList()
-        onboardingData.add(OnboardingData("Easy Life", "Make it easier for farmers to monitor soil conditions, weather, and pests on their agricultural land using arnesys",
-            R.drawable.onboarding_1, 420, 420,  -50, 200, 0, 50))
-        onboardingData.add(OnboardingData("Advance Tech", "Supported by technologies such as LoRA to support a centralized system, solar panels to meet electricity supply, and IoT for data communication",
+        onboardingData.add(OnboardingData("Mudahkan Hidup", "Sistem ini membuat kegiatan penyiraman dan pemupukan dapat dilakukan secara efisien, dengan memungkinkan pemantauan dan pengendalian jarak jauh",
+            R.drawable.onboarding_4, 420, 420,  0, 200, 0, 50))
+        onboardingData.add(OnboardingData("Teknologi Canggih", "Sistem ini memungkinkan penggunaan preset secara dinamis dengan parameter yang dapat petani atur, didukung dengan teknologi yang murah dan berkualitas",
             R.drawable.onboarding_2, 580, 580, -20, -20, 0, -200))
-        onboardingData.add(OnboardingData("Best Quality", "Indirectly produce high quality plants by providing complete information about the current condition of the plants",
-            R.drawable.onboarding_3, 380, 380, -20, 260, 0, 50))
+        onboardingData.add(OnboardingData("Kebermanfaatan", "Pengembangan sistem dilakukan berdasarkan proses observasi yang panjang terhadap narasumber dan literatur, sehingga menciptakan kesesuaian penerapan",
+            R.drawable.onboarding_5, 380, 380, -20, 260, 0, 50))
         setOnBoardingViewPagerAdapter(onboardingData)
 
         val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)

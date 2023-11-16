@@ -15,19 +15,19 @@
         android:orientation="vertical" >
 
         <ImageView
-            android:layout_width="260dp"
-            android:layout_height="260dp"
-            android:layout_marginTop="60dp"
+            android:layout_width="290dp"
+            android:layout_height="290dp"
+            android:layout_marginTop="30dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/login_banner"/>
+            android:src="@drawable/register_banner"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Login"
+            android:text="Register"
             android:textSize="30dp"
+            android:layout_marginTop="-20dp"
             android:textColor="@color/black"
-            android:layout_marginTop="30dp"
             android:textStyle="bold" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -55,8 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             app:boxBackgroundMode="outline"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:passwordToggleEnabled="true">
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
@@ -69,21 +68,60 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/btnLogin"
+        <TextView
+            android:id="@+id/txt_password_error"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="20dp"
-            android:text="Login" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="-7dp"
+            android:textColor="@color/red_50"
+            android:visibility="gone"
+            android:text="Min, 8 character, number, letter, and symbol" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/etPasswordConfirmLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:boxBackgroundMode="outline"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPasswordConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Confirm Password"
+                android:drawablePadding="15dp"
+                android:drawableStart="@drawable/baseline_sync_lock_24"
+                android:inputType="textPassword"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
+            android:id="@+id/txt_password_confirm_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="-7dp"
+            android:visibility="gone"
+            android:textColor="@color/red_50"
+            android:text="Password isn't match" />
+
+        <Button
             android:id="@+id/btn_register"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="15dp"
+            android:text="Register" />
+
+        <TextView
+            android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
             android:textSize="17dp"
-            android:text="Don't have account yet?" />
+            android:text="Already have account?" />
 
 
         <RelativeLayout
