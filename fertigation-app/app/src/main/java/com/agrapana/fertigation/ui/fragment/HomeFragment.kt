@@ -63,9 +63,8 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         )!!
         clientId = prefs.getString("client_id", "")
 
-        val name: String? = prefs.getString("name", "")
-        val nameParts = name!!.trim().split("\\s+".toRegex())
-        binding.greeting.text = "Hello there, ${nameParts[0]}"
+        val name: String? = prefs.getString("client_name", "")
+        binding.greeting.text = "Hello there, $name"
 
         binding.btnPest.setOnClickListener {
             val dialog = SeekPestsFragment(pestPredictionResult)
@@ -75,33 +74,8 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         binding.toolbar.inflateMenu(R.menu.action_nav1)
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
-                R.id.notification -> {
-                    val suggestionList = ArrayList<Suggestion>()
+                R.id.worker -> {
 
-                    if(messageSupportDevice != null){
-                        if(messageSupportDevice?.monitoring?.soilNitrogen!! < 4){
-                            suggestionList.add(Suggestion("Kekurangan Nitrogen", "Memberikan pupuk organic, seperti kotoran sapi, kotoran hewan, serbuk gergaji, atau menambahkan bakteri salah satunya azotobacter, Anabaena, dll."))
-                        }
-
-                        if(messageSupportDevice?.monitoring?.soilPhosphor!! < 4){
-                            suggestionList.add(Suggestion("Kekurangan Phosphor", "Memberikan abu sekam padi 30%"))
-                        }
-
-                        if(messageSupportDevice?.monitoring?.soilKalium!! < 5){
-                            suggestionList.add(Suggestion("Kekurangan Kalium", "Memberikan abu kayu, cangkang telur (disemprotkan pada daun), atau tepung tulang"))
-                        }
-
-                        if(messageSupportDevice?.monitoring?.soilPh!! < 5){
-                            suggestionList.add(Suggestion("Kekurangan pH", "Memberikan abu kayu, atau dengan mikroorganisme seperti EM4"))
-                        }
-
-                        if(messageSupportDevice?.monitoring?.soilPh!! > 8){
-                            suggestionList.add(Suggestion("Kelebihan pH", "Memberikan belerang, sulfur atau serbuk kayu"))
-                        }
-
-                        val dialog = SuggestionFragment(suggestionList)
-                        activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
-                    }
                 }
                 R.id.about -> {
                     AlertDialog.Builder(requireContext())

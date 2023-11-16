@@ -83,7 +83,7 @@
                             android:id="@+id/hello"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Agracentrys App"
+                            android:text="Fertigation App"
                             android:textStyle="bold"
                             android:textColor="@color/white"
                             android:layout_marginStart="25dp"
@@ -533,10 +533,18 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
-                            android:textSize="20sp"
+                            android:textSize="21sp"
                             android:layout_marginTop="5dp"
                             android:layout_marginStart="12dp"
                             android:text="Real-time Monitoring" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="17sp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginStart="12dp"
+                            android:text="Perangkat Pemantau Ke-1" />
 
                         <GridLayout
                             android:layout_width="fill_parent"

@@ -9,6 +9,7 @@ import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityMainBinding
 import com.agrapana.fertigation.ui.fragment.FieldFragment
 import com.agrapana.fertigation.ui.fragment.HomeFragment
+import com.agrapana.fertigation.ui.fragment.PresetFragment
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
 
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         val homeFragment = HomeFragment()
+        val presetFragment = PresetFragment()
         val fieldFragment = FieldFragment()
         makeCurrentFragment(homeFragment)
 
@@ -41,6 +43,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.fields -> {
                     makeCurrentFragment(fieldFragment)
+                }
+                R.id.preset -> {
+                    makeCurrentFragment(presetFragment)
                 }
             }
             true

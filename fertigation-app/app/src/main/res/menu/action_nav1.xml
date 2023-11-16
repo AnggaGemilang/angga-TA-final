@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/notification"
-        android:title="Notification"
+        android:id="@+id/worker"
+        android:title="Worker"
         app:showAsAction="always"
-        android:icon="@drawable/baseline_notifications_24" />
+        android:icon="@drawable/baseline_group_24" />
     <item
         android:id="@+id/about"
         android:title="About"

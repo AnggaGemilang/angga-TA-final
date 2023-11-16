@@ -28,12 +28,7 @@
             android:name=".ui.activity.RegisterActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Arnesys.RegisterScreen" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.Arnesys.RegisterScreen" />
         <activity
             android:name=".ui.activity.DetailSupportDeviceActivity"
             android:exported="false"
@@ -73,7 +68,14 @@
             android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Arnesys.Main" />
+            android:theme="@style/Theme.Arnesys.Main" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>
