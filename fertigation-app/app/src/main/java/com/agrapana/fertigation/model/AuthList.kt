@@ -17,4 +17,11 @@ data class Auth(
     val created_at: Timestamp?,
     val updated_at: Timestamp?
     )
-data class AuthResponse(val status: String?, val message: String?, val data: Auth?)
+
+data class User(
+    val name: String?,
+    val email: String?,
+    val role: String?,
+)
+
+data class AuthResponse(val id: String?, val name: String?, val role: String?)

@@ -11,12 +11,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.agrapana.fertigation.databinding.ActivityLoginBinding
 import com.agrapana.fertigation.helper.AuthListener
 import com.agrapana.fertigation.model.AuthResponse
-import com.agrapana.fertigation.viewmodel.LoginViewModel
+import com.agrapana.fertigation.viewmodel.AuthViewModel
 
 class LoginActivity : AppCompatActivity(), AuthListener {
 
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var viewModel: LoginViewModel
+    private lateinit var viewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +25,13 @@ class LoginActivity : AppCompatActivity(), AuthListener {
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        viewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        viewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         viewModel.authListener = this
 
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
-            viewModel.onLoginButtonClick(email, password)
+            viewModel.onLogin(email, password)
         }
 
         binding.btnRegister.setOnClickListener {
@@ -40,20 +40,15 @@ class LoginActivity : AppCompatActivity(), AuthListener {
     }
 
     override fun onSuccess(response: LiveData<AuthResponse?>) {
-
         response.observe(this) {
-
-            if(it!!.status == "failed"){
-                Toast.makeText(this, "Email or Password Is Incorrect!", Toast.LENGTH_SHORT).show()
-            } else {
-                val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
-                val editor: SharedPreferences.Editor? = prefs.edit()
-                editor?.putBoolean("loginStart", false)
-                editor?.putString("client_id", it.data?.id)
-                editor?.putString("name", it.data?.first_name + " " + it.data?.last_name)
-                editor?.apply()
-                startActivity(Intent(this, MainActivity::class.java))
-            }
+            val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
+            val editor: SharedPreferences.Editor? = prefs.edit()
+            editor?.putBoolean("login_status", true)
+            editor?.putString("client_id", it?.id)
+            editor?.putString("client_name", it?.name!!.split(" ")[0])
+            editor?.putString("client_role", it?.role)
+            editor?.apply()
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 
