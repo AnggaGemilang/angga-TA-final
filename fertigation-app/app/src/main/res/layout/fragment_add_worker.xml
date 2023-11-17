@@ -31,340 +31,74 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Add Configuration"
+                android:text="Add Worker"
                 android:textSize="25sp"
                 android:layout_gravity="center"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/title_plant_name"
+                android:id="@+id/title_worker_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Plant Name"
+                android:text="Worker Name"
                 android:textStyle="bold"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="20dp"
                 android:textSize="14sp" />
 
             <EditText
-                android:id="@+id/plant_name"
+                android:id="@+id/worker_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
                 android:textSize="16sp"
                 android:background="@drawable/edittext_style"
-                android:hint="Enter Plant Name" />
+                android:hint="Enter Worker Name" />
 
             <TextView
-                android:id="@+id/title_category"
+                android:id="@+id/title_worker_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Plant Category"
+                android:text="Worker Email"
                 android:textStyle="bold"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
 
-            <Spinner
-                android:id="@+id/category"
+            <EditText
+                android:id="@+id/worker_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
-                android:entries="@array/val_plant_category"
-                app:popupTheme="@style/Spinner.Custom"
-                android:background="@drawable/spinner_style" />
+                android:textSize="16sp"
+                android:inputType="textEmailAddress"
+                android:background="@drawable/edittext_style"
+                android:hint="Enter Worker Email" />
 
             <TextView
-                android:id="@+id/title_default_image"
+                android:id="@+id/title_worker_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Default Image"
+                android:text="Worker Password"
                 android:textStyle="bold"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/default_image"
+            <EditText
+                android:id="@+id/worker_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
-                app:cardElevation="0dp"
-                app:cardCornerRadius="8dp"
-                android:backgroundTint="#32C4C4C4">
+                android:textSize="16sp"
+                android:background="@drawable/edittext_style"
+                android:hint="Enter Worker Password" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatButton
-                        android:id="@+id/open"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35dp"
-                        android:layout_marginVertical="15dp"
-                        android:layout_marginStart="15dp"
-                        android:paddingHorizontal="20dp"
-                        android:paddingTop="3dp"
-                        android:textColor="@color/black"
-                        android:background="@color/grey_20"
-                        android:text="Choose File"  />
-
-                    <TextView
-                        android:id="@+id/txt_filename"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:text="Choose Image" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_4"
+            <TextView
+                android:id="@+id/txt_password_error"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nutrition"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/nutrition"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Nutrition" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ph"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/ph"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Ph" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Growth Lamp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <Spinner
-                        android:id="@+id/growth_lamp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:entries="@array/val_component_state"
-                        app:popupTheme="@style/Spinner.Custom"
-                        android:background="@drawable/spinner_style" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pump"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <Spinner
-                        android:id="@+id/pump"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:entries="@array/val_component_state3"
-                        app:popupTheme="@style/Spinner.Custom"
-                        android:background="@drawable/spinner_style" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Temperature"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/temperature"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Temperature" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CO2 Value"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/gas_valve"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter CO2 Gas" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Seedling Time"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/seedling"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:textSize="16sp"
-                        android:inputType="phone"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Seedling Time" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Grow Time"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/grow"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:textSize="16sp"
-                        android:inputType="phone"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Grow Time" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+                android:layout_marginTop="10dp"
+                android:textColor="@color/red_50"
+                android:visibility="gone"
+                android:text="Min, 8 character, number, letter, and symbol" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_submit"
@@ -376,7 +110,8 @@
                 android:textColor="@color/white"
                 android:background="@drawable/button_submit"
                 android:drawableLeft="@drawable/ic_baseline_library_add_24"
-                android:text="Save Configuration" />
+                android:drawablePadding="5dp"
+                android:text="Save Worker" />
 
         </LinearLayout>
 

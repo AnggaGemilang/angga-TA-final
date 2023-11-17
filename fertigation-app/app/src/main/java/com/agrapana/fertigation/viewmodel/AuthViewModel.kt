@@ -20,6 +20,7 @@ class AuthViewModel : ViewModel() {
         FirebaseAuth.getInstance()
     }
     private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
+    private val dbWorkers = FirebaseDatabase.getInstance().getReference("workers")
     private val authResponse = MutableLiveData<AuthResponse?>()
     var authListener: AuthListener? = null
 
@@ -63,6 +64,33 @@ class AuthViewModel : ViewModel() {
                 if(task.isSuccessful){
                     val user = User(name, email, "Owner")
                     dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener {
+                        if(it.isSuccessful) {
+                            authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")
+                            authListener?.onSuccess(authResponse)
+                        } else {
+                            authListener?.onFailure(it.exception.toString())
+                            Log.d("Error", it.exception.toString())
+                        }
+                    }
+                } else {
+                    authListener?.onFailure(task.exception.toString())
+                    Log.d("Error", task.exception.toString())
+                }
+            }
+        }
+    }
+
+    fun onAddWorker(name: String, email: String, password: String){
+        if(email.isEmpty() || password.isEmpty()){
+            authListener?.onFailure("Email or Password Is Empty!")
+        } else if(password.length < 3 && !password.contains("[a-z]".toRegex()) && !password.contains("[0-9]".toRegex())
+            && !password.contains("[!\"#\$%&'()*+,-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())) {
+            authListener?.onFailure(password.length.toString() + "- Password Didn't Match Format")
+        } else {
+            firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+                if(task.isSuccessful){
+                    val user = User(name, email, "Owner")
+                    dbWorkers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener {
                         if(it.isSuccessful) {
                             authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")
                             authListener?.onSuccess(authResponse)

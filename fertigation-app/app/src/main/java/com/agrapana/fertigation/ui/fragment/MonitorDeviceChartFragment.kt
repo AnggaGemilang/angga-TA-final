@@ -21,7 +21,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import java.util.ArrayList
 
-class SupportDeviceChartFragment(
+class MonitorDeviceChartFragment(
     private val id: String,
     private val number: Int,
     private val column: String,
