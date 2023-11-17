@@ -14,7 +14,7 @@ import com.agrapana.fertigation.model.Preset
 import com.bumptech.glide.Glide
 
 @SuppressLint("NotifyDataSetChanged")
-class PresetsAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetsAdapter.MyViewHolder>() {
+class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAdapter.MyViewHolder>() {
 
     private var presets = mutableListOf<Preset>()
     private var presetId = mutableListOf<String>()
