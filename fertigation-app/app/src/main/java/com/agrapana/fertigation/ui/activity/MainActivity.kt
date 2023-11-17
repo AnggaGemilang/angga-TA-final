@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         val fieldFragment = FieldFragment()
         makeCurrentFragment(homeFragment)
 
-        binding.bottomNavigationBar.setOnNavigationItemSelectedListener() {
+        binding.bottomNavigationBar.setOnNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.home -> {
                     makeCurrentFragment(homeFragment)

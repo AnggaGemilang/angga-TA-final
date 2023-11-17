@@ -87,7 +87,7 @@ class RegisterActivity : AppCompatActivity(), AuthListener {
         response.observe(this) {
             val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
             val editor: SharedPreferences.Editor? = prefs.edit()
-            editor?.putBoolean("login_status", true)
+            editor?.putBoolean("login_status", false)
             editor?.putString("client_id", it?.id)
             editor?.putString("client_name", it?.name!!.split(" ")[0])
             editor?.putString("client_role", it?.role)

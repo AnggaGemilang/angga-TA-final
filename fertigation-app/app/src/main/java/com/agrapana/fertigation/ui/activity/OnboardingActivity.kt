@@ -37,7 +37,7 @@ class OnboardingActivity : AppCompatActivity() {
 
         val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
         val editor: SharedPreferences.Editor? = prefs.edit()
-        editor?.putBoolean("firstStart", false)
+        editor?.putBoolean("first_start_status", false)
         editor?.apply()
 
         binding.next.setOnClickListener {

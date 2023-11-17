@@ -30,11 +30,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Arnesys.WorkerScreen"  >
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
         </activity>
         <activity
             android:name=".ui.activity.RegisterActivity"
@@ -73,7 +68,14 @@
             android:exported="true"
             android:noHistory="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Arnesys.SplashScreen"></activity>
+            android:theme="@style/Theme.Arnesys.SplashScreen">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".ui.activity.MainActivity"
             android:exported="true"

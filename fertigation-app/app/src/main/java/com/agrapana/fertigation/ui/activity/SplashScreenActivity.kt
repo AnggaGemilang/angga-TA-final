@@ -48,8 +48,8 @@ class SplashScreenActivity : AppCompatActivity() {
             }
             Handler(Looper.getMainLooper()).post {
                 val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
-                val firstState: Boolean = prefs.getBoolean("firstStart", true)
-                val loginState: Boolean = prefs.getBoolean("loginStart", true)
+                val firstState: Boolean = prefs.getBoolean("first_start_status", true)
+                val loginState: Boolean = prefs.getBoolean("login_status", true)
 
                 if(firstState){
                     startActivity(Intent(this, OnboardingActivity::class.java))
