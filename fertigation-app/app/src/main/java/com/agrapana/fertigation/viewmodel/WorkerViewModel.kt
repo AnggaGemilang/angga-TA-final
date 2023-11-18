@@ -5,17 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.WorkerListener
-import com.agrapana.fertigation.model.AuthResponse
 import com.agrapana.fertigation.model.User
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
 
 
 class WorkerViewModel : ViewModel() {
@@ -140,7 +137,7 @@ class WorkerViewModel : ViewModel() {
         }
     }
 
-    fun onAddWorker(userId: String, name: String, email: String, password: String){
+    fun onAddWorker(ownerId: String, name: String, email: String, password: String){
         if(email.isEmpty() || password.isEmpty()){
             workerListener?.onFailure("Email or Password Is Empty!")
         } else if(password.length < 3 || !password.contains("[a-z]".toRegex()) || !password.contains("[0-9]".toRegex())
@@ -149,8 +146,8 @@ class WorkerViewModel : ViewModel() {
         } else {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if(task.isSuccessful){
-                    val user = User(name, email, password, "Worker")
-                    dbWorkers.child(userId).push().setValue(user).addOnCompleteListener {
+                    val user = User(dbWorkers.push().key.toString(), name, email, password, "Worker")
+                    dbWorkers.child(ownerId).child(user.id!!).setValue(user).addOnCompleteListener {
                         if(it.isSuccessful) {
                             workerListener?.onSuccess()
                         } else {

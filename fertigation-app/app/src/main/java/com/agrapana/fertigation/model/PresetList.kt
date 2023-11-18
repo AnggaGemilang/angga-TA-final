@@ -5,16 +5,11 @@ import java.sql.Timestamp
 
 data class Preset(
     var id: String = "",
-    var plantName: String = "",
-    var category: String = "",
-    var nutrition: String = "",
-    var growthLamp: String = "",
-    var gasValve: String = "",
-    var temperature: String = "",
-    var pump: String = "",
-    var seedlingTime: String = "",
-    var growTime: String = "",
-    var ph: String = "",
+    var presetName: String = "",
     var imageUrl: String = "",
-    var isDeleted: Boolean = false
+    var idealMoisture: String = "",
+    var irrigationDays: String = "",
+    var irrigationTimes: String = "",
+    var fertigationDays: String = "",
+    var fertigationTimes: String = "",
 )

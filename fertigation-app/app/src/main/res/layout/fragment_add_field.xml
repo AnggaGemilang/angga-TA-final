@@ -264,7 +264,7 @@
                         android:textSize="14sp" />
 
                     <EditText
-                        android:id="@+id/temperature"
+                        android:id="@+id/irrigation_days"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
@@ -291,7 +291,7 @@
                         android:textSize="14sp" />
 
                     <EditText
-                        android:id="@+id/gas_valve"
+                        android:id="@+id/irrigation_times"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
@@ -326,7 +326,7 @@
                         android:textSize="14sp" />
 
                     <EditText
-                        android:id="@+id/seedling"
+                        android:id="@+id/fertigation_days"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
@@ -353,7 +353,7 @@
                         android:textSize="14sp" />
 
                     <EditText
-                        android:id="@+id/grow"
+                        android:id="@+id/fertigation_times"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"

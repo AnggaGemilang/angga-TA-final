@@ -49,9 +49,6 @@ class PresetViewModel : ViewModel() {
         }
     }
 
-    fun getRealtimeUpdates(type: String) {
-        dbPresets.orderByChild("category").equalTo(type).addChildEventListener(childEventListener)
-    }
     private val valueEventListener = object : ValueEventListener {
         override fun onCancelled(error: DatabaseError) { }
 
@@ -68,6 +65,10 @@ class PresetViewModel : ViewModel() {
                 _presets.value = presets
             }
         }
+    }
+
+    fun getRealtimeUpdates(type: String) {
+        dbPresets.orderByChild("category").equalTo(type).addChildEventListener(childEventListener)
     }
 
     fun fetchOnePreset(name: String) {

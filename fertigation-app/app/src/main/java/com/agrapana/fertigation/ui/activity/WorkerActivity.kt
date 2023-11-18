@@ -67,6 +67,8 @@ class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, WorkerLi
         viewModel.getRealtimeUpdates(clientId)
         viewModel.worker.observe(this) {
             adapter.addWorker(it)
+            binding.notFound.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
         }
         viewModel.deletedworker.observe(this) {
             adapter.deleteWorker(it)
@@ -75,12 +77,12 @@ class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, WorkerLi
             if (it!!.isNotEmpty()) {
                 binding.workerListPlaceholder.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
-                adapter.setWorkers(it)
             } else {
                 binding.workerListPlaceholder.visibility = View.GONE
                 binding.recyclerView.visibility = View.GONE
                 binding.notFound.visibility = View.VISIBLE
             }
+            adapter.setWorkers(it)
         }
     }
 

@@ -40,30 +40,14 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if(arguments?.getString("status") == "update"){
-            binding.title.text = "Edit Configuration"
-            binding.btnSubmit.text = "Edit Configuration"
-            binding.plantName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("plantName"))
-            binding.temperature.text = Editable.Factory.getInstance().newEditable(arguments?.getString("temperature"))
-            binding.seedling.text = Editable.Factory.getInstance().newEditable(arguments?.getString("seedlingTime"))
-            binding.grow.text = Editable.Factory.getInstance().newEditable(arguments?.getString("growTime"))
-            binding.category.setSelection(
-                (binding.category.adapter as ArrayAdapter<String>).getPosition(
-                    arguments?.getString("category")
-                )
-            )
-            binding.growthLamp.setSelection(
-                (binding.growthLamp.adapter as ArrayAdapter<String>).getPosition(
-                    arguments?.getString("growthLamp")
-                )
-            )
-            binding.ph.text = Editable.Factory.getInstance().newEditable(arguments?.getString("ph"))
-            binding.gasValve.text = Editable.Factory.getInstance().newEditable(arguments?.getString("gasValve"))
-            binding.pump.setSelection(
-                (binding.pump.adapter as ArrayAdapter<String>).getPosition(
-                    arguments?.getString("pump")
-                )
-            )
-            binding.nutrition.text = Editable.Factory.getInstance().newEditable(arguments?.getString("nutrition"))
+            binding.title.text = "Edit Preset"
+            binding.btnSubmit.text = "Edit Preset"
+            binding.presetName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("preset_name"))
+            binding.idealMoisture.text = Editable.Factory.getInstance().newEditable(arguments?.getString("ideal_moisture"))
+            binding.fertigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_days"))
+            binding.fertigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_times"))
+            binding.irrigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("Irrigation_days"))
+            binding.irrigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_times"))
         }
 
         binding.open.setOnClickListener {
@@ -77,29 +61,20 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
             progressDialog.show()
 
             if(arguments?.getString("status") == "update") {
-                val name = binding.plantName.text.toString().trim()
-                val category = binding.category.selectedItem.toString()
-                val nutrition = binding.nutrition.text.toString().trim()
-                val growthLamp = binding.growthLamp.selectedItem.toString()
-                val gasValve = binding.gasValve.text.toString().trim()
-                val temperature = binding.temperature.text.toString().trim()
-                val pump = binding.pump.selectedItem.toString()
-                val ph = binding.ph.text.toString().trim()
-                val seedlingTime = binding.seedling.text.toString().trim()
-                val growTime = binding.grow.text.toString().trim()
+                val presetName = binding.presetName.text.toString().trim()
+                val idealMoisture = binding.idealMoisture.text.toString().trim()
+                val irrigationDays = binding.irrigationDays.text.toString().trim()
+                val irrigationTimes = binding.irrigationTimes.text.toString().trim()
+                val fertigationDays = binding.fertigationDays.text.toString().trim()
+                val fertigationTimes = binding.fertigationTimes.text.toString().trim()
                 val preset = Preset()
                 preset.id = arguments?.getString("id")!!
-                preset.plantName = name
-                preset.category = category
-                preset.nutrition = nutrition
-                preset.growthLamp = growthLamp
-                preset.gasValve = gasValve
-                preset.temperature = temperature
-                preset.pump = pump
-                preset.ph = ph
-                preset.seedlingTime = seedlingTime
-                preset.growTime = growTime
-                preset.isDeleted = true
+                preset.presetName = presetName
+                preset.idealMoisture = idealMoisture
+                preset.irrigationDays = irrigationDays
+                preset.irrigationTimes = irrigationTimes
+                preset.fertigationDays = fertigationDays
+                preset.fertigationTimes = fertigationTimes
                 if(linkImage == null){
                     preset.imageUrl = arguments?.getString("imageURL")!!
                 } else {
@@ -137,29 +112,20 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
                     .addOnSuccessListener { taskSnapshot ->
                         taskSnapshot.storage.downloadUrl.addOnSuccessListener {
                             val imageUrl = it.toString()
-                            val name = binding.plantName.text.toString().trim()
-                            val category = binding.category.selectedItem.toString()
-                            val nutrition = binding.nutrition.text.toString().trim()
-                            val growthLamp = binding.growthLamp.selectedItem.toString()
-                            val gasValve = binding.gasValve.text.toString().trim()
-                            val temperature = binding.temperature.text.toString().trim()
-                            val pump = binding.pump.selectedItem.toString()
-                            val seedlingTime = binding.seedling.text.toString().trim()
-                            val growTime = binding.grow.text.toString().trim()
-                            val ph = binding.ph.text.toString().trim()
+                            val presetName = binding.presetName.text.toString().trim()
+                            val idealMoisture = binding.idealMoisture.text.toString().trim()
+                            val fertigationDays = binding.fertigationDays.text.toString().trim()
+                            val fertigationTimes = binding.fertigationTimes.text.toString().trim()
+                            val irrigationDays = binding.irrigationDays.text.toString().trim()
+                            val irrigationTimes = binding.irrigationTimes.text.toString().trim()
                             val preset = Preset()
-                            preset.plantName = name
-                            preset.category = category
-                            preset.nutrition = nutrition
-                            preset.growthLamp = growthLamp
-                            preset.gasValve = gasValve
-                            preset.temperature = temperature
-                            preset.pump = pump
-                            preset.ph = ph
-                            preset.seedlingTime = seedlingTime
-                            preset.growTime = growTime
+                            preset.presetName = presetName
+                            preset.idealMoisture = idealMoisture
+                            preset.fertigationDays = fertigationDays
+                            preset.fertigationTimes = fertigationTimes
+                            preset.irrigationDays = irrigationDays
+                            preset.irrigationTimes = irrigationTimes
                             preset.imageUrl = imageUrl
-                            preset.isDeleted = false
                             val dbPresets = viewModel.getDBReference()
                             preset.id = dbPresets.push().key.toString()
                             dbPresets.child(preset.id).setValue(preset).addOnCompleteListener { it1 ->

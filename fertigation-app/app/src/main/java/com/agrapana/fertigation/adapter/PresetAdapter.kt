@@ -1,110 +1,95 @@
 package com.agrapana.fertigation.adapter
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
-import com.agrapana.fertigation.model.Preset
-import com.bumptech.glide.Glide
+import com.agrapana.fertigation.model.User
 
 @SuppressLint("NotifyDataSetChanged")
 class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAdapter.MyViewHolder>() {
 
-    private var presets = mutableListOf<Preset>()
-    private var presetId = mutableListOf<String>()
+    private var presets = mutableListOf<User>()
+    private var workerEmail = mutableListOf<String>()
     private var taskListener: TaskListener = taskListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.template_preset, parent, false)
+        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.template_worker, parent, false)
         return MyViewHolder(inflater)
     }
 
     override fun getItemCount() = presets.size
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.tvName.text = presets[position].plantName
-        holder.tvgasValve.text = "CO2 Value : " + presets[position].gasValve
-        holder.tvPh.text = "Ph : " + presets[position].ph
-        holder.tvNutrition.text = "Nutrition : " + presets[position].nutrition
-        holder.tvGrowthLamp.text = "Growth Lamp : " + presets[position].growthLamp
-        holder.tvSeedlingTime.text = "Seedling Time : " + presets[position].seedlingTime + " days"
-        holder.tvGrowTime.text = "Grow Time : " + presets[position].growTime + " days"
-        holder.tvTemperature.text = "Temperature : " + presets[position].temperature + "°C"
-        holder.tvPump.text = "Pump : " + presets[position].pump
-        Glide.with(holder.imageView.context)
-            .load(presets[position].imageUrl)
-            .into(holder.imageView);
-
+        holder.tvName.text = presets[position].name
+        holder.tvEmail.text = presets[position].email
+        holder.tvRole.text = presets[position].role
         holder.optionMenu.setOnClickListener {
             taskListener.onOptionClick(it, presets[position])
         }
     }
 
-    fun setPresets(presets: List<Preset>) {
-        this.presets = presets as MutableList<Preset>
+    fun setWorkers(workers: List<User>) {
+        this.presets = workers as MutableList<User>
         notifyDataSetChanged()
     }
 
-    private fun isContain(preset: Preset): Boolean {
-        presetId.clear()
+    private fun isContain(worker: User): Boolean {
+        workerEmail.clear()
         for(p in presets){
-            presetId.add(p.id)
+            workerEmail.add(worker.email!!)
         }
         for(p in presets){
-            if(p.id == preset.id){
+            if(p.email == worker.email){
                 return true
             }
         }
         return false
     }
 
-    fun addPreset(preset: Preset) {
-        if (!isContain(preset)){
-            Log.d("preset 2", preset.toString())
-            presets.add(preset)
+    fun addWorker(worker: User) {
+        if (!isContain(worker)){
+            presets.add(worker)
         } else {
-            Log.d("preset", preset.toString())
-            val index = presetId.indexOf(preset.id)
-            presets[index] = preset
+            workerEmail.clear()
+            for(p in presets){
+                workerEmail.add(p.email!!)
+            }
+            val index = workerEmail.indexOf(worker.email)
+            presets[index] = worker
         }
+        notifyDataSetChanged()
+    }
+
+    fun deleteWorker(worker: User) {
+        workerEmail.clear()
+        for(p in presets){
+            workerEmail.add(p.email!!)
+        }
+        val index = workerEmail.indexOf(worker.email)
+        presets.removeAt(index)
         notifyDataSetChanged()
     }
 
     class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var tvName: TextView
-        var tvgasValve: TextView
-        var tvNutrition: TextView
-        var tvGrowthLamp: TextView
-        var tvSeedlingTime: TextView
-        var tvGrowTime: TextView
-        var tvTemperature: TextView
-        var tvPump: TextView
-        var tvPh: TextView
+        var tvEmail: TextView
+        var tvRole: TextView
         var optionMenu: ImageButton
-        var imageView: ImageView
 
         init {
             tvName = view.findViewById(R.id.tv_name)
-            tvgasValve = view.findViewById(R.id.tv_gas_valve)
-            tvNutrition = view.findViewById(R.id.tv_nutrition)
-            tvGrowthLamp = view.findViewById(R.id.tv_growth_lamp)
-            tvSeedlingTime = view.findViewById(R.id.tv_seedling_time)
-            tvGrowTime = view.findViewById(R.id.tv_grow_time)
-            tvTemperature = view.findViewById(R.id.tv_temperature)
-            tvPump = view.findViewById(R.id.tv_pump)
-            imageView = view.findViewById(R.id.thumbnail)
-            tvPh = view.findViewById(R.id.tv_ph)
+            tvEmail = view.findViewById(R.id.tv_email)
+            tvRole = view.findViewById(R.id.tv_role)
             optionMenu = view.findViewById(R.id.option_menu)
         }
     }
 
     interface TaskListener {
-        fun onOptionClick(view: View, preset: Preset)
+        fun onOptionClick(view: View, worker: User)
     }
 }
