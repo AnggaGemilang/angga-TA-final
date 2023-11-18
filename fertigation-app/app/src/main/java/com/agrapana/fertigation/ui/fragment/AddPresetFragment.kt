@@ -51,7 +51,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             binding.idealMoisture.text = Editable.Factory.getInstance().newEditable(arguments?.getString("ideal_moisture"))
             binding.fertigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_days"))
             binding.fertigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_times"))
-            binding.irrigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("Irrigation_days"))
+            binding.irrigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_days"))
             binding.irrigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_times"))
         }
 
@@ -87,6 +87,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 preset.fertigationTimes = fertigationTimes
                 if(linkImage == null){
                     preset.imageUrl = arguments?.getString("imageURL")!!
+                    viewModel.onUpdatePreset(userId, preset)
                 } else {
                     val storageReference = FirebaseStorage.getInstance()
                         .getReferenceFromUrl(arguments?.getString("imageURL")!!)
@@ -97,7 +98,10 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                             .addOnSuccessListener { taskSnapshot ->
                                 taskSnapshot.storage.downloadUrl.addOnSuccessListener {
                                     val imageUrl = it.toString()
+                                    Log.d("Warko", "Sabihis bener kuduna kadieu")
                                     preset.imageUrl = imageUrl
+                                    Log.d("Warko 2", preset.toString())
+                                    viewModel.onUpdatePreset(userId, preset)
                                 }
                             }
                             .addOnFailureListener { e ->
@@ -107,34 +111,38 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                         Log.d("gagal", it.message.toString())
                     }
                 }
-                viewModel.onUpdatePreset(userId, preset)
             } else {
-                val fileName = UUID.randomUUID().toString() +".png"
-                val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
-                refStorage.putFile(linkImage!!)
-                    .addOnSuccessListener { taskSnapshot ->
-                        taskSnapshot.storage.downloadUrl.addOnSuccessListener {
-                            val imageUrl = it.toString()
-                            val presetName = binding.presetName.text.toString().trim()
-                            val idealMoisture = binding.idealMoisture.text.toString().trim()
-                            val fertigationDays = binding.fertigationDays.text.toString().trim()
-                            val fertigationTimes = binding.fertigationTimes.text.toString().trim()
-                            val irrigationDays = binding.irrigationDays.text.toString().trim()
-                            val irrigationTimes = binding.irrigationTimes.text.toString().trim()
-                            val preset = Preset()
-                            preset.presetName = presetName
-                            preset.idealMoisture = idealMoisture
-                            preset.fertigationDays = fertigationDays
-                            preset.fertigationTimes = fertigationTimes
-                            preset.irrigationDays = irrigationDays
-                            preset.irrigationTimes = irrigationTimes
-                            preset.imageUrl = imageUrl
-                            viewModel.onAddPreset(userId, preset)
+                if(linkImage == null){
+                    progressDialog!!.dismiss()
+                    Toast.makeText(context, "Fill all blanks input", Toast.LENGTH_SHORT).show()
+                } else {
+                    val fileName = UUID.randomUUID().toString() +".png"
+                    val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
+                    refStorage.putFile(linkImage!!)
+                        .addOnSuccessListener { taskSnapshot ->
+                            taskSnapshot.storage.downloadUrl.addOnSuccessListener {
+                                val imageUrl = it.toString()
+                                val presetName = binding.presetName.text.toString().trim()
+                                val idealMoisture = binding.idealMoisture.text.toString().trim()
+                                val fertigationDays = binding.fertigationDays.text.toString().trim()
+                                val fertigationTimes = binding.fertigationTimes.text.toString().trim()
+                                val irrigationDays = binding.irrigationDays.text.toString().trim()
+                                val irrigationTimes = binding.irrigationTimes.text.toString().trim()
+                                val preset = Preset()
+                                preset.presetName = presetName
+                                preset.idealMoisture = idealMoisture
+                                preset.fertigationDays = fertigationDays
+                                preset.fertigationTimes = fertigationTimes
+                                preset.irrigationDays = irrigationDays
+                                preset.irrigationTimes = irrigationTimes
+                                preset.imageUrl = imageUrl
+                                viewModel.onAddPreset(userId, preset)
+                            }
                         }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.d("gagal", e.message.toString())
-                    }
+                        .addOnFailureListener { e ->
+                            Log.d("gagal", e.message.toString())
+                        }
+                }
             }
         }
     }
@@ -183,13 +191,16 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
     override fun onSuccess() {
         progressDialog!!.dismiss()
         this.dismiss()
-        Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
+        if(arguments?.getString("status") == "update") {
+            Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onFailure(message: String) {
         progressDialog!!.dismiss()
-        this.dismiss()
-        Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
 }

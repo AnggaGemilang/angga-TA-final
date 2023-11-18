@@ -79,22 +79,32 @@ class PresetViewModel : ViewModel() {
     }
 
     fun onAddPreset(clientId: String, preset: Preset){
-        preset.id = dbPresets.push().key.toString()
-        dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
-            if(it.isSuccessful) {
-                operationListener?.onSuccess()
-            } else {
-                operationListener?.onFailure(it.exception.toString())
+        if(preset.presetName.isEmpty() || preset.fertigationDays.isEmpty() ||
+            preset.fertigationTimes.isEmpty() || preset.irrigationDays.isEmpty() || preset.irrigationTimes.isEmpty()) {
+            operationListener?.onFailure("Fill all blanks input")
+        } else {
+            preset.id = dbPresets.push().key.toString()
+            dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    operationListener?.onSuccess()
+                } else {
+                    operationListener?.onFailure(it.exception.toString())
+                }
             }
         }
     }
 
     fun onUpdatePreset(clientId: String, preset: Preset){
-        dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
-            if(it.isSuccessful) {
-                operationListener?.onSuccess()
-            } else {
-                operationListener?.onFailure(it.exception.toString())
+        if(preset.presetName.isEmpty() || preset.fertigationDays.isEmpty() ||
+            preset.fertigationTimes.isEmpty() || preset.irrigationDays.isEmpty() || preset.irrigationTimes.isEmpty()) {
+            operationListener?.onFailure("Fill all blanks input")
+        } else {
+            dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
+                if(it.isSuccessful) {
+                    operationListener?.onSuccess()
+                } else {
+                    operationListener?.onFailure(it.exception.toString())
+                }
             }
         }
     }
@@ -105,7 +115,13 @@ class PresetViewModel : ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (worker in snapshot.children) {
                     worker.ref.removeValue()
-                    operationListener?.onSuccess()
+                    val storageReference = FirebaseStorage.getInstance()
+                        .getReferenceFromUrl(preset.imageUrl)
+                    storageReference.delete().addOnSuccessListener {
+                        operationListener?.onSuccess()
+                    }.addOnFailureListener {
+                        operationListener?.onFailure(it.message.toString())
+                    }
                 }
             }
             override fun onCancelled(error: DatabaseError) {

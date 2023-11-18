@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.model.Preset
 import com.agrapana.fertigation.model.User
+import com.bumptech.glide.Glide
 
 @SuppressLint("NotifyDataSetChanged")
 class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAdapter.MyViewHolder>() {
@@ -27,9 +29,12 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.tvPresetName.text = presets[position].presetName
-        holder.tvIdealMoisture.text = presets[position].idealMoisture
-        holder.tvDoIrrigation.text = "${presets[position].irrigationTimes}/${presets[position].irrigationDays}hari"
-        holder.tvDoFertigation.text = "${presets[position].fertigationTimes}/${presets[position].fertigationDays}hari"
+        holder.tvIdealMoisture.text = "Moisture: ${presets[position].idealMoisture}%"
+        Glide.with(holder.imageView.context)
+            .load(presets[position].imageUrl)
+            .into(holder.imageView);
+        holder.tvDoIrrigation.text = "Irrigation: Pukul ${presets[position].irrigationTimes}/${presets[position].irrigationDays} hari"
+        holder.tvDoFertigation.text = "Fertigation: Pukul ${presets[position].fertigationTimes}/${presets[position].fertigationDays} hari"
         holder.optionMenu.setOnClickListener {
             taskListener.onOptionClick(it, presets[position])
         }
@@ -83,9 +88,11 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         var tvDoFertigation: TextView
         var tvDoIrrigation: TextView
         var optionMenu: ImageButton
+        var imageView: ImageView
 
         init {
             tvPresetName = view.findViewById(R.id.tv_name)
+            imageView = view.findViewById(R.id.thumbnail)
             tvIdealMoisture = view.findViewById(R.id.tv_ideal_moisture)
             tvDoFertigation = view.findViewById(R.id.tv_do_fertigation)
             tvDoIrrigation = view.findViewById(R.id.tv_do_irrigation)

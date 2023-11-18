@@ -102,7 +102,7 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
+                        android:layout_marginBottom="18dp"
                         android:layout_marginStart="12dp"
                         android:text="My Presets" />
 
@@ -343,7 +343,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="gone"
-                        android:orientation="vertical"/>
+                        android:orientation="vertical"
+                        android:scrollbars="none"
+                        android:overScrollMode="never"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
                 </LinearLayout>
 
@@ -352,28 +355,5 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <RelativeLayout
-        android:id="@+id/loadingPanel"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:visibility="gone"
-        android:clickable="true"
-        android:gravity="center">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.6"
-            android:background="#68000000" />
-
-        <ProgressBar
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_centerInParent="true"
-            android:indeterminateTint="@color/green_light_50"
-            android:indeterminate="true" />
-
-    </RelativeLayout>
 
 </FrameLayout>

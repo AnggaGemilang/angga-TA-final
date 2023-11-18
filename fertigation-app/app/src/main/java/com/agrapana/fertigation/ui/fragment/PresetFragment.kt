@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -19,11 +20,12 @@ import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.PresetAdapter
 import com.agrapana.fertigation.adapter.WorkerAdapter
 import com.agrapana.fertigation.databinding.FragmentPresetBinding
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Preset
 import com.agrapana.fertigation.model.User
 import com.agrapana.fertigation.viewmodel.PresetViewModel
 
-class PresetFragment : Fragment(), PresetAdapter.TaskListener {
+class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener {
 
     private lateinit var binding: FragmentPresetBinding
     private lateinit var viewModel: PresetViewModel
@@ -35,6 +37,7 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener {
     ): View {
         binding = FragmentPresetBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this)[PresetViewModel::class.java]
+        viewModel.operationListener = this
         return binding.root
     }
 
@@ -81,7 +84,6 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener {
         }
         viewModel.presets.observe(viewLifecycleOwner) {
             if (it!!.isNotEmpty()) {
-                Log.d("dadang2", it.toString())
                 binding.presetListPlaceholder.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
             } else {
@@ -133,5 +135,13 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener {
             }
             false
         }
+    }
+
+    override fun onSuccess() {
+        Toast.makeText(requireContext(), "Worker is deleted", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onFailure(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
