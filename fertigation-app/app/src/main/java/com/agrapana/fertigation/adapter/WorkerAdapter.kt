@@ -56,6 +56,10 @@ class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAda
         if (!isContain(worker)){
             workers.add(worker)
         } else {
+            workerEmail.clear()
+            for(p in workers){
+                workerEmail.add(p.email!!)
+            }
             val index = workerEmail.indexOf(worker.email)
             workers[index] = worker
         }
@@ -67,11 +71,7 @@ class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAda
         for(p in workers){
             workerEmail.add(p.email!!)
         }
-        Log.d("hasil 999", workers.toString())
-        Log.d("hasil 0", worker.email.toString())
-        Log.d("hasil 1", workerEmail.toString())
         val index = workerEmail.indexOf(worker.email)
-        Log.d("hasil 2", index.toString())
         workers.removeAt(index)
         notifyDataSetChanged()
     }
