@@ -1,5 +1,7 @@
 package com.agrapana.fertigation.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.sql.Timestamp
 
 data class Auth(
@@ -18,10 +20,12 @@ data class Auth(
     val updated_at: Timestamp?
     )
 
+@Parcelize
 data class User(
-    val name: String?,
-    val email: String?,
-    val role: String?,
-)
+    val name: String? = "",
+    val email: String? = "",
+    val password: String? = "",
+    val role: String? = "",
+) : Parcelable
 
 data class AuthResponse(val id: String?, val name: String?, val role: String?)

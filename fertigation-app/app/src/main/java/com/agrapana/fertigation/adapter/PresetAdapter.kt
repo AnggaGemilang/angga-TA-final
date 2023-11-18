@@ -21,7 +21,7 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
     private var taskListener: TaskListener = taskListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.item_presets, parent, false)
+        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.template_preset, parent, false)
         return MyViewHolder(inflater)
     }
 

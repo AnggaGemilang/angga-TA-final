@@ -61,7 +61,7 @@ class AuthViewModel : ViewModel() {
         } else {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if(task.isSuccessful){
-                    val user = User(name, email, "Owner")
+                    val user = User(name, email, password, "Owner")
                     dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener {
                         if(it.isSuccessful) {
                             authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")

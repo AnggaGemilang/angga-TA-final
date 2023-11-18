@@ -55,9 +55,9 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), WorkerListener {
         if(arguments?.getString("status") == "update"){
             binding.title.text = "Edit Worker"
             binding.btnSubmit.text = "Edit Worker"
-            binding.workerName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("plantName"))
-            binding.workerEmail.text = Editable.Factory.getInstance().newEditable(arguments?.getString("temperature"))
-            binding.workerPassword.text = Editable.Factory.getInstance().newEditable(arguments?.getString("seedlingTime"))
+            binding.workerName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("worker_name"))
+            binding.workerEmail.text = Editable.Factory.getInstance().newEditable(arguments?.getString("worker_email"))
+            binding.workerEmail.isEnabled = false
         }
 
         binding.workerPassword.addTextChangedListener(object: TextWatcher {
@@ -90,7 +90,12 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), WorkerListener {
             val name = binding.workerName.text.toString()
             val email = binding.workerEmail.text.toString()
             val password = binding.workerPassword.text.toString()
-            viewModel.onAddWorker(userId, name, email, password)
+
+            if(arguments?.getString("status") == "update"){
+                viewModel.onUpdateWorker(userId, name, email, password)
+            } else {
+                viewModel.onAddWorker(userId, name, email, password)
+            }
         }
     }
 
