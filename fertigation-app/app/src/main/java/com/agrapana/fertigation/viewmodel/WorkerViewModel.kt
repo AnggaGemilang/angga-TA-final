@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.agrapana.fertigation.helper.WorkerListener
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.User
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -21,7 +21,7 @@ class WorkerViewModel : ViewModel() {
     private val firebaseAuth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
-    var workerListener: WorkerListener? = null
+    var operationListener: OperationListener? = null
 
     private val _workers = MutableLiveData<List<User>?>()
 
@@ -42,13 +42,11 @@ class WorkerViewModel : ViewModel() {
         override fun onChildMoved(snapshot: DataSnapshot, p1: String?) { }
 
         override fun onChildChanged(snapshot: DataSnapshot, p1: String?) {
-            Log.d("warko 1", "sini")
             val worker = snapshot.getValue(User::class.java)
             _worker.value = worker!!
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            Log.d("warko 2", snapshot.toString())
             val worker = snapshot.getValue(User::class.java)
             _deletedworker.value = worker!!
         }
@@ -66,17 +64,12 @@ class WorkerViewModel : ViewModel() {
         override fun onDataChange(snapshot: DataSnapshot) {
             val workers = mutableListOf<User>()
             if (snapshot.exists()) {
-
-                Log.d("sabihis 1", snapshot.value.toString())
-
                 for (dataSnapshot in snapshot.children) {
                     val worker = dataSnapshot.getValue(User::class.java)
                     worker?.let { workers.add(it) }
                 }
                 _workers.value = workers
             } else {
-                Log.d("sabihis 2", "data ke sini")
-
                 _workers.value = workers
             }
         }
@@ -90,7 +83,7 @@ class WorkerViewModel : ViewModel() {
         if(password.isNotEmpty()){
             if(password.length < 3 || !password.contains("[a-z]".toRegex()) || !password.contains("[0-9]".toRegex())
                 || !password.contains("[!\"#\$%&'()*+,-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())) {
-                workerListener?.onFailure("Password Didn't Match Format")
+                operationListener?.onFailure("Password Didn't Match Format")
             } else {
                 val getUser = dbWorkers.child(userId).orderByChild("email").equalTo(email)
                 getUser.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -107,13 +100,13 @@ class WorkerViewModel : ViewModel() {
                                     .addOnCompleteListener {
                                         val user = firebaseAuth.currentUser!!
                                         user.updatePassword(password)
-                                        workerListener?.onSuccess()
+                                        operationListener?.onSuccess()
                                     }
                             }
                         }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                        workerListener?.onFailure(error.message)
+                        operationListener?.onFailure(error.message)
                     }
                 })
             }
@@ -126,12 +119,12 @@ class WorkerViewModel : ViewModel() {
                         val worker = worker.getValue(User::class.java)
                         val newUser = User(name, email, worker!!.password, "Worker")
                         dbWorkers.child(userId).child(workerId!!).setValue(newUser).addOnCompleteListener {
-                            workerListener?.onSuccess()
+                            operationListener?.onSuccess()
                         }
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {
-                    workerListener?.onFailure(error.message)
+                    operationListener?.onFailure(error.message)
                 }
             })
         }
@@ -139,24 +132,24 @@ class WorkerViewModel : ViewModel() {
 
     fun onAddWorker(ownerId: String, name: String, email: String, password: String){
         if(email.isEmpty() || password.isEmpty()){
-            workerListener?.onFailure("Email or Password Is Empty!")
+            operationListener?.onFailure("Email or Password Is Empty!")
         } else if(password.length < 3 || !password.contains("[a-z]".toRegex()) || !password.contains("[0-9]".toRegex())
             || !password.contains("[!\"#\$%&'()*+,-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())) {
-            workerListener?.onFailure("Password Didn't Match Format")
+            operationListener?.onFailure("Password Didn't Match Format")
         } else {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if(task.isSuccessful){
                     val user = User(dbWorkers.push().key.toString(), name, email, password, "Worker")
                     dbWorkers.child(ownerId).child(user.id!!).setValue(user).addOnCompleteListener {
                         if(it.isSuccessful) {
-                            workerListener?.onSuccess()
+                            operationListener?.onSuccess()
                         } else {
-                            workerListener?.onFailure(it.exception.toString())
+                            operationListener?.onFailure(it.exception.toString())
                             Log.d("Error", it.exception.toString())
                         }
                     }
                 } else {
-                    workerListener?.onFailure(task.exception.toString())
+                    operationListener?.onFailure(task.exception.toString())
                     Log.d("Error", task.exception.toString())
                 }
             }
@@ -181,14 +174,13 @@ class WorkerViewModel : ViewModel() {
                         .addOnCompleteListener {
                             val user = firebaseAuth.currentUser!!
                             user.delete()
-                            workerListener?.onSuccess()
+                            operationListener?.onSuccess()
                         }
                 }
             }
             override fun onCancelled(error: DatabaseError) {
-                workerListener?.onFailure(error.message)
+                operationListener?.onFailure(error.message)
             }
-
         })
     }
 

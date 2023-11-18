@@ -16,12 +16,12 @@ import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.WorkerAdapter
 import com.agrapana.fertigation.databinding.ActivityWorkerBinding
-import com.agrapana.fertigation.helper.WorkerListener
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.User
 import com.agrapana.fertigation.ui.fragment.AddWorkerFragment
 import com.agrapana.fertigation.viewmodel.WorkerViewModel
 
-class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, WorkerListener {
+class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, OperationListener {
 
     private lateinit var binding: ActivityWorkerBinding
     private lateinit var viewModel: WorkerViewModel
@@ -63,7 +63,7 @@ class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, WorkerLi
         val clientId: String = prefs.getString("client_id", "")!!
         viewModel = ViewModelProviders.of(this)[WorkerViewModel::class.java]
         viewModel.fetchWorkers(clientId)
-        viewModel.workerListener = this
+        viewModel.operationListener = this
         viewModel.getRealtimeUpdates(clientId)
         viewModel.worker.observe(this) {
             adapter.addWorker(it)

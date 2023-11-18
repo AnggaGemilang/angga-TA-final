@@ -1,39 +1,23 @@
 package com.agrapana.fertigation.ui.fragment
 
-import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
 import com.agrapana.fertigation.databinding.FragmentAddWorkerBinding
-import com.agrapana.fertigation.helper.AuthListener
-import com.agrapana.fertigation.helper.WorkerListener
-import com.agrapana.fertigation.model.AuthResponse
-import com.agrapana.fertigation.model.Preset
-import com.agrapana.fertigation.model.User
-import com.agrapana.fertigation.viewmodel.AuthViewModel
-import com.agrapana.fertigation.viewmodel.PresetViewModel
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.viewmodel.WorkerViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.firebase.storage.FirebaseStorage
-import java.util.*
 
-class AddWorkerFragment : RoundedBottomSheetDialogFragment(), WorkerListener {
+class AddWorkerFragment : RoundedBottomSheetDialogFragment(), OperationListener {
 
     private lateinit var viewModel: WorkerViewModel
     private lateinit var binding: FragmentAddWorkerBinding
@@ -44,7 +28,7 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), WorkerListener {
         savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProviders.of(this)[WorkerViewModel::class.java]
-        viewModel.workerListener = this
+        viewModel.operationListener = this
         binding = FragmentAddWorkerBinding.inflate(inflater, container, false)
         return binding.root
     }

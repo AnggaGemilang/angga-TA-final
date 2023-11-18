@@ -1,15 +1,20 @@
 package com.agrapana.fertigation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Preset
+import com.agrapana.fertigation.model.User
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 
 class PresetViewModel : ViewModel() {
 
     private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
+    var operationListener: OperationListener? = null
 
     private val _presets = MutableLiveData<List<Preset>?>()
     val presets: MutableLiveData<List<Preset>?>
@@ -19,11 +24,9 @@ class PresetViewModel : ViewModel() {
     val preset: LiveData<Preset>
         get() = _preset
 
-    private val _result = MutableLiveData<Exception?>()
-
-    fun getDBReference(): DatabaseReference {
-        return dbPresets
-    }
+    private val _deletedPreset = MutableLiveData<Preset>()
+    val deletedPreset: LiveData<Preset>
+        get() = _deletedPreset
 
     private val childEventListener = object : ChildEventListener {
         override fun onCancelled(error: DatabaseError) { }
@@ -39,7 +42,7 @@ class PresetViewModel : ViewModel() {
         override fun onChildRemoved(snapshot: DataSnapshot) {
             val preset = snapshot.getValue(Preset::class.java)
             preset?.id = snapshot.key.toString()
-            _preset.value = preset!!
+            _deletedPreset.value = preset!!
         }
 
         override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
@@ -67,36 +70,48 @@ class PresetViewModel : ViewModel() {
         }
     }
 
-    fun getRealtimeUpdates(type: String) {
-        dbPresets.orderByChild("category").equalTo(type).addChildEventListener(childEventListener)
+    fun getRealtimeUpdates(id: String) {
+        dbPresets.child(id).addChildEventListener(childEventListener)
     }
 
-    fun fetchOnePreset(name: String) {
-        dbPresets.orderByChild("plantName").equalTo(name).addListenerForSingleValueEvent(valueEventListener)
+    fun fetchPresets(id: String) {
+        dbPresets.child(id).addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun getAllDataPreset() {
-        dbPresets.addListenerForSingleValueEvent(valueEventListener)
-    }
-
-    fun fetchPresets(type: String) {
-        dbPresets.orderByChild("category").equalTo(type).addListenerForSingleValueEvent(valueEventListener)
-    }
-
-    fun deletePreset(preset: Preset) {
-        dbPresets.child(preset.id).setValue(null).addOnCompleteListener { it ->
+    fun onAddPreset(clientId: String, preset: Preset){
+        preset.id = dbPresets.push().key.toString()
+        dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
             if(it.isSuccessful) {
-                val storageReference = FirebaseStorage.getInstance()
-                    .getReferenceFromUrl(preset.imageUrl)
-                storageReference.delete().addOnSuccessListener {
-                    _result.value = null
-                }.addOnFailureListener {
-                    _result.value = it
-                }
+                operationListener?.onSuccess()
             } else {
-                _result.value = it.exception
+                operationListener?.onFailure(it.exception.toString())
             }
         }
+    }
+
+    fun onUpdatePreset(clientId: String, preset: Preset){
+        dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
+            if(it.isSuccessful) {
+                operationListener?.onSuccess()
+            } else {
+                operationListener?.onFailure(it.exception.toString())
+            }
+        }
+    }
+
+    fun onDeletePreset(clientId: String, preset: Preset) {
+        val operation = dbPresets.child(clientId).orderByChild("id").equalTo(preset.id)
+        operation.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (worker in snapshot.children) {
+                    worker.ref.removeValue()
+                    operationListener?.onSuccess()
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                operationListener?.onFailure(error.message)
+            }
+        })
     }
 
     override fun onCleared() {

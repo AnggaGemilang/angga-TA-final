@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddFieldBinding
 import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
 import com.agrapana.fertigation.model.Preset
+import com.agrapana.fertigation.viewmodel.FieldViewModel
 import com.agrapana.fertigation.viewmodel.PresetViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -24,7 +25,7 @@ import java.util.*
 
 class AddFieldFragment : RoundedBottomSheetDialogFragment() {
 
-    private lateinit var viewModel: PresetViewModel
+    private lateinit var viewModel: FieldViewModel
     private lateinit var binding: FragmentAddFieldBinding
     private var linkImage: Uri? = null
     private val GALLERY_REQUEST_CODE = 999
@@ -33,7 +34,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProviders.of(this)[PresetViewModel::class.java]
+        viewModel = ViewModelProviders.of(this)[FieldViewModel::class.java]
         binding = FragmentAddFieldBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -96,14 +97,14 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
                         Log.d("gagal", it.message.toString())
                     }
                 }
-                val dbPresets = viewModel.getDBReference()
-                dbPresets.child(preset.id).setValue(preset).addOnCompleteListener {
-                    if(it.isSuccessful) {
-                        progressDialog.dismiss()
-                        this.dismiss()
-                        Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
-                    }
-                }
+//                val dbPresets = viewModel.getDBReference()
+//                dbPresets.child(preset.id).setValue(preset).addOnCompleteListener {
+//                    if(it.isSuccessful) {
+//                        progressDialog.dismiss()
+//                        this.dismiss()
+//                        Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
             } else {
                 val fileName = UUID.randomUUID().toString() +".png"
                 val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
@@ -124,15 +125,15 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
 //                            preset.growTime = growTime
 //                            preset.imageUrl = imageUrl
 //                            preset.isDeleted = false
-                            val dbPresets = viewModel.getDBReference()
-                            preset.id = dbPresets.push().key.toString()
-                            dbPresets.child(preset.id).setValue(preset).addOnCompleteListener { it1 ->
-                                if(it1.isSuccessful) {
-                                    progressDialog.dismiss()
-                                    this.dismiss()
-                                    Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+//                            val dbPresets = viewModel.getDBReference()
+//                            preset.id = dbPresets.push().key.toString()
+//                            dbPresets.child(preset.id).setValue(preset).addOnCompleteListener { it1 ->
+//                                if(it1.isSuccessful) {
+//                                    progressDialog.dismiss()
+//                                    this.dismiss()
+//                                    Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
+//                                }
+//                            }
                         }
                     }
                     .addOnFailureListener { e ->

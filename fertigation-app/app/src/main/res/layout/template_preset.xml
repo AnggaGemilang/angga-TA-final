@@ -55,71 +55,31 @@
                 android:id="@+id/tv_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Spinach"
+                android:text="Name: "
                 android:textStyle="bold"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/tv_nutrition"
+                android:id="@+id/tv_ideal_moisture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nutrition : "
+                android:text="Moisture: "
                 android:layout_marginTop="3dp"
                 android:textSize="15sp" />
 
             <TextView
-                android:id="@+id/tv_ph"
+                android:id="@+id/tv_do_irrigation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ph : "
+                android:text="Irrigation: "
                 android:layout_marginTop="3dp"
                 android:textSize="15sp" />
 
             <TextView
-                android:id="@+id/tv_growth_lamp"
+                android:id="@+id/tv_do_fertigation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Growth Lamp :"
-                android:layout_marginTop="3dp"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_gas_valve"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CO2 Value : "
-                android:layout_marginTop="3dp"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_temperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Temperature : "
-                android:layout_marginTop="3dp"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_pump"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pump :"
-                android:layout_marginTop="3dp"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_seedling_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Seedling Time :"
-                android:layout_marginTop="3dp"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_grow_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Grow Time :"
+                android:text="Fertigation: "
                 android:layout_marginTop="3dp"
                 android:textSize="15sp" />
 

@@ -8,88 +8,92 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
+import com.agrapana.fertigation.model.Preset
 import com.agrapana.fertigation.model.User
 
 @SuppressLint("NotifyDataSetChanged")
 class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAdapter.MyViewHolder>() {
 
-    private var presets = mutableListOf<User>()
-    private var workerEmail = mutableListOf<String>()
+    private var presets = mutableListOf<Preset>()
+    private var presetId = mutableListOf<String>()
     private var taskListener: TaskListener = taskListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.template_worker, parent, false)
+        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.template_preset, parent, false)
         return MyViewHolder(inflater)
     }
 
     override fun getItemCount() = presets.size
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.tvName.text = presets[position].name
-        holder.tvEmail.text = presets[position].email
-        holder.tvRole.text = presets[position].role
+        holder.tvPresetName.text = presets[position].presetName
+        holder.tvIdealMoisture.text = presets[position].idealMoisture
+        holder.tvDoIrrigation.text = "${presets[position].irrigationTimes}/${presets[position].irrigationDays}hari"
+        holder.tvDoFertigation.text = "${presets[position].fertigationTimes}/${presets[position].fertigationDays}hari"
         holder.optionMenu.setOnClickListener {
             taskListener.onOptionClick(it, presets[position])
         }
     }
 
-    fun setWorkers(workers: List<User>) {
-        this.presets = workers as MutableList<User>
+    fun setPreset(presets: List<Preset>) {
+        this.presets = presets as MutableList<Preset>
         notifyDataSetChanged()
     }
 
-    private fun isContain(worker: User): Boolean {
-        workerEmail.clear()
+    private fun isContain(preset: Preset): Boolean {
+        presetId.clear()
         for(p in presets){
-            workerEmail.add(worker.email!!)
+            presetId.add(preset.id)
         }
         for(p in presets){
-            if(p.email == worker.email){
+            if(p.id == preset.id){
                 return true
             }
         }
         return false
     }
 
-    fun addWorker(worker: User) {
-        if (!isContain(worker)){
-            presets.add(worker)
+    fun addPreset(preset: Preset) {
+        if (!isContain(preset)){
+            presets.add(preset)
         } else {
-            workerEmail.clear()
+            presetId.clear()
             for(p in presets){
-                workerEmail.add(p.email!!)
+                presetId.add(p.id)
             }
-            val index = workerEmail.indexOf(worker.email)
-            presets[index] = worker
+            val index = presetId.indexOf(preset.id)
+            presets[index] = preset
         }
         notifyDataSetChanged()
     }
 
-    fun deleteWorker(worker: User) {
-        workerEmail.clear()
+    fun deletePreset(preset: Preset) {
+        presetId.clear()
         for(p in presets){
-            workerEmail.add(p.email!!)
+            presetId.add(p.id)
         }
-        val index = workerEmail.indexOf(worker.email)
+        val index = presetId.indexOf(preset.id)
         presets.removeAt(index)
         notifyDataSetChanged()
     }
 
     class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var tvName: TextView
-        var tvEmail: TextView
-        var tvRole: TextView
+        var tvPresetName: TextView
+        var tvIdealMoisture: TextView
+        var tvDoFertigation: TextView
+        var tvDoIrrigation: TextView
         var optionMenu: ImageButton
 
         init {
-            tvName = view.findViewById(R.id.tv_name)
-            tvEmail = view.findViewById(R.id.tv_email)
-            tvRole = view.findViewById(R.id.tv_role)
+            tvPresetName = view.findViewById(R.id.tv_name)
+            tvIdealMoisture = view.findViewById(R.id.tv_ideal_moisture)
+            tvDoFertigation = view.findViewById(R.id.tv_do_fertigation)
+            tvDoIrrigation = view.findViewById(R.id.tv_do_irrigation)
             optionMenu = view.findViewById(R.id.option_menu)
         }
     }
 
     interface TaskListener {
-        fun onOptionClick(view: View, worker: User)
+        fun onOptionClick(view: View, preset: Preset)
     }
 }

@@ -3,6 +3,7 @@ package com.agrapana.fertigation.ui.fragment
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -12,8 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Preset
 import com.agrapana.fertigation.viewmodel.PresetViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
@@ -21,10 +24,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 
-class AddPresetFragment : RoundedBottomSheetDialogFragment() {
+class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener {
 
     private lateinit var viewModel: PresetViewModel
     private lateinit var binding: FragmentAddPresetBinding
+    private var progressDialog: ProgressDialog? = null
     private var linkImage: Uri? = null
     private val GALLERY_REQUEST_CODE = 999
 
@@ -33,6 +37,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         viewModel = ViewModelProviders.of(this)[PresetViewModel::class.java]
+        viewModel.operationListener = this
         binding = FragmentAddPresetBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -55,10 +60,15 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
         }
 
         binding.btnSubmit.setOnClickListener {
-            val progressDialog = ProgressDialog(requireContext())
-            progressDialog.setTitle("Please Wait")
-            progressDialog.setMessage("System is working . . .")
-            progressDialog.show()
+            progressDialog = ProgressDialog(requireContext())
+            progressDialog!!.setTitle("Please Wait")
+            progressDialog!!.setMessage("System is working . . .")
+            progressDialog!!.show()
+
+            val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs",
+                AppCompatActivity.MODE_PRIVATE
+            )
+            val userId: String = prefs.getString("client_id", "")!!
 
             if(arguments?.getString("status") == "update") {
                 val presetName = binding.presetName.text.toString().trim()
@@ -97,14 +107,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
                         Log.d("gagal", it.message.toString())
                     }
                 }
-                val dbPresets = viewModel.getDBReference()
-                dbPresets.child(preset.id).setValue(preset).addOnCompleteListener {
-                    if(it.isSuccessful) {
-                        progressDialog.dismiss()
-                        this.dismiss()
-                        Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                viewModel.onUpdatePreset(userId, preset)
             } else {
                 val fileName = UUID.randomUUID().toString() +".png"
                 val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
@@ -126,15 +129,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
                             preset.irrigationDays = irrigationDays
                             preset.irrigationTimes = irrigationTimes
                             preset.imageUrl = imageUrl
-                            val dbPresets = viewModel.getDBReference()
-                            preset.id = dbPresets.push().key.toString()
-                            dbPresets.child(preset.id).setValue(preset).addOnCompleteListener { it1 ->
-                                if(it1.isSuccessful) {
-                                    progressDialog.dismiss()
-                                    this.dismiss()
-                                    Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            viewModel.onAddPreset(userId, preset)
                         }
                     }
                     .addOnFailureListener { e ->
@@ -183,6 +178,18 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment() {
         super.onStart()
         val behavior = BottomSheetBehavior.from(requireView().parent as View)
         behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    override fun onSuccess() {
+        progressDialog!!.dismiss()
+        this.dismiss()
+        Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onFailure(message: String) {
+        progressDialog!!.dismiss()
+        this.dismiss()
+        Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
     }
 
 }
