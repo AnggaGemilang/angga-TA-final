@@ -1,9 +1,7 @@
 package com.agrapana.fertigation.ui.fragment
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -14,15 +12,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.PresetAdapter
-import com.agrapana.fertigation.adapter.WorkerAdapter
 import com.agrapana.fertigation.databinding.FragmentPresetBinding
 import com.agrapana.fertigation.helper.OperationListener
-import com.agrapana.fertigation.model.Preset
-import com.agrapana.fertigation.model.User
+import com.agrapana.fertigation.model.ParameterPreset
 import com.agrapana.fertigation.viewmodel.PresetViewModel
 
 class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener {
@@ -74,12 +69,12 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
         val clientId: String = prefs.getString("client_id", "")!!
         viewModel.fetchPresets(clientId)
         viewModel.getRealtimeUpdates(clientId)
-        viewModel.preset.observe(viewLifecycleOwner) {
+        viewModel.parameterPreset.observe(viewLifecycleOwner) {
             adapter.addPreset(it)
             binding.notFound.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
         }
-        viewModel.deletedPreset.observe(viewLifecycleOwner) {
+        viewModel.deletedParameterPreset.observe(viewLifecycleOwner) {
             adapter.deletePreset(it)
         }
         viewModel.presets.observe(viewLifecycleOwner) {
@@ -95,7 +90,7 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
         }
     }
 
-    override fun onOptionClick(view: View, preset: Preset) {
+    override fun onOptionClick(view: View, parameterPreset: ParameterPreset) {
         val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
         val contextThemeWrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
@@ -108,14 +103,14 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
                     val dialog = AddPresetFragment()
                     val bundle = Bundle()
                     bundle.putString("status", "update")
-                    bundle.putString("id", preset.id)
-                    bundle.putString("preset_name", preset.presetName)
-                    bundle.putString("imageURL", preset.imageUrl)
-                    bundle.putString("ideal_moisture", preset.idealMoisture)
-                    bundle.putString("fertigation_days", preset.fertigationDays)
-                    bundle.putString("fertigation_times", preset.fertigationTimes)
-                    bundle.putString("irrigation_days", preset.irrigationDays)
-                    bundle.putString("irrigation_times", preset.irrigationTimes)
+                    bundle.putString("id", parameterPreset.id)
+                    bundle.putString("preset_name", parameterPreset.presetName)
+                    bundle.putString("imageURL", parameterPreset.imageUrl)
+                    bundle.putString("ideal_moisture", parameterPreset.idealMoisture)
+                    bundle.putString("fertigation_days", parameterPreset.fertigationDays)
+                    bundle.putString("fertigation_times", parameterPreset.fertigationTimes)
+                    bundle.putString("irrigation_days", parameterPreset.irrigationDays)
+                    bundle.putString("irrigation_times", parameterPreset.irrigationTimes)
                     dialog.arguments = bundle
                     activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
                 }
@@ -124,7 +119,7 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
                     builder.setTitle("Are You Sure?")
                     builder.setMessage("This can be deleted permamently")
                     builder.setPositiveButton("YES") { _, _ ->
-                        viewModel.onDeletePreset(clientId, preset)
+                        viewModel.onDeletePreset(clientId, parameterPreset)
                     }
                     builder.setNegativeButton("NO") { dialog, _ ->
                         dialog.dismiss()

@@ -1,21 +1,24 @@
 package com.agrapana.fertigation.ui.fragment
 
+import android.R
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddFieldBinding
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Field
+import com.agrapana.fertigation.model.ParameterPreset
 import com.agrapana.fertigation.ui.activity.ScannerActivity
 import com.agrapana.fertigation.viewmodel.FieldViewModel
 import com.agrapana.fertigation.viewmodel.PresetViewModel
@@ -27,10 +30,15 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
+
 class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
 
-    private lateinit var viewModel: FieldViewModel
+    private lateinit var fieldViewModel: FieldViewModel
+    private lateinit var presetViewModel: PresetViewModel
     private lateinit var binding: FragmentAddFieldBinding
+    private var presets: List<ParameterPreset> = emptyList()
+    private var presetsName = mutableListOf<String>()
+    private var presetsId = mutableListOf<String>()
     private var hardwareCode: String? = null
     private var progressDialog: ProgressDialog? = null
 
@@ -38,14 +46,33 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProviders.of(this)[FieldViewModel::class.java]
-        viewModel.operationListener = this
+        fieldViewModel = ViewModelProviders.of(this)[FieldViewModel::class.java]
+        presetViewModel = ViewModelProviders.of(this)[PresetViewModel::class.java]
+        fieldViewModel.operationListener = this
         binding = FragmentAddFieldBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
+        val clientId: String = prefs.getString("client_id", "")!!
+
+        presetViewModel.fetchPresets(clientId)
+        presetViewModel.presets.observe(viewLifecycleOwner) {
+            presetsName.add("Choose Plant Type")
+            if (it!!.isNotEmpty()) {
+                for (preset in it) {
+                    presetsName.add(preset.presetName)
+                }
+                for (preset in it) {
+                    presetsId.add(preset.id)
+                }
+                presets = it
+            }
+            val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, presetsName)
+            binding.presetName.adapter = adapter
+        }
 
         if(arguments?.getString("status") == "update"){
             binding.title.text = "Edit Field"
@@ -53,6 +80,20 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
             binding.numberOfMonitorDevice.isEnabled = false
             binding.syncHardware.visibility = View.GONE
             binding.titleSyncHardware.visibility = View.GONE
+
+            val oldPresetId = arguments?.getString("preset_id")!!
+            binding.presetName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View,
+                    position: Int,
+                    id: Long
+                ) {
+                    parent.setSelection(presetsId.indexOf(oldPresetId)+1)
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
             binding.fieldName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_name"))
             binding.fieldAddress.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_address"))
             binding.fieldArea.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_area"))
@@ -79,6 +120,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
             field.name = fieldName
             field.address = fieldAddress
             field.land_area = fieldArea
+            field.preset_id = presets[presetsName.indexOf(binding.presetName.selectedItem.toString())-1].id
             field.number_of_monitor_device = numberOfMonitorDevice.toInt()
 
             if(arguments?.getString("status") == "update") {
@@ -89,7 +131,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                 field.id = arguments?.getString("id")!!
                 field.hardware_code = arguments?.getString("hardware_code")!!
                 field.created_at = arguments?.getString("created_at")!!
-                viewModel.onUpdatePreset(userId, field)
+                fieldViewModel.onUpdatePreset(userId, field)
             } else {
                 if(hardwareCode == null){
                     Toast.makeText(context, "Fill all blanks input", Toast.LENGTH_SHORT).show()
@@ -103,7 +145,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                         .withZone(ZoneOffset.UTC)
                         .format(Instant.now())
                     field.hardware_code = hardwareCode!!
-                    viewModel.onAddPreset(userId, field)
+                    fieldViewModel.onAddPreset(userId, field)
                 }
             }
         }

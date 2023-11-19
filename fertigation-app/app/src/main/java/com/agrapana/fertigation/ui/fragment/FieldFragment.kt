@@ -1,35 +1,24 @@
 package com.agrapana.fertigation.ui.fragment
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.NestedScrollView
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.FieldAdapter
-import com.agrapana.fertigation.adapter.PresetAdapter
 import com.agrapana.fertigation.databinding.FragmentFieldBinding
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Field
-import com.agrapana.fertigation.model.Preset
-import com.agrapana.fertigation.ui.activity.LoginActivity
-import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.viewmodel.FieldViewModel
-import com.agrapana.fertigation.viewmodel.PresetViewModel
 
 class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
 
@@ -118,6 +107,7 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
                     bundle.putString("id", field.id)
                     bundle.putString("field_name", field.name)
                     bundle.putString("field_address", field.address)
+                    bundle.putString("preset_id", field.preset_id)
                     bundle.putString("field_area", field.land_area)
                     bundle.putString("created_at", field.created_at)
                     bundle.putString("hardware_code", field.hardware_code)

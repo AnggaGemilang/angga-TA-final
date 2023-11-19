@@ -1,9 +1,6 @@
 package com.agrapana.fertigation.model
 
-import com.google.gson.annotations.SerializedName
-import java.sql.Timestamp
-
-data class Preset(
+data class ParameterPreset(
     var id: String = "",
     var presetName: String = "",
     var imageUrl: String = "",
@@ -12,4 +9,9 @@ data class Preset(
     var irrigationTimes: String = "",
     var fertigationDays: String = "",
     var fertigationTimes: String = "",
+)
+
+data class IntervalPreset(
+    var userReqest: Int = 0,
+    var systemRequest: Int = 0,
 )

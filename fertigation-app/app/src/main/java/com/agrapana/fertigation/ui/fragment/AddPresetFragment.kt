@@ -11,13 +11,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
 import com.agrapana.fertigation.helper.OperationListener
-import com.agrapana.fertigation.model.Preset
+import com.agrapana.fertigation.model.ParameterPreset
 import com.agrapana.fertigation.viewmodel.PresetViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -77,17 +76,17 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 val irrigationTimes = binding.irrigationTimes.text.toString().trim()
                 val fertigationDays = binding.fertigationDays.text.toString().trim()
                 val fertigationTimes = binding.fertigationTimes.text.toString().trim()
-                val preset = Preset()
-                preset.id = arguments?.getString("id")!!
-                preset.presetName = presetName
-                preset.idealMoisture = idealMoisture
-                preset.irrigationDays = irrigationDays
-                preset.irrigationTimes = irrigationTimes
-                preset.fertigationDays = fertigationDays
-                preset.fertigationTimes = fertigationTimes
+                val parameterPreset = ParameterPreset()
+                parameterPreset.id = arguments?.getString("id")!!
+                parameterPreset.presetName = presetName
+                parameterPreset.idealMoisture = idealMoisture
+                parameterPreset.irrigationDays = irrigationDays
+                parameterPreset.irrigationTimes = irrigationTimes
+                parameterPreset.fertigationDays = fertigationDays
+                parameterPreset.fertigationTimes = fertigationTimes
                 if(linkImage == null){
-                    preset.imageUrl = arguments?.getString("imageURL")!!
-                    viewModel.onUpdatePreset(userId, preset)
+                    parameterPreset.imageUrl = arguments?.getString("imageURL")!!
+                    viewModel.onUpdatePreset(userId, parameterPreset)
                 } else {
                     val storageReference = FirebaseStorage.getInstance()
                         .getReferenceFromUrl(arguments?.getString("imageURL")!!)
@@ -99,9 +98,9 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                                 taskSnapshot.storage.downloadUrl.addOnSuccessListener {
                                     val imageUrl = it.toString()
                                     Log.d("Warko", "Sabihis bener kuduna kadieu")
-                                    preset.imageUrl = imageUrl
-                                    Log.d("Warko 2", preset.toString())
-                                    viewModel.onUpdatePreset(userId, preset)
+                                    parameterPreset.imageUrl = imageUrl
+                                    Log.d("Warko 2", parameterPreset.toString())
+                                    viewModel.onUpdatePreset(userId, parameterPreset)
                                 }
                             }
                             .addOnFailureListener { e ->
@@ -128,15 +127,15 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                                 val fertigationTimes = binding.fertigationTimes.text.toString().trim()
                                 val irrigationDays = binding.irrigationDays.text.toString().trim()
                                 val irrigationTimes = binding.irrigationTimes.text.toString().trim()
-                                val preset = Preset()
-                                preset.presetName = presetName
-                                preset.idealMoisture = idealMoisture
-                                preset.fertigationDays = fertigationDays
-                                preset.fertigationTimes = fertigationTimes
-                                preset.irrigationDays = irrigationDays
-                                preset.irrigationTimes = irrigationTimes
-                                preset.imageUrl = imageUrl
-                                viewModel.onAddPreset(userId, preset)
+                                val parameterPreset = ParameterPreset()
+                                parameterPreset.presetName = presetName
+                                parameterPreset.idealMoisture = idealMoisture
+                                parameterPreset.fertigationDays = fertigationDays
+                                parameterPreset.fertigationTimes = fertigationTimes
+                                parameterPreset.irrigationDays = irrigationDays
+                                parameterPreset.irrigationTimes = irrigationTimes
+                                parameterPreset.imageUrl = imageUrl
+                                viewModel.onAddPreset(userId, parameterPreset)
                             }
                         }
                         .addOnFailureListener { e ->

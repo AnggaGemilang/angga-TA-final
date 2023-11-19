@@ -9,14 +9,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
-import com.agrapana.fertigation.model.Preset
-import com.agrapana.fertigation.model.User
+import com.agrapana.fertigation.model.ParameterPreset
 import com.bumptech.glide.Glide
 
 @SuppressLint("NotifyDataSetChanged")
 class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAdapter.MyViewHolder>() {
 
-    private var presets = mutableListOf<Preset>()
+    private var parameterPresets = mutableListOf<ParameterPreset>()
     private var presetId = mutableListOf<String>()
     private var taskListener: TaskListener = taskListener
 
@@ -25,60 +24,60 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         return MyViewHolder(inflater)
     }
 
-    override fun getItemCount() = presets.size
+    override fun getItemCount() = parameterPresets.size
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.tvPresetName.text = presets[position].presetName
-        holder.tvIdealMoisture.text = "Moisture: ${presets[position].idealMoisture}%"
+        holder.tvPresetName.text = parameterPresets[position].presetName
+        holder.tvIdealMoisture.text = "Moisture: ${parameterPresets[position].idealMoisture}%"
         Glide.with(holder.imageView.context)
-            .load(presets[position].imageUrl)
+            .load(parameterPresets[position].imageUrl)
             .into(holder.imageView);
-        holder.tvDoIrrigation.text = "Irrigation: Pukul ${presets[position].irrigationTimes}/${presets[position].irrigationDays} hari"
-        holder.tvDoFertigation.text = "Fertigation: Pukul ${presets[position].fertigationTimes}/${presets[position].fertigationDays} hari"
+        holder.tvDoIrrigation.text = "Irrigation: Pukul \n${parameterPresets[position].irrigationTimes}/${parameterPresets[position].irrigationDays} hari"
+        holder.tvDoFertigation.text = "Fertigation: Pukul \n${parameterPresets[position].fertigationTimes}/${parameterPresets[position].fertigationDays} hari"
         holder.optionMenu.setOnClickListener {
-            taskListener.onOptionClick(it, presets[position])
+            taskListener.onOptionClick(it, parameterPresets[position])
         }
     }
 
-    fun setPreset(presets: List<Preset>) {
-        this.presets = presets as MutableList<Preset>
+    fun setPreset(parameterPresets: List<ParameterPreset>) {
+        this.parameterPresets = parameterPresets as MutableList<ParameterPreset>
         notifyDataSetChanged()
     }
 
-    private fun isContain(preset: Preset): Boolean {
+    private fun isContain(parameterPreset: ParameterPreset): Boolean {
         presetId.clear()
-        for(p in presets){
-            presetId.add(preset.id)
+        for(p in parameterPresets){
+            presetId.add(parameterPreset.id)
         }
-        for(p in presets){
-            if(p.id == preset.id){
+        for(p in parameterPresets){
+            if(p.id == parameterPreset.id){
                 return true
             }
         }
         return false
     }
 
-    fun addPreset(preset: Preset) {
-        if (!isContain(preset)){
-            presets.add(preset)
+    fun addPreset(parameterPreset: ParameterPreset) {
+        if (!isContain(parameterPreset)){
+            parameterPresets.add(parameterPreset)
         } else {
             presetId.clear()
-            for(p in presets){
+            for(p in parameterPresets){
                 presetId.add(p.id)
             }
-            val index = presetId.indexOf(preset.id)
-            presets[index] = preset
+            val index = presetId.indexOf(parameterPreset.id)
+            parameterPresets[index] = parameterPreset
         }
         notifyDataSetChanged()
     }
 
-    fun deletePreset(preset: Preset) {
+    fun deletePreset(parameterPreset: ParameterPreset) {
         presetId.clear()
-        for(p in presets){
+        for(p in parameterPresets){
             presetId.add(p.id)
         }
-        val index = presetId.indexOf(preset.id)
-        presets.removeAt(index)
+        val index = presetId.indexOf(parameterPreset.id)
+        parameterPresets.removeAt(index)
         notifyDataSetChanged()
     }
 
@@ -101,6 +100,6 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
     }
 
     interface TaskListener {
-        fun onOptionClick(view: View, preset: Preset)
+        fun onOptionClick(view: View, parameterPreset: ParameterPreset)
     }
 }

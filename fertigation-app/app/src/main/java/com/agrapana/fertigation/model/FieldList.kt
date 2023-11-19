@@ -11,6 +11,7 @@ data class Field(
     var address: String = "",
     var land_area: String = "",
     var hardware_code: String = "",
+    var preset_id: String = "",
     var number_of_monitor_device: Int = 0,
     var created_at: String = "",
     var isExpandable: Boolean = false,

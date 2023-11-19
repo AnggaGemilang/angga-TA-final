@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.AuthListener
 import com.agrapana.fertigation.model.AuthResponse
+import com.agrapana.fertigation.model.IntervalPreset
 import com.agrapana.fertigation.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -20,6 +21,7 @@ class AuthViewModel : ViewModel() {
         FirebaseAuth.getInstance()
     }
     private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
+    private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
     private val authResponse = MutableLiveData<AuthResponse?>()
     var authListener: AuthListener? = null
 
@@ -59,21 +61,29 @@ class AuthViewModel : ViewModel() {
         } else if(password != confirmPassword) {
             authListener?.onFailure("Confirm Password Didn't Match")
         } else {
-            firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                if(task.isSuccessful){
+            firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { saveAccount ->
+                if(saveAccount.isSuccessful){
                     val user = User(firebaseAuth.currentUser!!.uid, name, email, password, "Owner")
-                    dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener {
-                        if(it.isSuccessful) {
-                            authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")
-                            authListener?.onSuccess(authResponse)
+                    dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener { saveUser ->
+                        if(saveUser.isSuccessful) {
+                            val intervalPreset = IntervalPreset(5,5)
+                            dbPresets.child(firebaseAuth.currentUser!!.uid).child("interval").setValue(intervalPreset).addOnCompleteListener { savePreset ->
+                                if(savePreset.isSuccessful) {
+                                    authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")
+                                    authListener?.onSuccess(authResponse)
+                                } else {
+                                    authListener?.onFailure(savePreset.exception.toString())
+                                    Log.d("Error", savePreset.exception.toString())
+                                }
+                            }
                         } else {
-                            authListener?.onFailure(it.exception.toString())
-                            Log.d("Error", it.exception.toString())
+                            authListener?.onFailure(saveUser.exception.toString())
+                            Log.d("Error", saveUser.exception.toString())
                         }
                     }
                 } else {
-                    authListener?.onFailure(task.exception.toString())
-                    Log.d("Error", task.exception.toString())
+                    authListener?.onFailure(saveAccount.exception.toString())
+                    Log.d("Error", saveAccount.exception.toString())
                 }
             }
         }

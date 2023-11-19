@@ -1,13 +1,10 @@
 package com.agrapana.fertigation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.OperationListener
-import com.agrapana.fertigation.model.Preset
-import com.agrapana.fertigation.model.User
-import com.google.firebase.auth.EmailAuthProvider
+import com.agrapana.fertigation.model.ParameterPreset
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 
@@ -16,17 +13,17 @@ class PresetViewModel : ViewModel() {
     private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
     var operationListener: OperationListener? = null
 
-    private val _presets = MutableLiveData<List<Preset>?>()
-    val presets: MutableLiveData<List<Preset>?>
+    private val _presets = MutableLiveData<List<ParameterPreset>?>()
+    val presets: MutableLiveData<List<ParameterPreset>?>
         get() = _presets
 
-    private val _preset = MutableLiveData<Preset>()
-    val preset: LiveData<Preset>
-        get() = _preset
+    private val _Parameter_preset = MutableLiveData<ParameterPreset>()
+    val parameterPreset: LiveData<ParameterPreset>
+        get() = _Parameter_preset
 
-    private val _deletedPreset = MutableLiveData<Preset>()
-    val deletedPreset: LiveData<Preset>
-        get() = _deletedPreset
+    private val _deletedParameterPreset = MutableLiveData<ParameterPreset>()
+    val deletedParameterPreset: LiveData<ParameterPreset>
+        get() = _deletedParameterPreset
 
     private val childEventListener = object : ChildEventListener {
         override fun onCancelled(error: DatabaseError) { }
@@ -34,21 +31,21 @@ class PresetViewModel : ViewModel() {
         override fun onChildMoved(snapshot: DataSnapshot, p1: String?) { }
 
         override fun onChildChanged(snapshot: DataSnapshot, p1: String?) {
-            val preset = snapshot.getValue(Preset::class.java)
-            preset?.id = snapshot.key.toString()
-            _preset.value = preset!!
+            val parameterPreset = snapshot.getValue(ParameterPreset::class.java)
+            parameterPreset?.id = snapshot.key.toString()
+            _Parameter_preset.value = parameterPreset!!
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            val preset = snapshot.getValue(Preset::class.java)
-            preset?.id = snapshot.key.toString()
-            _deletedPreset.value = preset!!
+            val parameterPreset = snapshot.getValue(ParameterPreset::class.java)
+            parameterPreset?.id = snapshot.key.toString()
+            _deletedParameterPreset.value = parameterPreset!!
         }
 
         override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
-            val preset = snapshot.getValue(Preset::class.java)
-            preset?.id = snapshot.key.toString()
-            _preset.value = preset!!
+            val parameterPreset = snapshot.getValue(ParameterPreset::class.java)
+            parameterPreset?.id = snapshot.key.toString()
+            _Parameter_preset.value = parameterPreset!!
         }
     }
 
@@ -56,35 +53,35 @@ class PresetViewModel : ViewModel() {
         override fun onCancelled(error: DatabaseError) { }
 
         override fun onDataChange(snapshot: DataSnapshot) {
-            val presets = mutableListOf<Preset>()
+            val parameterPresets = mutableListOf<ParameterPreset>()
             if (snapshot.exists()) {
                 for (dataSnapshot in snapshot.children) {
-                    val preset = dataSnapshot.getValue(Preset::class.java)
-                    preset?.id = dataSnapshot.key.toString()
-                    preset?.let { presets.add(it) }
+                    val parameterPreset = dataSnapshot.getValue(ParameterPreset::class.java)
+                    parameterPreset?.id = dataSnapshot.key.toString()
+                    parameterPreset?.let { parameterPresets.add(it) }
                 }
-                _presets.value = presets
+                _presets.value = parameterPresets
             } else {
-                _presets.value = presets
+                _presets.value = parameterPresets
             }
         }
     }
 
     fun getRealtimeUpdates(id: String) {
-        dbPresets.child(id).addChildEventListener(childEventListener)
+        dbPresets.child(id).child("parameter").addChildEventListener(childEventListener)
     }
 
     fun fetchPresets(id: String) {
-        dbPresets.child(id).addListenerForSingleValueEvent(valueEventListener)
+        dbPresets.child(id).child("parameter").addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun onAddPreset(clientId: String, preset: Preset){
-        if(preset.presetName.isEmpty() || preset.fertigationDays.isEmpty() ||
-            preset.fertigationTimes.isEmpty() || preset.irrigationDays.isEmpty() || preset.irrigationTimes.isEmpty()) {
+    fun onAddPreset(clientId: String, parameterPreset: ParameterPreset){
+        if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
+            parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() || parameterPreset.irrigationTimes.isEmpty()) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
-            preset.id = dbPresets.push().key.toString()
-            dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
+            parameterPreset.id = dbPresets.push().key.toString()
+            dbPresets.child(clientId).child("parameter").child(parameterPreset.id).setValue(parameterPreset).addOnCompleteListener {
                 if(it.isSuccessful) {
                     operationListener?.onSuccess()
                 } else {
@@ -94,12 +91,12 @@ class PresetViewModel : ViewModel() {
         }
     }
 
-    fun onUpdatePreset(clientId: String, preset: Preset){
-        if(preset.presetName.isEmpty() || preset.fertigationDays.isEmpty() ||
-            preset.fertigationTimes.isEmpty() || preset.irrigationDays.isEmpty() || preset.irrigationTimes.isEmpty()) {
+    fun onUpdatePreset(clientId: String, parameterPreset: ParameterPreset){
+        if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
+            parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() || parameterPreset.irrigationTimes.isEmpty()) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
-            dbPresets.child(clientId).child(preset.id).setValue(preset).addOnCompleteListener {
+            dbPresets.child(clientId).child("parameter").child(parameterPreset.id).setValue(parameterPreset).addOnCompleteListener {
                 if(it.isSuccessful) {
                     operationListener?.onSuccess()
                 } else {
@@ -109,14 +106,14 @@ class PresetViewModel : ViewModel() {
         }
     }
 
-    fun onDeletePreset(clientId: String, preset: Preset) {
-        val operation = dbPresets.child(clientId).orderByChild("id").equalTo(preset.id)
+    fun onDeletePreset(clientId: String, parameterPreset: ParameterPreset) {
+        val operation = dbPresets.child(clientId).orderByChild("id").equalTo(parameterPreset.id)
         operation.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (worker in snapshot.children) {
                     worker.ref.removeValue()
                     val storageReference = FirebaseStorage.getInstance()
-                        .getReferenceFromUrl(preset.imageUrl)
+                        .getReferenceFromUrl(parameterPreset.imageUrl)
                     storageReference.delete().addOnSuccessListener {
                         operationListener?.onSuccess()
                     }.addOnFailureListener {

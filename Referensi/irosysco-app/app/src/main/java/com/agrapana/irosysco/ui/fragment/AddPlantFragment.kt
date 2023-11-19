@@ -28,7 +28,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddPlantFragment : RoundedBottomSheetDialogFragment() {
+class  AddPlantFragment : RoundedBottomSheetDialogFragment() {
 
     private lateinit var viewModelPreset: PresetViewModel
     private lateinit var viewModelPlant: PlantViewModel

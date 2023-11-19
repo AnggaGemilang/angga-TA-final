@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.TemplateFieldBinding
 import com.agrapana.fertigation.model.Field
-import com.agrapana.fertigation.model.Preset
-import com.bumptech.glide.Glide
 
 class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener): RecyclerView.Adapter<FieldAdapter.MyViewHolder>() {
 
