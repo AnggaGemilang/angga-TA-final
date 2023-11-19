@@ -35,7 +35,7 @@ class FieldAdapter(val context: Context): RecyclerView.Adapter<FieldAdapter.MyVi
 
         var nestedList: MutableList<String> = ArrayList()
         val model: Field = fieldList[position]
-        holder.binding.tvName.text = model.plant_type
+        holder.binding.tvName.text = model.name
         holder.binding.tvAddress.text = model.address
         holder.binding.tvArea.text = model.land_area
 
@@ -59,8 +59,8 @@ class FieldAdapter(val context: Context): RecyclerView.Adapter<FieldAdapter.MyVi
         }
 
         nestedList.add("Main Device")
-        for (i in 1..model.number_of_support_device!!){
-            nestedList.add("Support Device $i")
+        for (i in 1..model.number_of_monitor_device!!){
+            nestedList.add("Monitor Device $i")
         }
 
         val adapter = NestedFieldAdapter(context, nestedList, model)

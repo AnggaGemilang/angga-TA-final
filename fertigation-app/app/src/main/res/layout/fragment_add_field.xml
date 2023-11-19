@@ -31,52 +31,70 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Add Configuration"
+                android:text="Add Field"
                 android:textSize="25sp"
                 android:layout_gravity="center"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/title_plant_name"
+                android:id="@+id/title_field_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Plant Name"
+                android:text="Field Name"
                 android:textStyle="bold"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
 
             <EditText
-                android:id="@+id/plant_name"
+                android:id="@+id/field_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
                 android:textSize="16sp"
                 android:background="@drawable/edittext_style"
-                android:hint="Enter Plant Name" />
+                android:hint="Enter Field Name" />
 
             <TextView
-                android:id="@+id/title_category"
+                android:id="@+id/title_field_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Plant Category"
+                android:text="Field Address"
                 android:textStyle="bold"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
 
-            <Spinner
-                android:id="@+id/category"
+            <EditText
+                android:id="@+id/field_address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
-                android:entries="@array/val_plant_category"
-                app:popupTheme="@style/Spinner.Custom"
-                android:background="@drawable/spinner_style" />
+                android:textSize="16sp"
+                android:background="@drawable/edittext_style"
+                android:hint="Enter Field Address" />
 
             <TextView
-                android:id="@+id/title_default_image"
+                android:id="@+id/title_field_area"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Default Image"
+                android:text="Field Area"
+                android:textStyle="bold"
+                android:layout_marginTop="15dp"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/field_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:textSize="16sp"
+                android:background="@drawable/edittext_style"
+                android:hint="Enter Field Area" />
+
+            <TextView
+                android:id="@+id/title_sync_hardware"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sync Hardware"
                 android:textStyle="bold"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
@@ -105,7 +123,7 @@
                         android:paddingTop="3dp"
                         android:textColor="@color/black"
                         android:background="@color/grey_20"
-                        android:text="Choose File"  />
+                        android:text="Open Scanner"  />
 
                     <TextView
                         android:id="@+id/txt_filename"
@@ -114,257 +132,30 @@
                         android:gravity="center_vertical"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="10dp"
-                        android:text="Choose Image" />
+                        android:text="Scan QR Code" />
 
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <LinearLayout
-                android:id="@+id/configuration_item_4"
+            <TextView
+                android:id="@+id/title_number_of_monitor_device"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Number of Monitor Device"
+                android:textStyle="bold"
+                android:layout_marginTop="15dp"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/number_of_monitor_device"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Nutrition"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/nutrition"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Nutrition" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ph"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/ph"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Ph" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Growth Lamp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <Spinner
-                        android:id="@+id/growth_lamp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:entries="@array/val_component_state"
-                        app:popupTheme="@style/Spinner.Custom"
-                        android:background="@drawable/spinner_style" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pump"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <Spinner
-                        android:id="@+id/pump"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:entries="@array/val_component_state3"
-                        app:popupTheme="@style/Spinner.Custom"
-                        android:background="@drawable/spinner_style" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Temperature"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/irrigation_days"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Temperature" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CO2 Value"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/irrigation_times"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:inputType="phone"
-                        android:textSize="16sp"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter CO2 Gas" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/configuration_item_3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Seedling Time"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/fertigation_days"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:textSize="16sp"
-                        android:inputType="phone"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Seedling Time" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="7dp"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Grow Time"
-                        android:textStyle="bold"
-                        android:layout_marginTop="15dp"
-                        android:textSize="14sp" />
-
-                    <EditText
-                        android:id="@+id/fertigation_times"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="7dp"
-                        android:textSize="16sp"
-                        android:inputType="phone"
-                        android:background="@drawable/edittext_style"
-                        android:hint="Enter Grow Time" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+                android:layout_marginTop="7dp"
+                android:textSize="16sp"
+                android:inputType="number"
+                android:background="@drawable/edittext_style"
+                android:hint="Enter Number of Monitor Device" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_submit"
@@ -376,7 +167,8 @@
                 android:textColor="@color/white"
                 android:background="@drawable/button_submit"
                 android:drawableLeft="@drawable/ic_baseline_library_add_24"
-                android:text="Save Configuration" />
+                android:drawablePadding="5dp"
+                android:text="Save Field" />
 
         </LinearLayout>
 

@@ -2,17 +2,17 @@ package com.agrapana.fertigation.model
 
 import com.google.gson.annotations.SerializedName
 import java.sql.Timestamp
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 data class Field(
-    val id: String?,
-    val address: String?,
-    val plant_type: String?,
-    val land_area: String?,
-    val thumbnail: String?,
-    val number_of_support_device: Int?,
-    val client_id: String?,
-    val created_at: Timestamp?,
-    val updated_at: Timestamp?,
+    var id: String = "",
+    var name: String = "",
+    var address: String = "",
+    var land_area: String = "",
+    var thumbnail: String = "",
+    var number_of_monitor_device: Int = 0,
+    val created_at: Timestamp = Timestamp(System.currentTimeMillis()),
     var isExpandable: Boolean = false,
 )
 data class Links(

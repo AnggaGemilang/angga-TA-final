@@ -53,7 +53,7 @@ class FieldFilterAdapter(val context: Context): RecyclerView.Adapter<FieldFilter
             holder.binding.cardViewFilter.layoutParams = layoutParams
         }
 
-        holder.binding.txtName.text = fieldList[position].plant_type
+        holder.binding.txtName.text = fieldList[position].name
         holder.binding.cardViewFilter.setOnClickListener {
             for (cardView in cardViewList) {
                 cardView.background.setTint(ContextCompat.getColor(context, R.color.black_20))

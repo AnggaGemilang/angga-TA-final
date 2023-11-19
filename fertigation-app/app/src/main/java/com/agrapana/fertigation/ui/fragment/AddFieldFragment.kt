@@ -1,34 +1,28 @@
 package com.agrapana.fertigation.ui.fragment
 
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddFieldBinding
-import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
-import com.agrapana.fertigation.model.Preset
+import com.agrapana.fertigation.model.Field
+import com.agrapana.fertigation.ui.activity.ScannerActivity
 import com.agrapana.fertigation.viewmodel.FieldViewModel
-import com.agrapana.fertigation.viewmodel.PresetViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.firebase.storage.FirebaseStorage
-import java.util.*
+import com.google.zxing.integration.android.IntentIntegrator
+import org.json.JSONException
 
 class AddFieldFragment : RoundedBottomSheetDialogFragment() {
 
     private lateinit var viewModel: FieldViewModel
     private lateinit var binding: FragmentAddFieldBinding
-    private var linkImage: Uri? = null
-    private val GALLERY_REQUEST_CODE = 999
+    private var CAMERA_PERMISSION_CODE: Int = 3
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,18 +35,18 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         if(arguments?.getString("status") == "update"){
-            binding.title.text = "Edit Configuration"
-            binding.btnSubmit.text = "Edit Configuration"
-//            binding.presetName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("plantName"))
-//            binding.temperature.text = Editable.Factory.getInstance().newEditable(arguments?.getString("temperature"))
-//            binding.seedling.text = Editable.Factory.getInstance().newEditable(arguments?.getString("seedlingTime"))
-//            binding.grow.text = Editable.Factory.getInstance().newEditable(arguments?.getString("growTime"))
-//            binding.gasValve.text = Editable.Factory.getInstance().newEditable(arguments?.getString("gasValve"))
+            binding.title.text = "Edit Field"
+            binding.btnSubmit.text = "Edit Field"
+            binding.fieldName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_name"))
+            binding.fieldAddress.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_address"))
+            binding.fieldArea.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_area"))
+            binding.numberOfMonitorDevice.text = Editable.Factory.getInstance().newEditable(arguments?.getString("number_of_monitor_device"))
         }
 
         binding.open.setOnClickListener {
-            selectImageFromGallery()
+            openCamera()
         }
 
         binding.btnSubmit.setOnClickListener {
@@ -62,120 +56,56 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
             progressDialog.show()
 
             if(arguments?.getString("status") == "update") {
-//                val name = binding.presetName.text.toString().trim()
-//                val gasValve = binding.gasValve.text.toString().trim()
-//                val temperature = binding.temperature.text.toString().trim()
-//                val seedlingTime = binding.seedling.text.toString().trim()
-//                val growTime = binding.grow.text.toString().trim()
-                val preset = Preset()
-                preset.id = arguments?.getString("id")!!
-//                preset.plantName = name
-//                preset.gasValve = gasValve
-//                preset.temperature = temperature
-//                preset.seedlingTime = seedlingTime
-//                preset.growTime = growTime
-//                preset.isDeleted = true
-                if(linkImage == null){
-                    preset.imageUrl = arguments?.getString("imageURL")!!
-                } else {
-                    val storageReference = FirebaseStorage.getInstance()
-                        .getReferenceFromUrl(arguments?.getString("imageURL")!!)
-                    storageReference.delete().addOnSuccessListener {
-                        val fileName = UUID.randomUUID().toString() +".png"
-                        val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
-                        refStorage.putFile(linkImage!!)
-                            .addOnSuccessListener { taskSnapshot ->
-                                taskSnapshot.storage.downloadUrl.addOnSuccessListener {
-                                    val imageUrl = it.toString()
-                                    preset.imageUrl = imageUrl
-                                }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.d("gagal", e.message.toString())
-                            }
-                    }.addOnFailureListener {
-                        Log.d("gagal", it.message.toString())
-                    }
-                }
-//                val dbPresets = viewModel.getDBReference()
-//                dbPresets.child(preset.id).setValue(preset).addOnCompleteListener {
-//                    if(it.isSuccessful) {
-//                        progressDialog.dismiss()
-//                        this.dismiss()
-//                        Toast.makeText(context, "Preset has updated successfully", Toast.LENGTH_SHORT).show()
-//                    }
-//                }
+                val fieldName = binding.fieldName.text.toString().trim()
+                val fieldAddress = binding.fieldAddress.text.toString().trim()
+                val fieldArea = binding.fieldArea.text.toString().trim()
+                val numberOfMonitorDevice = binding.numberOfMonitorDevice.text.toString().trim()
+                val field = Field()
+                field.id = arguments?.getString("id")!!
+                field.name = fieldName
+                field.address = fieldAddress
+                field.land_area = fieldArea
+                field.number_of_monitor_device = numberOfMonitorDevice.toInt()
             } else {
-                val fileName = UUID.randomUUID().toString() +".png"
-                val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
-                refStorage.putFile(linkImage!!)
-                    .addOnSuccessListener { taskSnapshot ->
-                        taskSnapshot.storage.downloadUrl.addOnSuccessListener {
-                            val imageUrl = it.toString()
-//                            val name = binding.presetName.text.toString().trim()
-//                            val gasValve = binding.gasValve.text.toString().trim()
-//                            val temperature = binding.temperature.text.toString().trim()
-//                            val seedlingTime = binding.seedling.text.toString().trim()
-//                            val growTime = binding.grow.text.toString().trim()
-                            val preset = Preset()
-//                            preset.plantName = name
-//                            preset.gasValve = gasValve
-//                            preset.temperature = temperature
-//                            preset.seedlingTime = seedlingTime
-//                            preset.growTime = growTime
-//                            preset.imageUrl = imageUrl
-//                            preset.isDeleted = false
-//                            val dbPresets = viewModel.getDBReference()
-//                            preset.id = dbPresets.push().key.toString()
-//                            dbPresets.child(preset.id).setValue(preset).addOnCompleteListener { it1 ->
-//                                if(it1.isSuccessful) {
-//                                    progressDialog.dismiss()
-//                                    this.dismiss()
-//                                    Toast.makeText(context, "Preset has added successfully", Toast.LENGTH_SHORT).show()
-//                                }
-//                            }
-                        }
-                    }
-                    .addOnFailureListener { e ->
-                        Log.d("gagal", e.message.toString())
-                    }
+
             }
         }
     }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?
-    ) {
-        super.onActivityResult(
-            requestCode,
-            resultCode,
-            data
-        )
-        if (requestCode == GALLERY_REQUEST_CODE
-            && resultCode == Activity.RESULT_OK
-            && data != null
-            && data.data != null
-        ) {
-            val fileURL = data.data
-            val urlFile = data.data!!.path.toString()
-            binding.txtFilename.text = if(urlFile.length > 21) urlFile.substring(0, 20) + "..." else urlFile
-            linkImage = fileURL!!
-        }
+    private fun openCamera() {
+        val qrScan = IntentIntegrator(requireActivity())
+        qrScan.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES)
+        qrScan.setPrompt("Scan a QR Code")
+        qrScan.captureActivity = ScannerActivity::class.java
+        qrScan.setOrientationLocked(false)
+        qrScan.setBeepEnabled(true)
+        qrScan.initiateScan()
     }
 
-    private fun selectImageFromGallery() {
-        val intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(
-            Intent.createChooser(
-                intent,
-                "Please select..."
-            ),
-            GALLERY_REQUEST_CODE
-        )
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null)
+        {
+            if (result.contents == null){
+                Toast.makeText(requireContext(), "Result Not Found", Toast.LENGTH_LONG).show()
+            } else {
+                try {
+                    val contents = result.contents
+                    Toast.makeText(requireContext(), contents, Toast.LENGTH_LONG).show()
+                }
+                catch (e: JSONException) {
+                    e.printStackTrace()
+                    //if control comes here
+                    //that means the encoded format not matches
+                    //in this case you can display whatever data is available on the qrcode
+                    //to a toast
+                    Toast.makeText(requireContext(), result.contents, Toast.LENGTH_LONG).show()
+                }
+            }
+        } else {
+            Toast.makeText(requireContext(), "Result Not Found", Toast.LENGTH_LONG).show()
+            super.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     override fun onStart() {

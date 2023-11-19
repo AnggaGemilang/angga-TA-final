@@ -126,10 +126,6 @@ class DetailMainDeviceActivity : AppCompatActivity() {
                     .create()
                     .show()
             }
-            R.id.crop_recommend -> {
-                val dialog = CropRecommendationFragment(passedData!!.id!!, passedData!!.plant_type!!)
-                dialog.show(this.supportFragmentManager, "BottomSheetDialog")
-            }
         }
         return super.onOptionsItemSelected(item)
     }
