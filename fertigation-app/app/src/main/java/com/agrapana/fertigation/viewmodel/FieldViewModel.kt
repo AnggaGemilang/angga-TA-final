@@ -1,5 +1,6 @@
 package com.agrapana.fertigation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -86,19 +87,20 @@ class FieldViewModel: ViewModel() {
             || field.hardware_code.isEmpty() || field.number_of_monitor_device == 0) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
-            val operation = dbFields.child(clientId).orderByChild("hardware_core").equalTo(field.hardware_code)
-            operation.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if(snapshot.exists()){
-                        operationListener?.onFailure("Hardware Has Been Linked To Another Account")
-                    } else {
-                        field.id = dbFields.push().key.toString()
-                        dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {
-                            if(it.isSuccessful) {
-                                operationListener?.onSuccess()
-                            } else {
-                                operationListener?.onFailure(it.exception.toString())
-                            }
+            dbFields.child(clientId).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    for(snapshot in dataSnapshot.children){
+                        if (snapshot.child("hardware_code").value.toString() == field.hardware_code) {
+                            operationListener?.onFailure("Hardware Has Been Linked To Another Account")
+                            return
+                        }
+                    }
+                    field.id = dbFields.push().key.toString()
+                    dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {
+                        if(it.isSuccessful) {
+                            operationListener?.onSuccess()
+                        } else {
+                            operationListener?.onFailure(it.exception.toString())
                         }
                     }
                 }
@@ -130,6 +132,7 @@ class FieldViewModel: ViewModel() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (worker in snapshot.children) {
                     worker.ref.removeValue()
+                    operationListener?.onSuccess()
                 }
             }
             override fun onCancelled(error: DatabaseError) {

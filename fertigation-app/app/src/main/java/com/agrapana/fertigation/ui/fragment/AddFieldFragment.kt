@@ -52,6 +52,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
             binding.btnSubmit.text = "Edit Field"
             binding.numberOfMonitorDevice.isEnabled = false
             binding.syncHardware.visibility = View.GONE
+            binding.titleSyncHardware.visibility = View.GONE
             binding.fieldName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_name"))
             binding.fieldAddress.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_address"))
             binding.fieldArea.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_area"))

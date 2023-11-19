@@ -77,9 +77,9 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         val model: Field = fields[position]
         holder.binding.tvName.text = model.name
         holder.binding.tvAddress.text = model.address
-        holder.binding.tvArea.text = model.land_area
+        holder.binding.tvArea.text = "${model.land_area} hA"
 
-        val dateParts = model.created_at.toString().trim().split("\\s+".toRegex())
+        val dateParts = model.created_at.trim().split("\\s+".toRegex())
         holder.binding.tvCreated.text = dateParts[0]
 
         val isExpandable = model.isExpandable

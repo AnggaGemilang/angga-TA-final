@@ -43,6 +43,7 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
     ): View {
         binding = FragmentFieldBinding.inflate(inflater, container, false)
         viewModel = ViewModelProviders.of(this)[FieldViewModel::class.java]
+        viewModel.operationListener = this
         return binding.root
     }
 
@@ -118,6 +119,8 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
                     bundle.putString("field_name", field.name)
                     bundle.putString("field_address", field.address)
                     bundle.putString("field_area", field.land_area)
+                    bundle.putString("created_at", field.created_at)
+                    bundle.putString("hardware_code", field.hardware_code)
                     bundle.putString("number_of_monitor_device", field.number_of_monitor_device.toString())
                     dialog.arguments = bundle
                     activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
