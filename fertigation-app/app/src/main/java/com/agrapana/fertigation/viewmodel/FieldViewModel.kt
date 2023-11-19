@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 
 class FieldViewModel: ViewModel() {
 
@@ -85,14 +86,26 @@ class FieldViewModel: ViewModel() {
             || field.hardware_code.isEmpty() || field.number_of_monitor_device == 0) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
-            field.id = dbFields.push().key.toString()
-            dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {
-                if(it.isSuccessful) {
-                    operationListener?.onSuccess()
-                } else {
-                    operationListener?.onFailure(it.exception.toString())
+            val operation = dbFields.child(clientId).orderByChild("hardware_core").equalTo(field.hardware_code)
+            operation.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.exists()){
+                        operationListener?.onFailure("Hardware Has Been Linked To Another Account")
+                    } else {
+                        field.id = dbFields.push().key.toString()
+                        dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {
+                            if(it.isSuccessful) {
+                                operationListener?.onSuccess()
+                            } else {
+                                operationListener?.onFailure(it.exception.toString())
+                            }
+                        }
+                    }
                 }
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    operationListener?.onFailure(error.message)
+                }
+            })
         }
     }
 
@@ -111,7 +124,7 @@ class FieldViewModel: ViewModel() {
         }
     }
 
-    fun onDeletePreset(clientId: String, field: Field) {
+    fun onDeleteField(clientId: String, field: Field) {
         val operation = dbFields.child(clientId).orderByChild("id").equalTo(field.id)
         operation.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

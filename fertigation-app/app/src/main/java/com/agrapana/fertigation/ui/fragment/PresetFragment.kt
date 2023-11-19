@@ -138,7 +138,7 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
     }
 
     override fun onSuccess() {
-        Toast.makeText(requireContext(), "Worker is deleted", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Preset is deleted", Toast.LENGTH_SHORT).show()
     }
 
     override fun onFailure(message: String) {

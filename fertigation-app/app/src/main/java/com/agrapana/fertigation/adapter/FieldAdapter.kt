@@ -12,10 +12,11 @@ import com.agrapana.fertigation.model.Field
 import com.agrapana.fertigation.model.Preset
 import com.bumptech.glide.Glide
 
-class FieldAdapter(val context: Context): RecyclerView.Adapter<FieldAdapter.MyViewHolder>() {
+class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener): RecyclerView.Adapter<FieldAdapter.MyViewHolder>() {
 
     var fields = mutableListOf<Field>()
     private var fieldId = mutableListOf<String>()
+    private var taskListener: FieldAdapter.TaskListener = taskListener
 
     fun setFieldList(fields: List<Field>): Boolean {
         this.fields = fields.toMutableList()
@@ -103,8 +104,17 @@ class FieldAdapter(val context: Context): RecyclerView.Adapter<FieldAdapter.MyVi
             model.isExpandable = !model.isExpandable
             notifyItemChanged(holder.adapterPosition)
         })
+
+        holder.binding.optionMenu.setOnClickListener {
+            taskListener.onOptionClick(it, fields[position])
+        }
+
     }
 
     class MyViewHolder(val binding: TemplateFieldBinding): RecyclerView.ViewHolder(binding.root){}
+
+    interface TaskListener {
+        fun onOptionClick(view: View, field: Field)
+    }
 
 }
