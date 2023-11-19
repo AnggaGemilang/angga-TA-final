@@ -2,8 +2,10 @@ package com.agrapana.fertigation.ui.fragment
 
 import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +24,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
 
     private lateinit var viewModel: FieldViewModel
     private lateinit var binding: FragmentAddFieldBinding
-    private var CAMERA_PERMISSION_CODE: Int = 3
+    private var hardwareCode: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,12 +75,12 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
     }
 
     private fun openCamera() {
-        val qrScan = IntentIntegrator(requireActivity())
-        qrScan.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES)
+        val qrScan = IntentIntegrator.forSupportFragment(this)
+        qrScan.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
         qrScan.setPrompt("Scan a QR Code")
         qrScan.captureActivity = ScannerActivity::class.java
         qrScan.setOrientationLocked(false)
-        qrScan.setBeepEnabled(true)
+        qrScan.setBeepEnabled(false)
         qrScan.initiateScan()
     }
 
@@ -87,23 +89,25 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment() {
         if (result != null)
         {
             if (result.contents == null){
-                Toast.makeText(requireContext(), "Result Not Found", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "QR Code Isn't Valid", Toast.LENGTH_LONG).show()
             } else {
                 try {
                     val contents = result.contents
-                    Toast.makeText(requireContext(), contents, Toast.LENGTH_LONG).show()
+                    val separatedContents = contents.split("&").toTypedArray()
+                    if(separatedContents.isEmpty() || separatedContents.size > 2 || separatedContents[0] != "fertigation_kota203"){
+                        Toast.makeText(requireContext(), "QR Code Isn't Valid", Toast.LENGTH_LONG).show()
+                    } else {
+                        binding.txtFilename.text = if(separatedContents[1].length > 15) separatedContents[1].substring(0, 15) + "..." else separatedContents[1]
+                        hardwareCode = separatedContents[1]
+                    }
                 }
                 catch (e: JSONException) {
                     e.printStackTrace()
-                    //if control comes here
-                    //that means the encoded format not matches
-                    //in this case you can display whatever data is available on the qrcode
-                    //to a toast
                     Toast.makeText(requireContext(), result.contents, Toast.LENGTH_LONG).show()
                 }
             }
         } else {
-            Toast.makeText(requireContext(), "Result Not Found", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "QR Code Isn't Valid", Toast.LENGTH_LONG).show()
             super.onActivityResult(requestCode, resultCode, data)
         }
     }
