@@ -20,11 +20,13 @@ import com.agrapana.fertigation.model.AuthResponse
 import com.agrapana.fertigation.viewmodel.AuthViewModel
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
 class RegisterActivity : AppCompatActivity(), AuthListener {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var viewModel: AuthViewModel
+    private var noInternetDialog: NoInternetDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,4 +102,30 @@ class RegisterActivity : AppCompatActivity(), AuthListener {
     override fun onFailure(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onResume() {
+        super.onResume()
+        val builder1 = NoInternetDialog.Builder(this)
+        builder1.cancelable = false // Optional
+        builder1.noInternetConnectionTitle = "No Internet" // Optional
+        builder1.noInternetConnectionMessage = "Check your Internet connection and try again" // Optional
+        builder1.showInternetOnButtons = true // Optional
+        builder1.pleaseTurnOnText = "Please turn on" // Optional
+        builder1.wifiOnButtonText = "Wifi" // Optional
+        builder1.mobileDataOnButtonText = "Mobile data" // Optional
+        builder1.onAirplaneModeTitle = "No Internet" // Optional
+        builder1.onAirplaneModeMessage = "You have turned on the airplane mode." // Optional
+        builder1.pleaseTurnOffText = "Please turn off" // Optional
+        builder1.airplaneModeOffButtonText = "Airplane mode" // Optional
+        builder1.showAirplaneModeOffButtons = true // Optional
+        noInternetDialog = builder1.build()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (noInternetDialog != null) {
+            noInternetDialog!!.destroy();
+        }
+    }
+
 }

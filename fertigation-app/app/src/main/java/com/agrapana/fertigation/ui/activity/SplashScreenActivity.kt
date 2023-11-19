@@ -18,7 +18,6 @@ class SplashScreenActivity : AppCompatActivity() {
 
     private var binding: ActivitySplashScreenBinding? = null
     private var noInternetDialog: NoInternetDialog? = null
-    private var progressStatus = 0
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {

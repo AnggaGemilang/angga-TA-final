@@ -3,16 +3,18 @@
     <PreferenceCategory app:title="System">
 
         <EditTextPreference
-            app:key="refresh"
+            app:key="system_request"
             app:icon="@drawable/ic_baseline_refresh_24"
-            app:title="Refresh Data"
-            app:defaultValue="10"
+            app:title="System Request (second)"
+            app:defaultValue="5"
             app:useSimpleSummaryProvider="true" />
 
-        <SwitchPreferenceCompat
-            app:key="notification"
-            app:icon="@drawable/ic_baseline_notifications_24"
-            app:title="Notification Alert" />
+        <EditTextPreference
+            app:key="user_request"
+            app:icon="@drawable/ic_baseline_refresh_24"
+            app:title="User Request (second)"
+            app:defaultValue="5"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

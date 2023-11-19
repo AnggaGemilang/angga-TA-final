@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.OperationListener
+import com.agrapana.fertigation.model.IntervalPreset
 import com.agrapana.fertigation.model.ParameterPreset
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -87,6 +88,16 @@ class PresetViewModel : ViewModel() {
                 } else {
                     operationListener?.onFailure(it.exception.toString())
                 }
+            }
+        }
+    }
+
+    fun onUpdateIntervalPreset(clientId: String, newPreset: IntervalPreset) {
+        dbPresets.child(clientId).child("interval").setValue(newPreset).addOnCompleteListener {
+            if(it.isSuccessful) {
+                operationListener?.onSuccess()
+            } else {
+                operationListener?.onFailure(it.exception.toString())
             }
         }
     }

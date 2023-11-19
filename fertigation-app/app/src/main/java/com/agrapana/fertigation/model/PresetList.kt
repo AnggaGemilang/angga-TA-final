@@ -12,6 +12,6 @@ data class ParameterPreset(
 )
 
 data class IntervalPreset(
-    var userReqest: Int = 0,
+    var userRequest: Int = 0,
     var systemRequest: Int = 0,
 )

@@ -11,10 +11,4 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.agrapana.fertigation.databinding.ActivityScannerBinding
 import com.journeyapps.barcodescanner.CaptureActivity
 
-class ScannerActivity : CaptureActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-}
+class ScannerActivity : CaptureActivity()

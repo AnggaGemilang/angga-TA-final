@@ -1,5 +1,6 @@
 package com.agrapana.fertigation.ui.fragment
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.ContextThemeWrapper
@@ -18,6 +19,7 @@ import com.agrapana.fertigation.adapter.PresetAdapter
 import com.agrapana.fertigation.databinding.FragmentPresetBinding
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.ParameterPreset
+import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.viewmodel.PresetViewModel
 
 class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener {
@@ -47,6 +49,9 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
                     bundle.putString("status", "tambah")
                     dialog.arguments = bundle
                     activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
+                }
+                R.id.setting -> {
+                    startActivity(Intent(context, SettingActivity::class.java))
                 }
                 R.id.about -> {
                     AlertDialog.Builder(requireContext())

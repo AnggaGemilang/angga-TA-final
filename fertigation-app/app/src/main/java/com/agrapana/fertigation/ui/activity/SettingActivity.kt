@@ -3,12 +3,17 @@ package com.agrapana.fertigation.ui.activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelProviders
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivitySettingBinding
+import com.agrapana.fertigation.helper.OperationListener
+import com.agrapana.fertigation.model.IntervalPreset
+import com.agrapana.fertigation.viewmodel.PresetViewModel
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
 
@@ -75,29 +80,45 @@ class SettingActivity : AppCompatActivity() {
         noInternetDialog = builder1.build()
     }
 
-    class SettingsFragment : PreferenceFragmentCompat() {
+    class SettingsFragment : PreferenceFragmentCompat(), OperationListener {
+
+        private lateinit var viewModel: PresetViewModel
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-            val refreshTime: Preference = findPreference("refresh")!!
-            val notification: Preference = findPreference("notification")!!
+            val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", MODE_PRIVATE)
+            val clientId: String = prefs.getString("client_id", "")!!
 
-            refreshTime.setOnPreferenceChangeListener { _, newValue ->
-                val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", MODE_PRIVATE)
-                val editor: SharedPreferences.Editor? = prefs.edit()
-                editor?.putString("refreshData", newValue.toString())
-                editor?.apply()
+            viewModel = ViewModelProviders.of(this)[PresetViewModel::class.java]
+            viewModel.operationListener = this
+
+            val systemRequest: Preference = findPreference("system_request")!!
+            val userRequest: Preference = findPreference("user_request")!!
+
+            systemRequest.setOnPreferenceChangeListener { _, newValue ->
+                val intervalPreset = IntervalPreset()
+                intervalPreset.systemRequest = newValue.toString().toInt()
+                intervalPreset.userRequest = userRequest.summary.toString().toInt()
+                viewModel.onUpdateIntervalPreset(clientId, intervalPreset)
                 true
             }
 
-            notification.setOnPreferenceChangeListener { _, newValue ->
-                val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", MODE_PRIVATE)
-                val editor: SharedPreferences.Editor? = prefs.edit()
-                editor?.putString("notificationAlert", newValue.toString())
-                editor?.apply()
+            userRequest.setOnPreferenceChangeListener { _, newValue ->
+                val intervalPreset = IntervalPreset()
+                intervalPreset.systemRequest = systemRequest.summary.toString().toInt()
+                intervalPreset.userRequest = newValue.toString().toInt()
+                viewModel.onUpdateIntervalPreset(clientId, intervalPreset)
                 true
             }
+        }
+
+        override fun onSuccess() {
+            Toast.makeText(context, "Preference Has Been Changed", Toast.LENGTH_LONG).show()
+        }
+
+        override fun onFailure(message: String) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
 
     }
