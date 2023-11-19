@@ -346,7 +346,7 @@
                         android:orientation="vertical"
                         android:scrollbars="none"
                         android:overScrollMode="never"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 </LinearLayout>
 

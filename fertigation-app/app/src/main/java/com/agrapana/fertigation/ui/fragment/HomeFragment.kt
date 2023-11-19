@@ -141,14 +141,6 @@ class HomeFragment: Fragment(), ChangeFieldListener {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[FieldViewModel::class.java]
-        viewModel.getAllField(clientId!!)
-        viewModel.getLoadFieldObservable().observe(activity!!) {
-            if(it?.data != null){
-                binding.valFilterFieldPlaceholder.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
-                recyclerViewAdapter.setFieldList(it.data)
-            }
-        }
     }
 
     override fun onChangeField(id: String?) {

@@ -16,7 +16,6 @@ import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityDetailSupportDeviceBinding
 import com.agrapana.fertigation.model.Field
 import com.agrapana.fertigation.ui.fragment.MonitorDeviceChartFragment
-import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
@@ -52,13 +51,6 @@ class DetailSupportDeviceActivity : AppCompatActivity() {
         fieldId = passedData.id
 
         val identity: String = intent.getStringExtra("identity")!!
-
-        val imageParts = passedData.thumbnail.toString().trim().split("public/".toRegex())
-        if(passedData.thumbnail != null){
-            Glide.with(this).load("https://arnesys.agrapana.tech/storage/" + imageParts[1]).into(binding.imgThumbnail);
-        } else {
-            Glide.with(this).load(R.drawable.farmland).into(binding.imgThumbnail);
-        }
 
         setSupportActionBar(binding.toolbar);
         supportActionBar?.setDisplayHomeAsUpEnabled(true);
@@ -105,7 +97,7 @@ class DetailSupportDeviceActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.action_nav4, menu)
+        menuInflater.inflate(R.menu.action_nav3, menu)
         return true
     }
 

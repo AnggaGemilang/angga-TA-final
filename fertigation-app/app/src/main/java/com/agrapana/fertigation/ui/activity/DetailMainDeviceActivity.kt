@@ -57,13 +57,6 @@ class DetailMainDeviceActivity : AppCompatActivity() {
 
         passedData = Gson().fromJson(intent.getStringExtra("passData"), Field::class.java)
 
-        val imageParts = passedData!!.thumbnail.toString().trim().split("public/".toRegex())
-        if(passedData!!.thumbnail != null){
-            Glide.with(this).load("https://arnesys.agrapana.tech/storage/" + imageParts[1]).into(binding.imgThumbnail);
-        } else {
-            Glide.with(this).load(R.drawable.farmland).into(binding.imgThumbnail);
-        }
-
         setSupportActionBar(binding.toolbar)
         supportActionBar?.title = "Main Device"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

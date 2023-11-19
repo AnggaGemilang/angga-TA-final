@@ -9,16 +9,55 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.TemplateFieldBinding
 import com.agrapana.fertigation.model.Field
+import com.agrapana.fertigation.model.Preset
 import com.bumptech.glide.Glide
 
 class FieldAdapter(val context: Context): RecyclerView.Adapter<FieldAdapter.MyViewHolder>() {
 
-    var fieldList = mutableListOf<Field>()
+    var fields = mutableListOf<Field>()
+    private var fieldId = mutableListOf<String>()
 
     fun setFieldList(fields: List<Field>): Boolean {
-        this.fieldList = fields.toMutableList()
+        this.fields = fields.toMutableList()
         notifyDataSetChanged()
         return true
+    }
+
+    private fun isContain(field: Field): Boolean {
+        fieldId.clear()
+        for(p in fields){
+            fieldId.add(field.id)
+        }
+        for(p in fields){
+            if(p.id == field.id){
+                return true
+            }
+        }
+        return false
+    }
+
+    fun addField(field: Field) {
+        if (!isContain(field)){
+            fields.add(field)
+        } else {
+            fieldId.clear()
+            for(p in fields){
+                fieldId.add(p.id)
+            }
+            val index = fieldId.indexOf(field.id)
+            fields[index] = field
+        }
+        notifyDataSetChanged()
+    }
+
+    fun deleteField(field: Field) {
+        fieldId.clear()
+        for(p in fields){
+            fieldId.add(p.id)
+        }
+        val index = fieldId.indexOf(field.id)
+        fields.removeAt(index)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -28,26 +67,19 @@ class FieldAdapter(val context: Context): RecyclerView.Adapter<FieldAdapter.MyVi
     }
 
     override fun getItemCount(): Int {
-        return fieldList.size
+        return fields.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
         var nestedList: MutableList<String> = ArrayList()
-        val model: Field = fieldList[position]
+        val model: Field = fields[position]
         holder.binding.tvName.text = model.name
         holder.binding.tvAddress.text = model.address
         holder.binding.tvArea.text = model.land_area
 
         val dateParts = model.created_at.toString().trim().split("\\s+".toRegex())
         holder.binding.tvCreated.text = dateParts[0]
-
-        val imageParts = model.thumbnail.toString().trim().split("public/".toRegex())
-        if(model.thumbnail != null){
-            Glide.with(context).load("https://arnesys.agrapana.tech/storage/" + imageParts[1]).into(holder.binding.thumbnail)
-        } else {
-            Glide.with(context).load(R.drawable.farmland).into(holder.binding.thumbnail)
-        }
 
         val isExpandable = model.isExpandable
         holder.binding.expandableLayout.visibility = if (isExpandable) View.VISIBLE else View.GONE

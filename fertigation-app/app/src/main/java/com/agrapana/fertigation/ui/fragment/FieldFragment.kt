@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.FieldAdapter
@@ -20,45 +21,25 @@ import com.agrapana.fertigation.databinding.FragmentFieldBinding
 import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.viewmodel.FieldViewModel
+import com.agrapana.fertigation.viewmodel.PresetViewModel
 
 class FieldFragment : Fragment() {
 
     private lateinit var binding: FragmentFieldBinding
-    private lateinit var prefs: SharedPreferences
-    private lateinit var recyclerViewAdapter: FieldAdapter
+    private lateinit var adapter: FieldAdapter
     private lateinit var viewModel: FieldViewModel
-    private lateinit var window: Window
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFieldBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProviders.of(this)[FieldViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        window = requireActivity().window
-
-        prefs = this.activity?.getSharedPreferences("prefs",
-            AppCompatActivity.MODE_PRIVATE
-        )!!
-
-        binding.scrollView.setOnScrollChangeListener(
-            NestedScrollView.OnScrollChangeListener {
-                    _, _, scrollY, _, _ ->
-                if(scrollY > 720){
-                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                } else {
-                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
-                }
-            })
-
-        initRecyclerView()
-        initViewModel()
-
         binding.toolbar.inflateMenu(R.menu.action_nav2)
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
@@ -78,53 +59,37 @@ class FieldFragment : Fragment() {
                         .create()
                         .show()
                 }
-                R.id.setting -> {
-                    startActivity(Intent(context, SettingActivity::class.java))
-                }
-                R.id.logout -> {
-                    val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("Are You Sure?")
-                    builder.setMessage("You can't get in to your account")
-                    builder.setPositiveButton("YES") { _, _ ->
-                        val editor: SharedPreferences.Editor? = prefs.edit()
-                        editor?.putBoolean("loginStart", true)
-                        editor?.putString("client_id", null)
-                        editor?.apply()
-                        startActivity(Intent(activity, LoginActivity::class.java))
-                    }
-                    builder.setNegativeButton("NO") { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    val alert = builder.create()
-                    alert.show()
-                }
             }
             true
         }
-
-    }
-
-    private fun initRecyclerView() {
-        val linearLayoutManager = LinearLayoutManager(
-            activity, LinearLayoutManager.VERTICAL, false
-        )
-        binding.recyclerView.layoutManager = linearLayoutManager
-        recyclerViewAdapter = FieldAdapter(activity!!)
-        binding.recyclerView.adapter = recyclerViewAdapter
-        recyclerViewAdapter.notifyDataSetChanged()
+        initViewModel()
+        binding.recyclerView.adapter = adapter
     }
 
     private fun initViewModel() {
-        val clientId: String? = prefs.getString("client_id", "")
-        viewModel = ViewModelProvider(this)[FieldViewModel::class.java]
-        viewModel.getAllField(clientId!!)
-        viewModel.getLoadFieldObservable().observe(activity!!) {
-            if(it?.data != null){
-                Log.d("cek", it.data.toString())
-                recyclerViewAdapter.setFieldList(it.data)
+        val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
+        val clientId: String = prefs.getString("client_id", "")!!
+        adapter = FieldAdapter(activity!!)
+        viewModel.fetchPresets(clientId)
+        viewModel.getRealtimeUpdates(clientId)
+        viewModel.field.observe(viewLifecycleOwner) {
+            adapter.addField(it)
+            binding.notFound.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+        }
+        viewModel.deletedField.observe(viewLifecycleOwner) {
+            adapter.deleteField(it)
+        }
+        viewModel.fields.observe(viewLifecycleOwner) {
+            if (it!!.isNotEmpty()) {
                 binding.valFieldListPlaceholder.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
+            } else {
+                binding.valFieldListPlaceholder.visibility = View.GONE
+                binding.recyclerView.visibility = View.GONE
+                binding.notFound.visibility = View.VISIBLE
             }
+            adapter.setFieldList(it)
         }
     }
 

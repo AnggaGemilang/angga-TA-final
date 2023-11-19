@@ -76,7 +76,7 @@
                 android:id="@+id/title_field_area"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Field Area"
+                android:text="Field Area (hA)"
                 android:textStyle="bold"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
@@ -88,6 +88,7 @@
                 android:layout_marginTop="7dp"
                 android:textSize="16sp"
                 android:background="@drawable/edittext_style"
+                android:inputType="number"
                 android:hint="Enter Field Area" />
 
             <TextView
@@ -144,6 +145,7 @@
                 android:layout_height="wrap_content"
                 android:text="Number of Monitor Device"
                 android:textStyle="bold"
+                android:inputType="number"
                 android:layout_marginTop="15dp"
                 android:textSize="14sp" />
 

@@ -10,9 +10,9 @@ data class Field(
     var name: String = "",
     var address: String = "",
     var land_area: String = "",
-    var thumbnail: String = "",
+    var hardware_code: String = "",
     var number_of_monitor_device: Int = 0,
-    val created_at: Timestamp = Timestamp(System.currentTimeMillis()),
+    var created_at: String = "",
     var isExpandable: Boolean = false,
 )
 data class Links(
