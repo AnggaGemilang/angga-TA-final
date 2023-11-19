@@ -20,7 +20,7 @@ void sendMessage();
 Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
 
 void sendMessage() {
-  String msg = "Hi from node1";
+  String msg = "Hi from node2";
   msg += mesh.getNodeId();
   mesh.sendBroadcast( msg );
   taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
@@ -60,7 +60,7 @@ void loop() {
 
   mesh.update();
 
-  // doc["source"] = "P1";
+  doc["source"] = "P1";
   
   // soilMoisture();
   // waterLevel();
