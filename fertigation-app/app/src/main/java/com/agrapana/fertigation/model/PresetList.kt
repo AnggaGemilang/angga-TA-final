@@ -9,6 +9,8 @@ data class ParameterPreset(
     var irrigationTimes: String = "",
     var fertigationDays: String = "",
     var fertigationTimes: String = "",
+    var fertigationDose: String = "",
+    var irrigationDose: String = "",
 )
 
 data class IntervalPreset(

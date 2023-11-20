@@ -120,7 +120,7 @@ class PresetViewModel : ViewModel() {
     }
 
     fun onDeletePreset(clientId: String, parameterPreset: ParameterPreset) {
-        val operation = dbPresets.child(clientId).orderByChild("id").equalTo(parameterPreset.id)
+        val operation = dbPresets.child(clientId).child("parameter").orderByChild("id").equalTo(parameterPreset.id)
         operation.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (worker in snapshot.children) {

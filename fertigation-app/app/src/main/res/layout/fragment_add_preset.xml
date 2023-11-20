@@ -245,6 +245,68 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/configuration_item_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="7dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fertigation Dose (mL)"
+                        android:textStyle="bold"
+                        android:layout_marginTop="15dp"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/fertigation_dose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:textSize="16sp"
+                        android:inputType="phone"
+                        android:background="@drawable/edittext_style"
+                        android:hint="Enter Dose" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="7dp"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Irrigation Dose (mL)"
+                        android:textStyle="bold"
+                        android:layout_marginTop="15dp"
+                        android:textSize="14sp" />
+
+                    <EditText
+                        android:id="@+id/irrigation_dose"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="7dp"
+                        android:textSize="16sp"
+                        android:inputType="phone"
+                        android:background="@drawable/edittext_style"
+                        android:hint="Enter Dose" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_submit"
                 android:layout_width="match_parent"

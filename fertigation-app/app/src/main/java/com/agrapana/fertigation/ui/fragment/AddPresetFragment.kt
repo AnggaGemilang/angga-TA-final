@@ -52,6 +52,8 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             binding.fertigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_times"))
             binding.irrigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_days"))
             binding.irrigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_times"))
+            binding.irrigationDose.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_dose"))
+            binding.fertigationDose.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_dose"))
         }
 
         binding.open.setOnClickListener {
@@ -69,21 +71,26 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             )
             val userId: String = prefs.getString("client_id", "")!!
 
+            val presetName = binding.presetName.text.toString().trim()
+            val idealMoisture = binding.idealMoisture.text.toString().trim()
+            val irrigationDays = binding.irrigationDays.text.toString().trim()
+            val irrigationTimes = binding.irrigationTimes.text.toString().trim()
+            val fertigationDays = binding.fertigationDays.text.toString().trim()
+            val fertigationTimes = binding.fertigationTimes.text.toString().trim()
+            val fertigationDose = binding.fertigationDose.text.toString().trim()
+            val irrigationDose = binding.irrigationDose.text.toString().trim()
+            val parameterPreset = ParameterPreset()
+            parameterPreset.id = arguments?.getString("id")!!
+            parameterPreset.presetName = presetName
+            parameterPreset.idealMoisture = idealMoisture
+            parameterPreset.irrigationDays = irrigationDays
+            parameterPreset.irrigationTimes = irrigationTimes
+            parameterPreset.fertigationDays = fertigationDays
+            parameterPreset.fertigationTimes = fertigationTimes
+            parameterPreset.fertigationDose = fertigationDose
+            parameterPreset.irrigationDose = irrigationDose
+
             if(arguments?.getString("status") == "update") {
-                val presetName = binding.presetName.text.toString().trim()
-                val idealMoisture = binding.idealMoisture.text.toString().trim()
-                val irrigationDays = binding.irrigationDays.text.toString().trim()
-                val irrigationTimes = binding.irrigationTimes.text.toString().trim()
-                val fertigationDays = binding.fertigationDays.text.toString().trim()
-                val fertigationTimes = binding.fertigationTimes.text.toString().trim()
-                val parameterPreset = ParameterPreset()
-                parameterPreset.id = arguments?.getString("id")!!
-                parameterPreset.presetName = presetName
-                parameterPreset.idealMoisture = idealMoisture
-                parameterPreset.irrigationDays = irrigationDays
-                parameterPreset.irrigationTimes = irrigationTimes
-                parameterPreset.fertigationDays = fertigationDays
-                parameterPreset.fertigationTimes = fertigationTimes
                 if(linkImage == null){
                     parameterPreset.imageUrl = arguments?.getString("imageURL")!!
                     viewModel.onUpdatePreset(userId, parameterPreset)
@@ -121,19 +128,6 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                         .addOnSuccessListener { taskSnapshot ->
                             taskSnapshot.storage.downloadUrl.addOnSuccessListener {
                                 val imageUrl = it.toString()
-                                val presetName = binding.presetName.text.toString().trim()
-                                val idealMoisture = binding.idealMoisture.text.toString().trim()
-                                val fertigationDays = binding.fertigationDays.text.toString().trim()
-                                val fertigationTimes = binding.fertigationTimes.text.toString().trim()
-                                val irrigationDays = binding.irrigationDays.text.toString().trim()
-                                val irrigationTimes = binding.irrigationTimes.text.toString().trim()
-                                val parameterPreset = ParameterPreset()
-                                parameterPreset.presetName = presetName
-                                parameterPreset.idealMoisture = idealMoisture
-                                parameterPreset.fertigationDays = fertigationDays
-                                parameterPreset.fertigationTimes = fertigationTimes
-                                parameterPreset.irrigationDays = irrigationDays
-                                parameterPreset.irrigationTimes = irrigationTimes
                                 parameterPreset.imageUrl = imageUrl
                                 viewModel.onAddPreset(userId, parameterPreset)
                             }

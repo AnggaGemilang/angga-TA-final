@@ -32,6 +32,8 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         Glide.with(holder.imageView.context)
             .load(parameterPresets[position].imageUrl)
             .into(holder.imageView);
+        holder.irrigationDose.text = "Irrigation Dose: ${parameterPresets[position].irrigationDose} mL"
+        holder.fertigationDose.text = "Fertigation Dose: ${parameterPresets[position].fertigationDose} mL"
         holder.tvDoIrrigation.text = "Irrigation: Pukul \n${parameterPresets[position].irrigationTimes}/${parameterPresets[position].irrigationDays} hari"
         holder.tvDoFertigation.text = "Fertigation: Pukul \n${parameterPresets[position].fertigationTimes}/${parameterPresets[position].fertigationDays} hari"
         holder.optionMenu.setOnClickListener {
@@ -86,6 +88,8 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         var tvIdealMoisture: TextView
         var tvDoFertigation: TextView
         var tvDoIrrigation: TextView
+        var fertigationDose: TextView
+        var irrigationDose: TextView
         var optionMenu: ImageButton
         var imageView: ImageView
 
@@ -95,6 +99,8 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
             tvIdealMoisture = view.findViewById(R.id.tv_ideal_moisture)
             tvDoFertigation = view.findViewById(R.id.tv_do_fertigation)
             tvDoIrrigation = view.findViewById(R.id.tv_do_irrigation)
+            fertigationDose = view.findViewById(R.id.tv_fertigation_dose)
+            irrigationDose = view.findViewById(R.id.tv_irrigation_dose)
             optionMenu = view.findViewById(R.id.option_menu)
         }
     }
