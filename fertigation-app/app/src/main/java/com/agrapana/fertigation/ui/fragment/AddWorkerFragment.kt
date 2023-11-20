@@ -1,5 +1,6 @@
 package com.agrapana.fertigation.ui.fragment
 
+import android.R
 import android.app.ProgressDialog
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -8,37 +9,82 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddWorkerBinding
 import com.agrapana.fertigation.helper.OperationListener
+import com.agrapana.fertigation.model.Field
+import com.agrapana.fertigation.model.ParameterPreset
+import com.agrapana.fertigation.viewmodel.FieldViewModel
 import com.agrapana.fertigation.viewmodel.WorkerViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class AddWorkerFragment : RoundedBottomSheetDialogFragment(), OperationListener {
 
-    private lateinit var viewModel: WorkerViewModel
+    private lateinit var workerViewModel: WorkerViewModel
+    private lateinit var fieldViewModel: FieldViewModel
     private lateinit var binding: FragmentAddWorkerBinding
+    private var fields: List<Field> = emptyList()
+    private lateinit var prefs: SharedPreferences
+    private var fieldsName = mutableListOf<String>()
+    private var fieldsId = mutableListOf<String>()
     private var progressDialog: ProgressDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = ViewModelProviders.of(this)[WorkerViewModel::class.java]
-        viewModel.operationListener = this
+        fieldViewModel = ViewModelProviders.of(this)[FieldViewModel::class.java]
+        workerViewModel = ViewModelProviders.of(this)[WorkerViewModel::class.java]
+        workerViewModel.operationListener = this
         binding = FragmentAddWorkerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefs = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
+        val clientId: String = prefs.getString("client_id", "")!!
+
+        fieldViewModel.fetchPresets(clientId)
+        fieldViewModel.fields.observe(viewLifecycleOwner) {
+            fieldsName.add("Choose Field")
+            if (it!!.isNotEmpty()) {
+                for (field in it) {
+                    fieldsName.add(field.name)
+                }
+                for (field in it) {
+                    fieldsId.add(field.id)
+                }
+                fields = it
+            }
+            val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, fieldsName)
+            binding.fieldName.adapter = adapter
+        }
 
         if(arguments?.getString("status") == "update"){
             binding.title.text = "Edit Worker"
             binding.btnSubmit.text = "Edit Worker"
+
+            val oldFieldId = arguments?.getString("worker_field_id")!!
+            binding.fieldName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>,
+                    view: View,
+                    position: Int,
+                    id: Long
+                ) {
+                    if(position == 0){
+                        parent.setSelection(fieldsId.indexOf(oldFieldId)+1)
+                    }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
             binding.workerName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("worker_name"))
             binding.workerEmail.text = Editable.Factory.getInstance().newEditable(arguments?.getString("worker_email"))
             binding.workerEmail.isEnabled = false
@@ -67,18 +113,16 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             progressDialog!!.setMessage("System is working . . .")
             progressDialog!!.show()
 
-            val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs",
-                AppCompatActivity.MODE_PRIVATE
-            )
             val userId: String = prefs.getString("client_id", "")!!
             val name = binding.workerName.text.toString()
             val email = binding.workerEmail.text.toString()
             val password = binding.workerPassword.text.toString()
+            val fieldId = fields[fieldsName.indexOf(binding.fieldName.selectedItem.toString())-1].id
 
             if(arguments?.getString("status") == "update"){
-                viewModel.onUpdateWorker(userId, name, email, password)
+                workerViewModel.onUpdateWorker(userId, name, email, password, fieldId)
             } else {
-                viewModel.onAddWorker(userId, name, email, password)
+                workerViewModel.onAddWorker(userId, name, email, password, fieldId)
             }
         }
     }

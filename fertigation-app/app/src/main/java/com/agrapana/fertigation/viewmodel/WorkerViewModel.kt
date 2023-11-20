@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.User
+import com.agrapana.fertigation.model.Worker
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ChildEventListener
@@ -23,17 +24,17 @@ class WorkerViewModel : ViewModel() {
     }
     var operationListener: OperationListener? = null
 
-    private val _workers = MutableLiveData<List<User>?>()
+    private val _workers = MutableLiveData<List<Worker>?>()
 
-    val workers: MutableLiveData<List<User>?>
+    val workers: MutableLiveData<List<Worker>?>
         get() = _workers
 
-    private val _worker = MutableLiveData<User>()
-    val worker: LiveData<User>
+    private val _worker = MutableLiveData<Worker>()
+    val worker: LiveData<Worker>
         get() = _worker
 
-    private val _deletedworker = MutableLiveData<User>()
-    val deletedworker: LiveData<User>
+    private val _deletedworker = MutableLiveData<Worker>()
+    val deletedworker: LiveData<Worker>
         get() = _deletedworker
 
     private val childEventListener = object : ChildEventListener {
@@ -42,18 +43,18 @@ class WorkerViewModel : ViewModel() {
         override fun onChildMoved(snapshot: DataSnapshot, p1: String?) { }
 
         override fun onChildChanged(snapshot: DataSnapshot, p1: String?) {
-            val worker = snapshot.getValue(User::class.java)
+            val worker = snapshot.getValue(Worker::class.java)
             _worker.value = worker!!
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
-            val worker = snapshot.getValue(User::class.java)
+            val worker = snapshot.getValue(Worker::class.java)
             _deletedworker.value = worker!!
         }
 
         override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
             Log.d("warko 3", "sini")
-            val worker = snapshot.getValue(User::class.java)
+            val worker = snapshot.getValue(Worker::class.java)
             _worker.value = worker!!
         }
     }
@@ -62,10 +63,10 @@ class WorkerViewModel : ViewModel() {
         override fun onCancelled(error: DatabaseError) { }
 
         override fun onDataChange(snapshot: DataSnapshot) {
-            val workers = mutableListOf<User>()
+            val workers = mutableListOf<Worker>()
             if (snapshot.exists()) {
                 for (dataSnapshot in snapshot.children) {
-                    val worker = dataSnapshot.getValue(User::class.java)
+                    val worker = dataSnapshot.getValue(Worker::class.java)
                     worker?.let { workers.add(it) }
                 }
                 _workers.value = workers
@@ -79,7 +80,7 @@ class WorkerViewModel : ViewModel() {
         dbWorkers.child(id).addChildEventListener(childEventListener)
     }
 
-    fun onUpdateWorker(userId: String, name: String, email: String, password: String){
+    fun onUpdateWorker(userId: String, name: String, email: String, password: String, fieldId: String){
         if(password.isNotEmpty()){
             if(password.length < 3 || !password.contains("[a-z]".toRegex()) || !password.contains("[0-9]".toRegex())
                 || !password.contains("[!\"#\$%&'()*+,-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())) {
@@ -90,8 +91,8 @@ class WorkerViewModel : ViewModel() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (worker in snapshot.children) {
                             val workerId = worker.ref.key
-                            val worker = worker.getValue(User::class.java)
-                            val newUser = User(name, email, password, "Worker")
+                            val worker = worker.getValue(Worker::class.java)
+                            val newUser = Worker(workerId, name, email, password, "Worker", fieldId)
                             dbWorkers.child(userId).child(workerId!!).setValue(newUser).addOnCompleteListener {
                                 val user = firebaseAuth.currentUser!!
                                 val credential = EmailAuthProvider
@@ -116,8 +117,8 @@ class WorkerViewModel : ViewModel() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (worker in snapshot.children) {
                         val workerId = worker.ref.key
-                        val worker = worker.getValue(User::class.java)
-                        val newUser = User(name, email, worker!!.password, "Worker")
+                        val worker = worker.getValue(Worker::class.java)
+                        val newUser = Worker(workerId, name, email, worker!!.password, "Worker", fieldId)
                         dbWorkers.child(userId).child(workerId!!).setValue(newUser).addOnCompleteListener {
                             operationListener?.onSuccess()
                         }
@@ -130,7 +131,7 @@ class WorkerViewModel : ViewModel() {
         }
     }
 
-    fun onAddWorker(ownerId: String, name: String, email: String, password: String){
+    fun onAddWorker(ownerId: String, name: String, email: String, password: String, fieldId: String){
         if(email.isEmpty() || password.isEmpty()){
             operationListener?.onFailure("Email or Password Is Empty!")
         } else if(password.length < 3 || !password.contains("[a-z]".toRegex()) || !password.contains("[0-9]".toRegex())
@@ -139,7 +140,7 @@ class WorkerViewModel : ViewModel() {
         } else {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
                 if(task.isSuccessful){
-                    val user = User(dbWorkers.push().key.toString(), name, email, password, "Worker")
+                    val user = Worker(dbWorkers.push().key.toString(), name, email, password, "Worker", fieldId)
                     dbWorkers.child(ownerId).child(user.id!!).setValue(user).addOnCompleteListener {
                         if(it.isSuccessful) {
                             operationListener?.onSuccess()
@@ -160,13 +161,13 @@ class WorkerViewModel : ViewModel() {
         dbWorkers.child(id).addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun deleteWorker(clientId: String, worker: User) {
+    fun deleteWorker(clientId: String, worker: Worker) {
         val operation = dbWorkers.child(clientId).orderByChild("email").equalTo(worker.email)
         operation.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (worker in snapshot.children) {
                     worker.ref.removeValue()
-                    val userNow = worker.getValue(User::class.java)
+                    val userNow = worker.getValue(Worker::class.java)
                     val user = firebaseAuth.currentUser!!
                     val credential = EmailAuthProvider
                         .getCredential(userNow!!.email!!, userNow.password!!)

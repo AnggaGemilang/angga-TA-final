@@ -12,6 +12,16 @@ data class User(
     val role: String? = "",
 ) : Parcelable
 
+@Parcelize
+data class Worker(
+    val id: String? = "",
+    val name: String? = "",
+    val email: String? = "",
+    val password: String? = "",
+    val role: String? = "",
+    val fieldId: String? = "",
+) : Parcelable
+
 data class AuthResponse(
     val id: String? = "",
     val name: String? = "",

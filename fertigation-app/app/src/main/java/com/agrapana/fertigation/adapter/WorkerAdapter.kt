@@ -10,11 +10,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.model.User
+import com.agrapana.fertigation.model.Worker
 
 @SuppressLint("NotifyDataSetChanged")
 class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAdapter.MyViewHolder>() {
 
-    private var workers = mutableListOf<User>()
+    private var workers = mutableListOf<Worker>()
     private var workerEmail = mutableListOf<String>()
     private var taskListener: TaskListener = taskListener
 
@@ -34,12 +35,12 @@ class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAda
         }
     }
 
-    fun setWorkers(workers: List<User>) {
-        this.workers = workers as MutableList<User>
+    fun setWorkers(workers: List<Worker>) {
+        this.workers = workers as MutableList<Worker>
         notifyDataSetChanged()
     }
 
-    private fun isContain(worker: User): Boolean {
+    private fun isContain(worker: Worker): Boolean {
         workerEmail.clear()
         for(p in workers){
             workerEmail.add(worker.email!!)
@@ -52,7 +53,7 @@ class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAda
         return false
     }
 
-    fun addWorker(worker: User) {
+    fun addWorker(worker: Worker) {
         if (!isContain(worker)){
             workers.add(worker)
         } else {
@@ -66,7 +67,7 @@ class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAda
         notifyDataSetChanged()
     }
 
-    fun deleteWorker(worker: User) {
+    fun deleteWorker(worker: Worker) {
         workerEmail.clear()
         for(p in workers){
             workerEmail.add(p.email!!)
@@ -91,6 +92,6 @@ class WorkerAdapter(taskListener: TaskListener) : RecyclerView.Adapter<WorkerAda
     }
 
     interface TaskListener {
-        fun onOptionClick(view: View, worker: User)
+        fun onOptionClick(view: View, worker: Worker)
     }
 }

@@ -18,6 +18,7 @@ import com.agrapana.fertigation.adapter.WorkerAdapter
 import com.agrapana.fertigation.databinding.ActivityWorkerBinding
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.User
+import com.agrapana.fertigation.model.Worker
 import com.agrapana.fertigation.ui.fragment.AddWorkerFragment
 import com.agrapana.fertigation.viewmodel.WorkerViewModel
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
@@ -113,7 +114,7 @@ class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, Operatio
         return true
     }
 
-    override fun onOptionClick(view: View, worker: User) {
+    override fun onOptionClick(view: View, worker: Worker) {
         val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
         val contextThemeWrapper = ContextThemeWrapper(this, R.style.MyPopupMenu)
@@ -128,6 +129,7 @@ class WorkerActivity : AppCompatActivity(), WorkerAdapter.TaskListener, Operatio
                     bundle.putString("status", "update")
                     bundle.putString("worker_name", worker.name)
                     bundle.putString("worker_email", worker.email)
+                    bundle.putString("worker_field_id", worker.fieldId)
                     dialog.arguments = bundle
                     dialog.show(supportFragmentManager, "BottomSheetDialog")
                 }

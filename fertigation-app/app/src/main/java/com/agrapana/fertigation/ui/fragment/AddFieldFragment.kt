@@ -59,7 +59,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
 
         presetViewModel.fetchPresets(clientId)
         presetViewModel.presets.observe(viewLifecycleOwner) {
-            presetsName.add("Choose Plant Type")
+            presetsName.add("Choose Preset")
             if (it!!.isNotEmpty()) {
                 for (preset in it) {
                     presetsName.add(preset.presetName)
@@ -88,7 +88,9 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                     position: Int,
                     id: Long
                 ) {
-                    parent.setSelection(presetsId.indexOf(oldPresetId)+1)
+                    if(position == 0){
+                        parent.setSelection(presetsId.indexOf(oldPresetId)+1)
+                    }
                 }
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
