@@ -50,7 +50,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Arnesys.RegisterScreen" />
         <activity
-            android:name=".ui.activity.DetailSupportDeviceActivity"
+            android:name=".ui.activity.DetailMonitorDeviceActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Arnesys.Detail" />

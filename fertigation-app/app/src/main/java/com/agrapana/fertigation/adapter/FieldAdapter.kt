@@ -1,7 +1,6 @@
 package com.agrapana.fertigation.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,7 @@ import com.agrapana.fertigation.model.Field
 class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener): RecyclerView.Adapter<FieldAdapter.MyViewHolder>() {
 
     var fields = mutableListOf<Field>()
-    private var fieldId = mutableListOf<String>()
+    private var fieldHardwareCode = mutableListOf<String>()
     private var taskListener: FieldAdapter.TaskListener = taskListener
 
     fun setFieldList(fields: List<Field>): Boolean {
@@ -24,12 +23,12 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
     }
 
     private fun isContain(field: Field): Boolean {
-        fieldId.clear()
+        fieldHardwareCode.clear()
         for(p in fields){
-            fieldId.add(field.id)
+            fieldHardwareCode.add(field.hardwareCode)
         }
         for(p in fields){
-            if(p.id == field.id){
+            if(p.hardwareCode == field.hardwareCode){
                 return true
             }
         }
@@ -40,22 +39,22 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         if (!isContain(field)){
             fields.add(field)
         } else {
-            fieldId.clear()
+            fieldHardwareCode.clear()
             for(p in fields){
-                fieldId.add(p.id)
+                fieldHardwareCode.add(p.hardwareCode)
             }
-            val index = fieldId.indexOf(field.id)
+            val index = fieldHardwareCode.indexOf(field.hardwareCode)
             fields[index] = field
         }
         notifyDataSetChanged()
     }
 
     fun deleteField(field: Field) {
-        fieldId.clear()
+        fieldHardwareCode.clear()
         for(p in fields){
-            fieldId.add(p.id)
+            fieldHardwareCode.add(p.hardwareCode)
         }
-        val index = fieldId.indexOf(field.id)
+        val index = fieldHardwareCode.indexOf(field.hardwareCode)
         fields.removeAt(index)
         notifyDataSetChanged()
     }
@@ -91,7 +90,7 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         }
 
         nestedList.add("Main Device")
-        for (i in 1..model.numberOfMonitorDevice!!){
+        for (i in 1..model.numberOfMonitorDevice){
             nestedList.add("Monitor Device $i")
         }
 

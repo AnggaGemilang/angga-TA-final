@@ -129,7 +129,6 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                 progressDialog!!.setTitle("Please Wait")
                 progressDialog!!.setMessage("System is working . . .")
                 progressDialog!!.show()
-                field.id = arguments?.getString("id")!!
                 field.hardwareCode = arguments?.getString("hardware_code")!!
                 field.createdAt = arguments?.getString("created_at")!!
                 fieldViewModel.onUpdateField(userId, field)

@@ -36,19 +36,19 @@ class FieldViewModel: ViewModel() {
 
         override fun onChildChanged(snapshot: DataSnapshot, p1: String?) {
             val field = snapshot.getValue(Field::class.java)
-            field?.id = snapshot.key.toString()
+            field?.hardwareCode = snapshot.key.toString()
             _field.value = field!!
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
             val field = snapshot.getValue(Field::class.java)
-            field?.id = snapshot.key.toString()
+            field?.hardwareCode = snapshot.key.toString()
             _deletedField.value = field!!
         }
 
         override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
             val field = snapshot.getValue(Field::class.java)
-            field?.id = snapshot.key.toString()
+            field?.hardwareCode = snapshot.key.toString()
             _field.value = field!!
         }
     }
@@ -60,7 +60,7 @@ class FieldViewModel: ViewModel() {
             if (snapshot.exists()) {
                 for (dataSnapshot in snapshot.children) {
                     val field = dataSnapshot.getValue(Field::class.java)
-                    field?.id = dataSnapshot.key.toString()
+                    field?.hardwareCode = dataSnapshot.key.toString()
                     field?.let { fields.add(it) }
                 }
                 _fields.value = fields
@@ -83,7 +83,7 @@ class FieldViewModel: ViewModel() {
             override fun onCancelled(error: DatabaseError) { }
             override fun onDataChange(snapshot: DataSnapshot) {
                 val field = snapshot.getValue(Field::class.java)
-                field?.id = snapshot.key.toString()
+                field?.hardwareCode = snapshot.key.toString()
                 _field.value = field!!
             }
         }
@@ -118,8 +118,7 @@ class FieldViewModel: ViewModel() {
                             return
                         }
                     }
-                    field.id = dbFields.push().key.toString()
-                    dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {
+                    dbFields.child(clientId).child(field.hardwareCode).setValue(field).addOnCompleteListener {
                         if(it.isSuccessful) {
                             operationListener?.onSuccess()
                         } else {
@@ -139,7 +138,7 @@ class FieldViewModel: ViewModel() {
             || field.hardwareCode.isEmpty() || field.numberOfMonitorDevice == 0) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
-            dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {
+            dbFields.child(clientId).child(field.hardwareCode).setValue(field).addOnCompleteListener {
                 if(it.isSuccessful) {
                     operationListener?.onSuccess()
                 } else {
@@ -150,7 +149,7 @@ class FieldViewModel: ViewModel() {
     }
 
     fun onDeleteField(clientId: String, field: Field) {
-        val operation = dbFields.child(clientId).orderByChild("id").equalTo(field.id)
+        val operation = dbFields.child(clientId).orderByChild("hardwareCode").equalTo(field.hardwareCode)
         operation.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (worker in snapshot.children) {

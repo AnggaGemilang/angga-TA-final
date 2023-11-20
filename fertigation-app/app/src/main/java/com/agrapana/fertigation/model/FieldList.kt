@@ -1,7 +1,6 @@
 package com.agrapana.fertigation.model
 
 data class Field(
-    var id: String = "",
     var name: String = "",
     var address: String = "",
     var landArea: String = "",

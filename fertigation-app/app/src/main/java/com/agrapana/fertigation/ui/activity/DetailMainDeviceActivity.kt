@@ -72,16 +72,16 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Wind Pressure"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Light Intensity"))
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        replaceFragment(MainDeviceChartFragment(passedData!!.id!!, "Warmth"))
+        replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Warmth"))
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
-                    0 -> replaceFragment(MainDeviceChartFragment(passedData!!.id!!, "Warmth"))
-                    1 -> replaceFragment(MainDeviceChartFragment(passedData!!.id!!, "Humidity"))
-                    2 -> replaceFragment(MainDeviceChartFragment(passedData!!.id!!, "Wind Speed"))
-                    3 -> replaceFragment(MainDeviceChartFragment(passedData!!.id!!, "Wind Pressure"))
-                    4 -> replaceFragment(MainDeviceChartFragment(passedData!!.id!!, "Light Intensity"))
+                    0 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Warmth"))
+                    1 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Humidity"))
+                    2 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Wind Speed"))
+                    3 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Wind Pressure"))
+                    4 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Light Intensity"))
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}

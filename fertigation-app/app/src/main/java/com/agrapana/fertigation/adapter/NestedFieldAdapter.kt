@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.databinding.TemplateNestedFieldBinding
 import com.agrapana.fertigation.model.Field
 import com.agrapana.fertigation.ui.activity.DetailMainDeviceActivity
-import com.agrapana.fertigation.ui.activity.DetailSupportDeviceActivity
+import com.agrapana.fertigation.ui.activity.DetailMonitorDeviceActivity
 import com.google.gson.Gson
 
 class NestedFieldAdapter(val context: Context, private val fieldList: List<String>, private val fieldDetail: Field): RecyclerView.Adapter<NestedFieldAdapter.MyViewHolder>() {
@@ -35,7 +35,7 @@ class NestedFieldAdapter(val context: Context, private val fieldList: List<Strin
                 intent.putExtra("passData", Gson().toJson(fieldDetail))
                 context.startActivity(intent)
             } else {
-                val intent = Intent(context, DetailSupportDeviceActivity::class.java)
+                val intent = Intent(context, DetailMonitorDeviceActivity::class.java)
                 intent.putExtra("passData", Gson().toJson(fieldDetail))
                 intent.putExtra("identity", deviceName)
                 context.startActivity(intent)

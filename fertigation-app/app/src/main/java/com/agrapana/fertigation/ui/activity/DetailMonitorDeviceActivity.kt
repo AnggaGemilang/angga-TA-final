@@ -21,7 +21,7 @@ import com.google.gson.Gson
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 import java.util.*
 
-class DetailSupportDeviceActivity : AppCompatActivity() {
+class DetailMonitorDeviceActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailSupportDeviceBinding
     private lateinit var prefs: SharedPreferences
@@ -48,7 +48,7 @@ class DetailSupportDeviceActivity : AppCompatActivity() {
         clientId = prefs.getString("client_id", "")
 
         val passedData: Field = Gson().fromJson(intent.getStringExtra("passData"), Field::class.java)
-        fieldId = passedData.id
+        fieldId = passedData.hardwareCode
 
         val identity: String = intent.getStringExtra("identity")!!
 
@@ -64,17 +64,17 @@ class DetailSupportDeviceActivity : AppCompatActivity() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Phosphor"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Kalium"))
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        replaceFragment(MonitorDeviceChartFragment(passedData.id!!, 1, "Warmth"))
+        replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1, "Warmth"))
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
-                    0 -> replaceFragment(MonitorDeviceChartFragment(passedData.id, 1,"Warmth"))
-                    1 -> replaceFragment(MonitorDeviceChartFragment(passedData.id, 1,"Moisture"))
-                    2 -> replaceFragment(MonitorDeviceChartFragment(passedData.id, 1,"pH"))
-                    3 -> replaceFragment(MonitorDeviceChartFragment(passedData.id, 1,"Nitrogen"))
-                    4 -> replaceFragment(MonitorDeviceChartFragment(passedData.id, 1,"Phosphor"))
-                    5 -> replaceFragment(MonitorDeviceChartFragment(passedData.id, 1,"Kalium"))
+                    0 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Warmth"))
+                    1 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Moisture"))
+                    2 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"pH"))
+                    3 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Nitrogen"))
+                    4 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Phosphor"))
+                    5 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Kalium"))
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab) {}

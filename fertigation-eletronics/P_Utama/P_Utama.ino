@@ -18,6 +18,7 @@
 #define VALVE_RELAY_1 14
 #define VALVE_RELAY_2 15
 #define HARDWARE_CODE "13kjh123kj1h3j12h21312kjhasdasd"
+#define OWNER_CODE "hpoQA4Xv0hTpmsB3lgOXyrRF7S12"
 #define FIREBASE_HOST "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
 #define FIREBASE_AUTH "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define WIFI_SSID "SPEEDY"

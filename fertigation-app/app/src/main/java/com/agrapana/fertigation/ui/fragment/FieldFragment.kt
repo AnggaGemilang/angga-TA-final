@@ -128,7 +128,6 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
                     val dialog = AddFieldFragment()
                     val bundle = Bundle()
                     bundle.putString("status", "update")
-                    bundle.putString("id", field.id)
                     bundle.putString("field_name", field.name)
                     bundle.putString("field_address", field.address)
                     bundle.putString("preset_id", field.presetId)

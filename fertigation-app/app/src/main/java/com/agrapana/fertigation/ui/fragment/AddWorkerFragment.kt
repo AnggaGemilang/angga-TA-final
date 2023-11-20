@@ -57,7 +57,7 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                     fieldsName.add(field.name)
                 }
                 for (field in it) {
-                    fieldsId.add(field.id)
+                    fieldsId.add(field.hardwareCode)
                 }
                 fields = it
             }
@@ -116,7 +116,7 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             val name = binding.workerName.text.toString()
             val email = binding.workerEmail.text.toString()
             val password = binding.workerPassword.text.toString()
-            val fieldId = fields[fieldsName.indexOf(binding.fieldName.selectedItem.toString())-1].id
+            val fieldId = fields[fieldsName.indexOf(binding.fieldName.selectedItem.toString())-1].hardwareCode
 
             if(arguments?.getString("status") == "update"){
                 workerViewModel.onUpdateWorker(userId, name, email, password, fieldId)
