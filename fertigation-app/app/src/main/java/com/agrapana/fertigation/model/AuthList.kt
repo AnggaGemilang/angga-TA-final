@@ -23,7 +23,9 @@ data class Worker(
 ) : Parcelable
 
 data class AuthResponse(
-    val id: String? = "",
+    val ownerId: String? = "",
     val name: String? = "",
     val role: String? = "",
+    val workerId: String? = "",
+    val fieldId: String? = "",
 )

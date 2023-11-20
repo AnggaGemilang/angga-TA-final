@@ -3,6 +3,7 @@ package com.agrapana.fertigation.ui.fragment
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import androidx.fragment.app.Fragment
@@ -78,11 +79,19 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
     }
 
     private fun initViewModel() {
-        val clientId: String = prefs.getString("client_id", "")!!
+        val ownerId: String = prefs.getString("client_id", "")!!
+        val role: String = prefs.getString("client_role", "")!!
         adapter = FieldAdapter(activity!!, this)
-        viewModel.fetchPresets(clientId)
-        viewModel.getRealtimeUpdates(clientId)
+        if(role == "Worker"){
+            val fieldId: String = prefs.getString("worker_field_id", "")!!
+            viewModel.fetchFieldsByWorker(ownerId, fieldId)
+            viewModel.getRealtimeUpdatesByWorker(ownerId, fieldId)
+        } else {
+            viewModel.fetchFields(ownerId)
+            viewModel.getRealtimeUpdates(ownerId)
+        }
         viewModel.field.observe(viewLifecycleOwner) {
+            Log.d("sabihis", "Kadieu Teuu")
             adapter.addField(it)
             binding.notFound.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE
@@ -108,6 +117,10 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
         val contextThemeWrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
         val popupMenu = PopupMenu(contextThemeWrapper, view, Gravity.END)
         popupMenu.menuInflater.inflate(R.menu.item_popup_action, popupMenu.menu)
+        val role: String? = prefs.getString("client_role", "")
+        if(role == "Worker"){
+            popupMenu.menu.findItem(R.id.act_delete).isVisible = false
+        }
         popupMenu.show()
         popupMenu.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {

@@ -132,7 +132,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                 field.id = arguments?.getString("id")!!
                 field.hardwareCode = arguments?.getString("hardware_code")!!
                 field.createdAt = arguments?.getString("created_at")!!
-                fieldViewModel.onUpdatePreset(userId, field)
+                fieldViewModel.onUpdateField(userId, field)
             } else {
                 if(hardwareCode == null){
                     Toast.makeText(context, "Fill all blanks input", Toast.LENGTH_SHORT).show()
@@ -146,7 +146,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                         .withZone(ZoneOffset.UTC)
                         .format(Instant.now())
                     field.hardwareCode = hardwareCode!!
-                    fieldViewModel.onAddPreset(userId, field)
+                    fieldViewModel.onAddField(userId, field)
                 }
             }
         }

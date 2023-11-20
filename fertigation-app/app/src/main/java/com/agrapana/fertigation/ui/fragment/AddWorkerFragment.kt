@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.databinding.FragmentAddWorkerBinding
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Field
-import com.agrapana.fertigation.model.ParameterPreset
 import com.agrapana.fertigation.viewmodel.FieldViewModel
 import com.agrapana.fertigation.viewmodel.WorkerViewModel
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
@@ -50,7 +49,7 @@ class AddWorkerFragment : RoundedBottomSheetDialogFragment(), OperationListener 
         prefs = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
 
-        fieldViewModel.fetchPresets(clientId)
+        fieldViewModel.fetchFields(clientId)
         fieldViewModel.fields.observe(viewLifecycleOwner) {
             fieldsName.add("Choose Field")
             if (it!!.isNotEmpty()) {

@@ -51,6 +51,8 @@ class AuthViewModel : ViewModel() {
                                                             owner.key.toString(),
                                                             worker.child("name").value.toString(),
                                                             worker.child("role").value.toString(),
+                                                            worker.child("id").value.toString(),
+                                                            worker.child("fieldId").value.toString(),
                                                         )
                                                     }
                                                 }

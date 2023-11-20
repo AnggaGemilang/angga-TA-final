@@ -1,5 +1,6 @@
 package com.agrapana.fertigation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -32,6 +33,7 @@ class PresetViewModel : ViewModel() {
         override fun onChildMoved(snapshot: DataSnapshot, p1: String?) { }
 
         override fun onChildChanged(snapshot: DataSnapshot, p1: String?) {
+            Log.d("nanang4", snapshot.toString())
             val parameterPreset = snapshot.getValue(ParameterPreset::class.java)
             parameterPreset?.id = snapshot.key.toString()
             _Parameter_preset.value = parameterPreset!!

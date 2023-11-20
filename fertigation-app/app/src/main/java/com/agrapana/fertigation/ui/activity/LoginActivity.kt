@@ -1,5 +1,6 @@
 package com.agrapana.fertigation.ui.activity
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ class LoginActivity : AppCompatActivity(), AuthListener {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var viewModel: AuthViewModel
+    private var progressDialog: ProgressDialog? = null
     private var noInternetDialog: NoInternetDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +33,10 @@ class LoginActivity : AppCompatActivity(), AuthListener {
         viewModel.authListener = this
 
         binding.btnLogin.setOnClickListener {
+            progressDialog = ProgressDialog(this)
+            progressDialog!!.setTitle("Please Wait")
+            progressDialog!!.setMessage("System is working . . .")
+            progressDialog!!.show()
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
             viewModel.onLogin(email, password)
@@ -42,19 +48,25 @@ class LoginActivity : AppCompatActivity(), AuthListener {
     }
 
     override fun onSuccess(response: LiveData<AuthResponse?>) {
+        progressDialog!!.dismiss()
         response.observe(this) {
             val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
             val editor: SharedPreferences.Editor? = prefs.edit()
             editor?.putBoolean("login_status", false)
-            editor?.putString("client_id", it?.id)
+            editor?.putString("client_id", it?.ownerId)
             editor?.putString("client_name", it?.name!!.split(" ")[0])
             editor?.putString("client_role", it?.role)
+            if(it?.role == "Worker"){
+                editor?.putString("worker_id", it.workerId)
+                editor?.putString("worker_field_id", it.fieldId)
+            }
             editor?.apply()
             startActivity(Intent(this, MainActivity::class.java))
         }
     }
 
     override fun onFailure(message: String) {
+        progressDialog!!.dismiss()
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 

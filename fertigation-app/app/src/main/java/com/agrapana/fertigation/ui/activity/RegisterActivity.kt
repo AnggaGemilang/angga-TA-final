@@ -1,31 +1,27 @@
 package com.agrapana.fertigation.ui.activity
 
-import android.R
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import com.agrapana.fertigation.databinding.ActivityRegisterBinding
 import com.agrapana.fertigation.helper.AuthListener
 import com.agrapana.fertigation.model.AuthResponse
 import com.agrapana.fertigation.viewmodel.AuthViewModel
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
 class RegisterActivity : AppCompatActivity(), AuthListener {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var viewModel: AuthViewModel
+    private var progressDialog: ProgressDialog? = null
     private var noInternetDialog: NoInternetDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +33,10 @@ class RegisterActivity : AppCompatActivity(), AuthListener {
         viewModel.authListener = this
 
         binding.btnRegister.setOnClickListener {
+            progressDialog = ProgressDialog(this)
+            progressDialog!!.setTitle("Please Wait")
+            progressDialog!!.setMessage("System is working . . .")
+            progressDialog!!.show()
             val name = binding.etName.text.toString()
             val email = binding.etEmail.text.toString()
             val password = binding.etPassword.text.toString()
@@ -86,11 +86,12 @@ class RegisterActivity : AppCompatActivity(), AuthListener {
     }
 
     override fun onSuccess(response: LiveData<AuthResponse?>) {
+        progressDialog!!.dismiss()
         response.observe(this) {
             val prefs: SharedPreferences = getSharedPreferences("prefs", MODE_PRIVATE)
             val editor: SharedPreferences.Editor? = prefs.edit()
             editor?.putBoolean("login_status", false)
-            editor?.putString("client_id", it?.id)
+            editor?.putString("client_id", it?.ownerId)
             editor?.putString("client_name", it?.name!!.split(" ")[0])
             editor?.putString("client_role", it?.role)
             editor?.apply()
@@ -100,6 +101,7 @@ class RegisterActivity : AppCompatActivity(), AuthListener {
     }
 
     override fun onFailure(message: String) {
+        progressDialog!!.dismiss()
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 

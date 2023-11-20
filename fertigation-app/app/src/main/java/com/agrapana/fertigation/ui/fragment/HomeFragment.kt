@@ -95,6 +95,7 @@ class HomeFragment: Fragment(), ChangeFieldListener {
                 }
                 R.id.logout -> {
                     val builder = AlertDialog.Builder(requireContext())
+                    val role: String? = prefs.getString("client_role", "")
                     builder.setTitle("Are You Sure?")
                     builder.setMessage("You can't get in to your account")
                     builder.setPositiveButton("YES") { _, _ ->
@@ -103,6 +104,10 @@ class HomeFragment: Fragment(), ChangeFieldListener {
                         editor?.putString("client_id", null)
                         editor?.putString("client_name", null)
                         editor?.putString("client_role", null)
+                        if(role == "Worker"){
+                            editor?.putString("worker_id", null)
+                            editor?.putString("worker_field_id", null)
+                        }
                         editor?.apply()
                         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
                         authViewModel.logout()

@@ -1,5 +1,6 @@
 package com.agrapana.fertigation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -54,7 +55,6 @@ class FieldViewModel: ViewModel() {
 
     private val valueEventListener = object : ValueEventListener {
         override fun onCancelled(error: DatabaseError) { }
-
         override fun onDataChange(snapshot: DataSnapshot) {
             val fields = mutableListOf<Field>()
             if (snapshot.exists()) {
@@ -74,11 +74,38 @@ class FieldViewModel: ViewModel() {
         dbFields.child(id).addChildEventListener(childEventListener)
     }
 
-    fun fetchPresets(id: String) {
+    fun fetchFields(id: String) {
         dbFields.child(id).addListenerForSingleValueEvent(valueEventListener)
     }
 
-    fun onAddPreset(clientId: String, field: Field){
+    fun getRealtimeUpdatesByWorker(id: String, fieldId: String) {
+        val value3EventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) { }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val field = snapshot.getValue(Field::class.java)
+                field?.id = snapshot.key.toString()
+                _field.value = field!!
+            }
+        }
+        dbFields.child(id).child(fieldId).addValueEventListener(value3EventListener)
+    }
+
+    fun fetchFieldsByWorker(ownerId: String, fieldId: String) {
+        val value2EventListener = object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) { }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val fields = mutableListOf<Field>()
+                if(snapshot.exists()){
+                    val field = snapshot.getValue(Field::class.java)
+                    field?.let { fields.add(it) }
+                }
+                _fields.value = fields
+            }
+        }
+        dbFields.child(ownerId).child(fieldId).addListenerForSingleValueEvent(value2EventListener)
+    }
+
+    fun onAddField(clientId: String, field: Field){
         if(field.name.isEmpty() || field.landArea.isEmpty() || field.address.isEmpty()
             || field.hardwareCode.isEmpty() || field.numberOfMonitorDevice == 0) {
             operationListener?.onFailure("Fill all blanks input")
@@ -107,7 +134,7 @@ class FieldViewModel: ViewModel() {
         }
     }
 
-    fun onUpdatePreset(clientId: String, field: Field){
+    fun onUpdateField(clientId: String, field: Field){
         if(field.name.isEmpty() || field.landArea.isEmpty() || field.address.isEmpty()
             || field.hardwareCode.isEmpty() || field.numberOfMonitorDevice == 0) {
             operationListener?.onFailure("Fill all blanks input")
