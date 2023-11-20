@@ -27,6 +27,7 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
     private lateinit var binding: FragmentFieldBinding
     private lateinit var adapter: FieldAdapter
     private lateinit var viewModel: FieldViewModel
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,7 +41,14 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefs = this.activity?.getSharedPreferences("prefs",
+            AppCompatActivity.MODE_PRIVATE
+        )!!
         binding.toolbar.inflateMenu(R.menu.action_nav2)
+        val role: String? = prefs.getString("client_role", "")
+        if(role == "Worker"){
+            binding.toolbar.menu.findItem(R.id.add).isVisible = false
+        }
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.add -> {
@@ -70,7 +78,6 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
     }
 
     private fun initViewModel() {
-        val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
         adapter = FieldAdapter(activity!!, this)
         viewModel.fetchPresets(clientId)
@@ -97,7 +104,6 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
     }
 
     override fun onOptionClick(view: View, field: Field) {
-        val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
         val contextThemeWrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
         val popupMenu = PopupMenu(contextThemeWrapper, view, Gravity.END)
@@ -112,11 +118,11 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
                     bundle.putString("id", field.id)
                     bundle.putString("field_name", field.name)
                     bundle.putString("field_address", field.address)
-                    bundle.putString("preset_id", field.preset_id)
-                    bundle.putString("field_area", field.land_area)
-                    bundle.putString("created_at", field.created_at)
-                    bundle.putString("hardware_code", field.hardware_code)
-                    bundle.putString("number_of_monitor_device", field.number_of_monitor_device.toString())
+                    bundle.putString("preset_id", field.presetId)
+                    bundle.putString("field_area", field.landArea)
+                    bundle.putString("created_at", field.createdAt)
+                    bundle.putString("hardware_code", field.hardwareCode)
+                    bundle.putString("number_of_monitor_device", field.numberOfMonitorDevice.toString())
                     dialog.arguments = bundle
                     activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
                 }

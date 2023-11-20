@@ -26,6 +26,7 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
 
     private lateinit var binding: FragmentPresetBinding
     private lateinit var viewModel: PresetViewModel
+    private lateinit var prefs: SharedPreferences
     private val adapter = PresetAdapter(this)
 
     override fun onCreateView(
@@ -40,7 +41,14 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefs = this.activity?.getSharedPreferences("prefs",
+            AppCompatActivity.MODE_PRIVATE
+        )!!
         binding.toolbar.inflateMenu(R.menu.action_nav2)
+        val role: String? = prefs.getString("client_role", "")
+        if(role == "Worker"){
+            binding.toolbar.menu.findItem(R.id.add).isVisible = false
+        }
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.add -> {
@@ -70,7 +78,6 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
     }
 
     private fun initViewModel() {
-        val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
         viewModel.fetchPresets(clientId)
         viewModel.getRealtimeUpdates(clientId)
@@ -96,7 +103,6 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
     }
 
     override fun onOptionClick(view: View, parameterPreset: ParameterPreset) {
-        val prefs: SharedPreferences = activity!!.getSharedPreferences("prefs", AppCompatActivity.MODE_PRIVATE)
         val clientId: String = prefs.getString("client_id", "")!!
         val contextThemeWrapper = ContextThemeWrapper(context, R.style.MyPopupMenu)
         val popupMenu = PopupMenu(contextThemeWrapper, view, Gravity.END)

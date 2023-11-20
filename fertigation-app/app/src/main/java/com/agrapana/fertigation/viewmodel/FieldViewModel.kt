@@ -79,14 +79,14 @@ class FieldViewModel: ViewModel() {
     }
 
     fun onAddPreset(clientId: String, field: Field){
-        if(field.name.isEmpty() || field.land_area.isEmpty() || field.address.isEmpty()
-            || field.hardware_code.isEmpty() || field.number_of_monitor_device == 0) {
+        if(field.name.isEmpty() || field.landArea.isEmpty() || field.address.isEmpty()
+            || field.hardwareCode.isEmpty() || field.numberOfMonitorDevice == 0) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
             dbFields.child(clientId).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for(snapshot in dataSnapshot.children){
-                        if (snapshot.child("hardware_code").value.toString() == field.hardware_code) {
+                        if (snapshot.child("hardware_code").value.toString() == field.hardwareCode) {
                             operationListener?.onFailure("Hardware Has Been Linked To Another Account")
                             return
                         }
@@ -108,8 +108,8 @@ class FieldViewModel: ViewModel() {
     }
 
     fun onUpdatePreset(clientId: String, field: Field){
-        if(field.name.isEmpty() || field.land_area.isEmpty() || field.address.isEmpty()
-            || field.hardware_code.isEmpty() || field.number_of_monitor_device == 0) {
+        if(field.name.isEmpty() || field.landArea.isEmpty() || field.address.isEmpty()
+            || field.hardwareCode.isEmpty() || field.numberOfMonitorDevice == 0) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
             dbFields.child(clientId).child(field.id).setValue(field).addOnCompleteListener {

@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.agrapana.fertigation.databinding.FragmentSeekCropRecommendationBinding
-import com.agrapana.fertigation.model.AIInput
 import com.deishelon.roundedbottomsheet.RoundedBottomSheetDialogFragment
 
 class CropRecommendationFragment(private var fieldId: String, private var cropNow: String) : RoundedBottomSheetDialogFragment() {

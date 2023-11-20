@@ -21,6 +21,7 @@ class AuthViewModel : ViewModel() {
         FirebaseAuth.getInstance()
     }
     private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
+    private val dbWorkers = FirebaseDatabase.getInstance().getReference("workers")
     private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
     private val authResponse = MutableLiveData<AuthResponse?>()
     var authListener: AuthListener? = null
@@ -34,15 +35,33 @@ class AuthViewModel : ViewModel() {
                     dbUsers.child(firebaseAuth.currentUser!!.uid).addListenerForSingleValueEvent(
                         object: ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                                authResponse.value = AuthResponse(
-                                    snapshot.key,
-                                    snapshot.child("name").value.toString(),
-                                    snapshot.child("role").value.toString()
-                                )
+                                if(snapshot.exists()){
+                                    authResponse.value = AuthResponse(
+                                        snapshot.key,
+                                        snapshot.child("name").value.toString(),
+                                        snapshot.child("role").value.toString(),
+                                    )
+                                } else {
+                                    dbWorkers.addValueEventListener(object : ValueEventListener {
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            for(owner in snapshot.children){
+                                                for(worker in owner.children){
+                                                    if(firebaseAuth.currentUser!!.email == worker.child("email").value.toString()){
+                                                        authResponse.value = AuthResponse(
+                                                            owner.key.toString(),
+                                                            worker.child("name").value.toString(),
+                                                            worker.child("role").value.toString(),
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        override fun onCancelled(error: DatabaseError) {}
+                                    })
+                                }
                                 authListener?.onSuccess(authResponse)
                             }
-                            override fun onCancelled(error: DatabaseError) {
-                            }
+                            override fun onCancelled(error: DatabaseError) {}
                         })
                 } else {
                     authListener?.onFailure("Account Not Found")
@@ -90,7 +109,5 @@ class AuthViewModel : ViewModel() {
     }
 
     fun logout() = firebaseAuth.signOut()
-
-    fun currentUser() = firebaseAuth.currentUser
 
 }

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,9 +118,9 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
             val field = Field()
             field.name = fieldName
             field.address = fieldAddress
-            field.land_area = fieldArea
-            field.preset_id = presets[presetsName.indexOf(binding.presetName.selectedItem.toString())-1].id
-            field.number_of_monitor_device = numberOfMonitorDevice.toInt()
+            field.landArea = fieldArea
+            field.presetId = presets[presetsName.indexOf(binding.presetName.selectedItem.toString())-1].id
+            field.numberOfMonitorDevice = numberOfMonitorDevice.toInt()
 
             if(arguments?.getString("status") == "update") {
                 progressDialog = ProgressDialog(requireContext())
@@ -129,8 +128,8 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                 progressDialog!!.setMessage("System is working . . .")
                 progressDialog!!.show()
                 field.id = arguments?.getString("id")!!
-                field.hardware_code = arguments?.getString("hardware_code")!!
-                field.created_at = arguments?.getString("created_at")!!
+                field.hardwareCode = arguments?.getString("hardware_code")!!
+                field.createdAt = arguments?.getString("created_at")!!
                 fieldViewModel.onUpdatePreset(userId, field)
             } else {
                 if(hardwareCode == null){
@@ -140,11 +139,11 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                     progressDialog!!.setTitle("Please Wait")
                     progressDialog!!.setMessage("System is working . . .")
                     progressDialog!!.show()
-                    field.created_at = DateTimeFormatter
+                    field.createdAt = DateTimeFormatter
                         .ofPattern("yyyy-MM-dd HH:mm")
                         .withZone(ZoneOffset.UTC)
                         .format(Instant.now())
-                    field.hardware_code = hardwareCode!!
+                    field.hardwareCode = hardwareCode!!
                     fieldViewModel.onAddPreset(userId, field)
                 }
             }

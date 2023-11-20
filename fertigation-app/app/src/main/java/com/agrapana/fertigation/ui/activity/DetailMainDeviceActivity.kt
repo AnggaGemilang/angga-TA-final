@@ -16,7 +16,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityDetailMainDeviceBinding
-import com.agrapana.fertigation.model.AIInput
 import com.agrapana.fertigation.model.Field
 import com.agrapana.fertigation.ui.fragment.CropRecommendationFragment
 import com.agrapana.fertigation.ui.fragment.MainDeviceChartFragment

@@ -4,7 +4,7 @@
 
         <EditTextPreference
             app:key="system_request"
-            app:icon="@drawable/ic_baseline_refresh_24"
+            app:icon="@drawable/baseline_redo_24"
             app:title="System Request (second)"
             app:defaultValue="5"
             app:useSimpleSummaryProvider="true" />

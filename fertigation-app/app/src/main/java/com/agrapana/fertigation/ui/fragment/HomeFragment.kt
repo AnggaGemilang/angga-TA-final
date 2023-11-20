@@ -12,6 +12,7 @@ import android.view.Window
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -20,12 +21,11 @@ import com.agrapana.fertigation.*
 import com.agrapana.fertigation.adapter.FieldFilterAdapter
 import com.agrapana.fertigation.databinding.FragmentHomeBinding
 import com.agrapana.fertigation.helper.ChangeFieldListener
-import com.agrapana.fertigation.model.AIInput
-import com.agrapana.fertigation.model.MonitoringSupportDevice
 import com.agrapana.fertigation.model.Suggestion
 import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.ui.activity.WorkerActivity
+import com.agrapana.fertigation.viewmodel.AuthViewModel
 import com.agrapana.fertigation.viewmodel.FieldViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -38,9 +38,9 @@ class HomeFragment: Fragment(), ChangeFieldListener {
     private lateinit var prefs: SharedPreferences
     private lateinit var recyclerViewAdapter: FieldFilterAdapter
     private lateinit var viewModel: FieldViewModel
+    private lateinit var authViewModel: AuthViewModel
     private lateinit var window: Window
 
-    private var messageSupportDevice: MonitoringSupportDevice? = null
     private var clientId: String? = null
     private var fieldId: String? = null
     private var pestPredictionResult: String? = null
@@ -72,6 +72,10 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         }
 
         binding.toolbar.inflateMenu(R.menu.action_nav1)
+        val role: String? = prefs.getString("client_role", "")
+        if(role == "Worker"){
+            binding.toolbar.menu.findItem(R.id.worker).isVisible = false
+        }
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.worker -> {
@@ -95,9 +99,13 @@ class HomeFragment: Fragment(), ChangeFieldListener {
                     builder.setMessage("You can't get in to your account")
                     builder.setPositiveButton("YES") { _, _ ->
                         val editor: SharedPreferences.Editor? = prefs.edit()
-                        editor?.putBoolean("loginStart", true)
+                        editor?.putBoolean("login_status", true)
                         editor?.putString("client_id", null)
+                        editor?.putString("client_name", null)
+                        editor?.putString("client_role", null)
                         editor?.apply()
+                        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+                        authViewModel.logout()
                         startActivity(Intent(activity, LoginActivity::class.java))
                     }
                     builder.setNegativeButton("NO") { dialog, _ ->

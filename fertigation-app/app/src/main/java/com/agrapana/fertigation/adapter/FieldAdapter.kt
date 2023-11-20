@@ -75,9 +75,9 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         val model: Field = fields[position]
         holder.binding.tvName.text = model.name
         holder.binding.tvAddress.text = model.address
-        holder.binding.tvArea.text = "${model.land_area} hA"
+        holder.binding.tvArea.text = "${model.landArea} hA"
 
-        val dateParts = model.created_at.trim().split("\\s+".toRegex())
+        val dateParts = model.createdAt.trim().split("\\s+".toRegex())
         holder.binding.tvCreated.text = dateParts[0]
 
         val isExpandable = model.isExpandable
@@ -90,7 +90,7 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         }
 
         nestedList.add("Main Device")
-        for (i in 1..model.number_of_monitor_device!!){
+        for (i in 1..model.numberOfMonitorDevice!!){
             nestedList.add("Monitor Device $i")
         }
 
