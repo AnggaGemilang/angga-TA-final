@@ -23,18 +23,22 @@
 #define FIREBASE_AUTH "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define WIFI_SSID "SPEEDY"
 #define WIFI_PASSWORD "suherman"
+#define MESH_PREFIX "fertigation-kota203"
+#define MESH_PASSWORD "f3rt1g4t10n" 
+#define MESH_PORT 5555
 
 // RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
 
-String timeNow();
+String tempDataReceive;
 
 Scheduler userScheduler;
 painlessMesh mesh;
 FirebaseData fbdo;
 
-void waterTank();
-void fertilizerTank();
+String timeNow();
+int waterTank();
+int fertilizerTank();
 
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
@@ -56,6 +60,13 @@ void setup() {
   Serial.begin(9600);
   lcd_i2c.init();
   lcd_i2c.backlight();
+
+  mesh.setDebugMsgTypes( ERROR | STARTUP );
+  mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
+  mesh.onReceive(&receivedCallback);
+  mesh.onNewConnection(&newConnectionCallback);
+  mesh.onChangedConnections(&changedConnectionCallback);
+  mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
   
   pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
@@ -95,6 +106,7 @@ void setup() {
 }
 
 void loop() {
+  mesh.update();
 
   digitalWrite(PUMP_RELAY, HIGH);
 

@@ -1,4 +1,4 @@
-void waterTank() {
+int waterTank() {
   long duration, waterHeight, volume;
   int distance, percentage;
   
@@ -25,4 +25,7 @@ void waterTank() {
   Serial.print("volume (mL): ");
   Serial.print(volume);
   Serial.println(" mL");  
+
+  return percentage;
+  
 }

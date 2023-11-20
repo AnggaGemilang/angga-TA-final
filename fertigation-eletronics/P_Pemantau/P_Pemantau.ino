@@ -10,7 +10,6 @@
 Scheduler userScheduler;
 painlessMesh  mesh;
 
-DynamicJsonDocument doc(1024);
 String temp;
 
 int soilMoisture();
@@ -22,6 +21,7 @@ Task taskSendMessage( TASK_SECOND * 5 , TASK_FOREVER, &sendMessage );
 Task taskSendMessageCallback( TASK_SECOND * 7 , TASK_FOREVER, &sendMessageCallback );
 
 void sendMessage() {
+  DynamicJsonDocument doc(1024);
   doc["source"] = "PP_1";
   doc["moisture"] = soilMoisture();
   doc["water_level"] = waterLevel();

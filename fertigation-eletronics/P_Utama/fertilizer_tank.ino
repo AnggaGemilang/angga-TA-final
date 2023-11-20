@@ -1,4 +1,4 @@
-void fertilizerTank() {
+int fertilizerTank() {
   long duration, waterHeight, volume;
   int distance, percentage;
   
@@ -28,4 +28,6 @@ void fertilizerTank() {
   Serial.print("volume (mL): ");
   Serial.print(volume);
   Serial.println(" mL");  
+
+  return percentage;
 }
