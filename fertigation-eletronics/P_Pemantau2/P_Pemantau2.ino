@@ -7,27 +7,40 @@
 #define MESH_PASSWORD "f3rt1g4t10n" 
 #define MESH_PORT 5555
 
-char output[200];
-
-StaticJsonDocument<200> doc;
 Scheduler userScheduler;
 painlessMesh  mesh;
 
-void soilMoisture();
-void waterLevel();
-void sendMessage();
+String temp;
 
-Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
+int soilMoisture();
+int waterLevel();
+void sendMessage();
+void sendMessageCallback();
+
+Task taskSendMessage( TASK_SECOND * 5 , TASK_FOREVER, &sendMessage );
+Task taskSendMessageCallback( TASK_SECOND * 7 , TASK_FOREVER, &sendMessageCallback );
 
 void sendMessage() {
-  String msg = "Hi from node2";
-  msg += mesh.getNodeId();
+  DynamicJsonDocument doc(1024);
+  doc["source"] = "PP_2";
+  doc["moisture"] = soilMoisture();
+  doc["water_level"] = waterLevel();
+
+  String msg;
+  serializeJson(doc, msg);
   mesh.sendBroadcast( msg );
-  taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
+  
+  taskSendMessage.setInterval((TASK_SECOND * 5));
+}
+
+void sendMessageCallback() {
+  mesh.sendBroadcast( temp );
+  taskSendMessageCallback.setInterval((TASK_SECOND * 7));
 }
 
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
+  temp = msg.c_str();
 }
 
 void newConnectionCallback(uint32_t nodeId) {
@@ -43,7 +56,7 @@ void nodeTimeAdjustedCallback(int32_t offset) {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   mesh.setDebugMsgTypes( ERROR | STARTUP );
 
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
@@ -53,18 +66,11 @@ void setup() {
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
   userScheduler.addTask( taskSendMessage );
+  userScheduler.addTask( taskSendMessageCallback );
   taskSendMessage.enable();
+  taskSendMessageCallback.enable();
 }
 
 void loop() {
-
   mesh.update();
-
-  doc["source"] = "P1";
-  
-  // soilMoisture();
-  // waterLevel();
-
-  // serializeJson(doc, output);
-
 }
