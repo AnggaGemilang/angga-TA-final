@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Field
+import com.agrapana.fertigation.model.ParameterPreset
+import com.agrapana.fertigation.model.ParameterPresetNow
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -15,6 +17,8 @@ import com.google.firebase.database.ValueEventListener
 class FieldViewModel: ViewModel() {
 
     private val dbFields = FirebaseDatabase.getInstance().getReference("fields")
+    private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
+    private val dbControlling = FirebaseDatabase.getInstance().getReference("controlling")
     var operationListener: OperationListener? = null
 
     private val _fields = MutableLiveData<List<Field>?>()
@@ -120,7 +124,28 @@ class FieldViewModel: ViewModel() {
                     }
                     dbFields.child(clientId).child(field.hardwareCode).setValue(field).addOnCompleteListener {
                         if(it.isSuccessful) {
-                            operationListener?.onSuccess()
+                            dbPresets.child(clientId).child("parameter").orderByChild("id").equalTo(field.presetId).addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                    for(snapshot in dataSnapshot.children){
+                                        val presetNow = ParameterPresetNow()
+                                        presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString()
+                                        presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString()
+                                        presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
+                                        presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString()
+                                        presetNow.irrigationTimes = snapshot.child("fertigationTimes").value.toString()
+                                        presetNow.fertigationDose = snapshot.child("fertigationDose").value.toString()
+                                        presetNow.irrigationDose = snapshot.child("irrigationDose").value.toString()
+                                        dbControlling.child(clientId).child("parameter").child(field.hardwareCode).setValue(presetNow).addOnCompleteListener { saved ->
+                                            if (saved.isSuccessful) {
+                                                operationListener?.onSuccess()
+                                            } else {
+                                                operationListener?.onFailure(it.exception.toString())
+                                            }
+                                        }
+                                    }
+                                }
+                                override fun onCancelled(error: DatabaseError) {}
+                            })
                         } else {
                             operationListener?.onFailure(it.exception.toString())
                         }
@@ -140,7 +165,28 @@ class FieldViewModel: ViewModel() {
         } else {
             dbFields.child(clientId).child(field.hardwareCode).setValue(field).addOnCompleteListener {
                 if(it.isSuccessful) {
-                    operationListener?.onSuccess()
+                    dbPresets.child(clientId).child("parameter").orderByChild("id").equalTo(field.presetId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for(snapshot in dataSnapshot.children){
+                                val presetNow = ParameterPresetNow()
+                                presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString()
+                                presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString()
+                                presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
+                                presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString()
+                                presetNow.irrigationTimes = snapshot.child("fertigationTimes").value.toString()
+                                presetNow.fertigationDose = snapshot.child("fertigationDose").value.toString()
+                                presetNow.irrigationDose = snapshot.child("irrigationDose").value.toString()
+                                dbControlling.child(clientId).child("parameter").child(field.hardwareCode).setValue(presetNow).addOnCompleteListener { saved ->
+                                    if (saved.isSuccessful) {
+                                        operationListener?.onSuccess()
+                                    } else {
+                                        operationListener?.onFailure(it.exception.toString())
+                                    }
+                                }
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {}
+                    })
                 } else {
                     operationListener?.onFailure(it.exception.toString())
                 }

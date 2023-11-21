@@ -80,7 +80,6 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             val fertigationDose = binding.fertigationDose.text.toString().trim()
             val irrigationDose = binding.irrigationDose.text.toString().trim()
             val parameterPreset = ParameterPreset()
-            parameterPreset.id = arguments?.getString("id")!!
             parameterPreset.presetName = presetName
             parameterPreset.idealMoisture = idealMoisture
             parameterPreset.irrigationDays = irrigationDays
@@ -92,6 +91,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
 
             if(arguments?.getString("status") == "update") {
                 if(linkImage == null){
+                    parameterPreset.id = arguments?.getString("id")!!
                     parameterPreset.imageUrl = arguments?.getString("imageURL")!!
                     viewModel.onUpdatePreset(userId, parameterPreset)
                 } else {

@@ -13,15 +13,16 @@ import com.google.firebase.storage.FirebaseStorage
 class PresetViewModel : ViewModel() {
 
     private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
+    private val dbControlling = FirebaseDatabase.getInstance().getReference("controlling")
     var operationListener: OperationListener? = null
 
     private val _presets = MutableLiveData<List<ParameterPreset>?>()
     val presets: MutableLiveData<List<ParameterPreset>?>
         get() = _presets
 
-    private val _Parameter_preset = MutableLiveData<ParameterPreset>()
+    private val _parameter_preset = MutableLiveData<ParameterPreset>()
     val parameterPreset: LiveData<ParameterPreset>
-        get() = _Parameter_preset
+        get() = _parameter_preset
 
     private val _deletedParameterPreset = MutableLiveData<ParameterPreset>()
     val deletedParameterPreset: LiveData<ParameterPreset>
@@ -33,10 +34,9 @@ class PresetViewModel : ViewModel() {
         override fun onChildMoved(snapshot: DataSnapshot, p1: String?) { }
 
         override fun onChildChanged(snapshot: DataSnapshot, p1: String?) {
-            Log.d("nanang4", snapshot.toString())
             val parameterPreset = snapshot.getValue(ParameterPreset::class.java)
             parameterPreset?.id = snapshot.key.toString()
-            _Parameter_preset.value = parameterPreset!!
+            _parameter_preset.value = parameterPreset!!
         }
 
         override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -48,7 +48,7 @@ class PresetViewModel : ViewModel() {
         override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
             val parameterPreset = snapshot.getValue(ParameterPreset::class.java)
             parameterPreset?.id = snapshot.key.toString()
-            _Parameter_preset.value = parameterPreset!!
+            _parameter_preset.value = parameterPreset!!
         }
     }
 
@@ -95,7 +95,7 @@ class PresetViewModel : ViewModel() {
     }
 
     fun onUpdateIntervalPreset(clientId: String, newPreset: IntervalPreset) {
-        dbPresets.child(clientId).child("interval").setValue(newPreset).addOnCompleteListener {
+        dbControlling.child(clientId).child("interval").setValue(newPreset).addOnCompleteListener {
             if(it.isSuccessful) {
                 operationListener?.onSuccess()
             } else {

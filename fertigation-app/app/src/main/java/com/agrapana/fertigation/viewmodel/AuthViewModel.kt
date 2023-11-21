@@ -22,6 +22,7 @@ class AuthViewModel : ViewModel() {
     }
     private val dbUsers = FirebaseDatabase.getInstance().getReference("users")
     private val dbWorkers = FirebaseDatabase.getInstance().getReference("workers")
+    private val dbControlling = FirebaseDatabase.getInstance().getReference("controlling")
     private val dbPresets = FirebaseDatabase.getInstance().getReference("presets")
     private val authResponse = MutableLiveData<AuthResponse?>()
     var authListener: AuthListener? = null
@@ -88,7 +89,7 @@ class AuthViewModel : ViewModel() {
                     dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener { saveUser ->
                         if(saveUser.isSuccessful) {
                             val intervalPreset = IntervalPreset(5,5)
-                            dbPresets.child(firebaseAuth.currentUser!!.uid).child("interval").setValue(intervalPreset).addOnCompleteListener { savePreset ->
+                            dbControlling.child(firebaseAuth.currentUser!!.uid).child("interval").setValue(intervalPreset).addOnCompleteListener { savePreset ->
                                 if(savePreset.isSuccessful) {
                                     authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")
                                     authListener?.onSuccess(authResponse)
