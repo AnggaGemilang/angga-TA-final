@@ -1,6 +1,7 @@
 #include "RTClib.h"
 #include "string.h"
 #include <LiquidCrystal_I2C.h>
+#include <ArduinoJson.h>
 #include <painlessMesh.h>
 #include <FirebaseESP32.h>
 
@@ -23,6 +24,8 @@
 #define FIREBASE_AUTH "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define WIFI_SSID "SPEEDY"
 #define WIFI_PASSWORD "suherman"
+// #define WIFI_SSID "Galaxy M33 5G"
+// #define WIFI_PASSWORD "anggaganteng"
 #define MESH_PREFIX "fertigation-kota203"
 #define MESH_PASSWORD "f3rt1g4t10n" 
 #define MESH_PORT 5555
@@ -30,18 +33,48 @@
 // RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
 
-String tempDataReceive;
-
 Scheduler userScheduler;
-painlessMesh mesh;
+painlessMesh  mesh;
 FirebaseData fbdo;
+
+String monitorDeviceData;
+String primaryDeviceData;
 
 String timeNow();
 int waterTank();
 int fertilizerTank();
+void sendMessage();
+
+Task taskSendMessage( TASK_SECOND * 11 , TASK_FOREVER, &sendMessage );
+
+void sendMessage() {
+  if(monitorDeviceData.length() > 6){
+    StaticJsonDocument<300> doc;
+    deserializeJson(doc, monitorDeviceData);
+    String source = doc["source"];
+    int moisture = doc["moisture"];
+    int waterLevel = doc["water_level"];
+    FirebaseJson updateData;
+    updateData.set("moisture",moisture);
+    updateData.set("water_level",waterLevel);
+    if(source == "PP_1"){
+      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_1/moisture", moisture);
+      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_2/water_level", waterLevel);      
+      Serial.printf("Upload to pemantau 1 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+    } else if (source == "PP_2"){
+      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_2/moisture", moisture);
+      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_2/water_level", waterLevel);
+      Serial.printf("Upload to pemantau 2 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+    }
+  }
+  taskSendMessage.setInterval((TASK_SECOND * 11));      
+}
 
 void receivedCallback( uint32_t from, String &msg ) {
-  Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
+  if(msg.length() > 6){
+    Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());    
+    monitorDeviceData = msg.c_str();
+  }
 }
 
 void newConnectionCallback(uint32_t nodeId) {
@@ -57,17 +90,20 @@ void nodeTimeAdjustedCallback(int32_t offset) {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   lcd_i2c.init();
   lcd_i2c.backlight();
-
+  
   mesh.setDebugMsgTypes( ERROR | STARTUP );
   mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
   mesh.onReceive(&receivedCallback);
   mesh.onNewConnection(&newConnectionCallback);
   mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
-  
+  mesh.stationManual(WIFI_SSID, WIFI_PASSWORD);
+  mesh.setRoot(true);
+  mesh.setContainsRoot(true);
+
   pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
   pinMode(PUMP_RELAY, OUTPUT);
@@ -88,50 +124,37 @@ void setup() {
 
 //  rtc.adjust(DateTime(__DATE__, __TIME__));
 
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);                                  
-  Serial.print("Connecting to ");
-  Serial.print(WIFI_SSID);
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    Serial.print(".");
-    delay(500);
-  }
- 
-  Serial.println();
-  Serial.print("Connected");
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  Serial.println("Firebase Connected");
 
+  userScheduler.addTask( taskSendMessage );
+  taskSendMessage.enable();
 }
 
 void loop() {
   mesh.update();
 
-  digitalWrite(PUMP_RELAY, HIGH);
+  //  digitalWrite(PUMP_RELAY, HIGH);
+  
+  //  lcd_i2c.clear();
+  //  lcd_i2c.setCursor(0, 0);
+  //  lcd_i2c.print("Moisture(1): 20%");
+  //  lcd_i2c.setCursor(0, 1);
+  //  lcd_i2c.print("Water(2): 20 cm");
 
-  lcd_i2c.clear();
-  lcd_i2c.setCursor(0, 0);
-  lcd_i2c.print("Moisture(1): 20%");
-  lcd_i2c.setCursor(0, 1);
-  lcd_i2c.print("Water(2): 20 cm");
-  delay(2000);
+  //  digitalWrite(PUMP_RELAY, LOW);
 
-  digitalWrite(PUMP_RELAY, LOW);
+  //  lcd_i2c.clear();
+  //  lcd_i2c.setCursor(0, 0);
+  //  lcd_i2c.print("Moisture(2): 20%");
+  //  lcd_i2c.setCursor(0, 1);
+  //  lcd_i2c.print("Water(2): 20 cm");
 
-  lcd_i2c.clear();
-  lcd_i2c.setCursor(0, 0);
-  lcd_i2c.print("Moisture(2): 20%");
-  lcd_i2c.setCursor(0, 1);
-  lcd_i2c.print("Water(2): 20 cm");
-  delay(2000);
-
-  lcd_i2c.clear();
-  lcd_i2c.setCursor(0, 0);
-  lcd_i2c.print("Water: 20");
-  lcd_i2c.setCursor(0, 1);
-  lcd_i2c.print("Fertilizer: 20%");
-  delay(2000);
+  //  lcd_i2c.clear();
+  //  lcd_i2c.setCursor(0, 0);
+  //  lcd_i2c.print("Water: 20");
+  //  lcd_i2c.setCursor(0, 1);
+  //  lcd_i2c.print("Fertilizer: 20%");
   
   // fertilizerTank();
   // waterTank();
@@ -140,6 +163,4 @@ void loop() {
 
   // Serial.print("Waktu: ");
   // Serial.println(timeNow());
-
-  delay(1000);
 }
