@@ -38,14 +38,19 @@ painlessMesh  mesh;
 FirebaseData fbdo;
 
 String monitorDeviceData;
-String primaryDeviceData;
+int fertilizerTankVal, waterTankVal, idealMoisture;
+int irrigationInterval, fertigationInterval;
+int irrigationTime, fertigationTime; 
+int irrigationDose, fertigationDose; 
 
 String timeNow();
 int waterTank();
 int fertilizerTank();
 void sendMessage();
+void readControlData();
 
 Task taskSendMessage( TASK_SECOND * 11 , TASK_FOREVER, &sendMessage );
+Task taskReadControlData( TASK_SECOND * 13 , TASK_FOREVER, &readControlData );
 
 void sendMessage() {
   if(monitorDeviceData.length() > 6){
@@ -58,22 +63,38 @@ void sendMessage() {
     updateData.set("moisture",moisture);
     updateData.set("water_level",waterLevel);
     if(source == "PP_1"){
-      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_1/moisture", moisture);
-      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_2/water_level", waterLevel);      
-      Serial.printf("Upload to pemantau 1 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice1/moisture", moisture);
+      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice1/water_level", waterLevel);      
+      Serial.printf("Upload to monitor device 1 msgMois=%d msgWater=%d\n", moisture, waterLevel);
     } else if (source == "PP_2"){
-      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_2/moisture", moisture);
-      Firebase.setInt(fbdo,"/monitor/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/pemantau_2/water_level", waterLevel);
-      Serial.printf("Upload to pemantau 2 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice2/moisture", moisture);
+      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice2/water_level", waterLevel);
+      Serial.printf("Upload to monitor device 2 msgMois=%d msgWater=%d\n", moisture, waterLevel);
     }
+    Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/fertilizerTank", fertilizerTankVal);
+    Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/waterTank", waterTankVal);
+    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
   }
-  taskSendMessage.setInterval((TASK_SECOND * 11));      
+  taskSendMessage.setInterval((TASK_SECOND * 11));
+}
+
+void readControlData(){
+    idealMoisture = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture");
+    irrigationInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/irrigationInterval");
+    fertigationInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/fertigationInterval");
+    irrigationTime = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/irrigationTime");            
+    fertigationTime = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/fertigationTime");
+    irrigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose");
+    fertigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose");
+    taskReadControlData.setInterval((TASK_SECOND * 13));    
 }
 
 void receivedCallback( uint32_t from, String &msg ) {
   if(msg.length() > 6){
     Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());    
     monitorDeviceData = msg.c_str();
+    fertilizerTankVal = fertilizerTank();
+    waterTankVal = waterTank();
   }
 }
 
@@ -128,7 +149,9 @@ void setup() {
   Serial.println("Firebase Connected");
 
   userScheduler.addTask( taskSendMessage );
+  userScheduler.addTask( taskReadControlData );
   taskSendMessage.enable();
+  taskReadControlData.enable();  
 }
 
 void loop() {
@@ -156,9 +179,6 @@ void loop() {
   //  lcd_i2c.setCursor(0, 1);
   //  lcd_i2c.print("Fertilizer: 20%");
   
-  // fertilizerTank();
-  // waterTank();
-
   // DateTime now = rtc.now();
 
   // Serial.print("Waktu: ");
