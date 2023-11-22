@@ -1,6 +1,7 @@
 package com.agrapana.fertigation.ui.activity
 
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -10,8 +11,10 @@ import com.agrapana.fertigation.databinding.ActivityMainBinding
 import com.agrapana.fertigation.ui.fragment.FieldFragment
 import com.agrapana.fertigation.ui.fragment.HomeFragment
 import com.agrapana.fertigation.ui.fragment.PresetFragment
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.iid.FirebaseInstanceIdReceiver
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +27,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+        val token: String = FirebaseInstanceId.getInstance().token!!
+        Log.d("token: ", token)
 
         val w = window
         w.setFlags(
@@ -82,4 +88,5 @@ class MainActivity : AppCompatActivity() {
         builder1.showAirplaneModeOffButtons = true // Optional
         noInternetDialog = builder1.build()
     }
+
 }

@@ -128,13 +128,13 @@ class FieldViewModel: ViewModel() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     for(snapshot in dataSnapshot.children){
                                         val presetNow = ParameterPresetNow()
-                                        presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString()
-                                        presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString()
+                                        presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString().toInt()
+                                        presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString().toInt()
                                         presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
-                                        presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString()
+                                        presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString().toInt()
                                         presetNow.irrigationTimes = snapshot.child("fertigationTimes").value.toString()
-                                        presetNow.fertigationDose = snapshot.child("fertigationDose").value.toString()
-                                        presetNow.irrigationDose = snapshot.child("irrigationDose").value.toString()
+                                        presetNow.fertigationDose = snapshot.child("fertigationDose").value.toString().toInt()
+                                        presetNow.irrigationDose = snapshot.child("irrigationDose").value.toString().toInt()
                                         dbControlling.child(clientId).child("parameter").child(field.hardwareCode).setValue(presetNow).addOnCompleteListener { saved ->
                                             if (saved.isSuccessful) {
                                                 operationListener?.onSuccess()
@@ -169,13 +169,13 @@ class FieldViewModel: ViewModel() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for(snapshot in dataSnapshot.children){
                                 val presetNow = ParameterPresetNow()
-                                presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString()
-                                presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString()
+                                presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString().toInt()
+                                presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString().toInt()
                                 presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
-                                presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString()
+                                presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString().toInt()
                                 presetNow.irrigationTimes = snapshot.child("fertigationTimes").value.toString()
-                                presetNow.fertigationDose = snapshot.child("fertigationDose").value.toString()
-                                presetNow.irrigationDose = snapshot.child("irrigationDose").value.toString()
+                                presetNow.fertigationDose = snapshot.child("fertigationDose").value.toString().toInt()
+                                presetNow.irrigationDose = snapshot.child("irrigationDose").value.toString().toInt()
                                 dbControlling.child(clientId).child("parameter").child(field.hardwareCode).setValue(presetNow).addOnCompleteListener { saved ->
                                     if (saved.isSuccessful) {
                                         operationListener?.onSuccess()
