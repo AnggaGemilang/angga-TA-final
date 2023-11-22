@@ -23,13 +23,11 @@
 #define PUMP_RELAY 13
 #define VALVE_RELAY_1 14
 #define VALVE_RELAY_2 15
-#define PATH_MNT "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/"
-#define PATH_CNT "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/"
 #define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
 #define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define FCM_URL "https://fcm.googleapis.com/fcm/send"
-#define FCM_API_KEY "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X";
-#define DEVICE_FCM_KEY "e0tQlw-Az2A:APA91bHtEdYptmOYWWCzEWUepfhGyq10VONGUl7ToUf91-TxWRlVUEM2ClsgE2P9GmTVGVLrnlDMNx5WY-0U4MYw7gqCr9f2MKOTWYltqC34jB8LzFd8-Pl54xwVEdxx-vCDWoyl7LPq";
+#define FCM_API_KEY "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X"
+#define DEVICE_FCM_KEY "e0tQlw-Az2A:APA91bHtEdYptmOYWWCzEWUepfhGyq10VONGUl7ToUf91-TxWRlVUEM2ClsgE2P9GmTVGVLrnlDMNx5WY-0U4MYw7gqCr9f2MKOTWYltqC34jB8LzFd8-Pl54xwVEdxx-vCDWoyl7LPq"
 #define WIFI_SSID "SPEEDY"
 #define WIFI_PASSWORD "suherman"
 // #define WIFI_SSID "Galaxy M33 5G"
@@ -47,10 +45,7 @@ FirebaseConfig config;
 String monitorDeviceData, irrigationTimes, fertigationTimes, tempLastIrrigation, tempatLastFertigation;
 int fertilizerTankVal, waterTankVal, idealMoisture;
 int irrigationDays, fertigationDays;
-int irrigationDose, fertigationDose;
-int systemInterval, userInterval;
-String path1 = PATH_MNT;
-String path2 = PATH_CNT;
+int irrigationDose, fertigationDose, userInterval;
 
 String timeNow();
 int waterTank();
@@ -68,89 +63,87 @@ void sendMessage() {
     int moisture = doc["moisture"];
     int waterLevel = doc["water_level"];
     if(source == "PP_1"){
-      Firebase.RTDB.setInt(&fbdo, path1.concat("monitorDevice1/moisture"), moisture);
-      Firebase.RTDB.setInt(&fbdo,path1.concat("monitorDevice1/water_level"), waterLevel);      
-      Serial.printf("Upload to monitor device 1 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+      Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice1/moisture", moisture);
+      Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice1/water_level", waterLevel);
     } else if (source == "PP_2"){
-      Firebase.RTDB.setInt(&fbdo, path1.concat("monitorDevice2/moisture)"), moisture);
-      Firebase.RTDB.setInt(&fbdo, path1.concat("monitorDevice2/water_level)"), waterLevel);
-      Serial.printf("Upload to monitor device 2 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+      Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice2/moisture", moisture);
+      Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice2/water_level", waterLevel);
     }
-    Firebase.RTDB.setInt(&fbdo, path1.concat("primaryDevice/fertilizerTank"), fertilizerTankVal);
-    Firebase.RTDB.setInt(&fbdo, path1.concat("primaryDevice/waterTank"), waterTankVal);
-    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
+    fertilizerTankVal = fertilizerTank();
+    waterTankVal =  waterTank();
+    Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/fertilizerTank", fertilizerTankVal);
+    if(Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/waterTank", waterTankVal)){
+      Serial.printf("Upload to monitor device msgMois=%d msgWater=%d\n", moisture, waterLevel);
+      Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
+    } else {
+      Serial.println(fbdo.errorReason());
+    }
   }
 }
 
 void readControlData(){
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("idealMoisture"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture")){
     if(fbdo.dataType() == "int"){
       idealMoisture = fbdo.intData();
     }
   }
 
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("irrigationDays"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDays")){
     if(fbdo.dataType() == "int"){
       irrigationDays = fbdo.intData();
     }
   }    
 
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("fertigationDays"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDays")){
     if(fbdo.dataType() == "int"){
       fertigationDays = fbdo.intData();
     }
   }    
 
-  if(Firebase.RTDB.getString(&fbdo, path2.concat("irrigationTimes"))){
+  if(Firebase.RTDB.getString(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationTimes")){
     if(fbdo.dataType() == "string"){
       irrigationTimes = fbdo.stringData();
     }
   }    
 
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("fertigationTimes"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationTimes")){
     if(fbdo.dataType() == "string"){
       fertigationTimes = fbdo.stringData();
     }
   }    
   
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("irrigationDose"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose")){
     if(fbdo.dataType() == "int"){
       irrigationDose = fbdo.intData();
     }
   }    
 
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("fertigationDose"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose")){
     if(fbdo.dataType() == "int"){
       fertigationDose = fbdo.intData();
     }
   }
 
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("systemRequest"))){
-    if(fbdo.dataType() == "int"){
-      systemInterval = fbdo.intData();
-    }
-  }    
-
-  if(Firebase.RTDB.getInt(&fbdo, path2.concat("userRequest"))){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/userRequest")){
     if(fbdo.dataType() == "int"){
       userInterval = fbdo.intData();
     }
   }
-  Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d SysInt=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, systemInterval, userInterval);
+  Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, userInterval);
   taskReadControlData.setInterval((TASK_SECOND * 18));    
 }
 
 void sendNotification(String title, String body) {
   if ((WiFi.status() == WL_CONNECTED)) {  
     //Specify the URL
-    HttpClient.begin(FCM_URL);
+    HttpClient.begin(String(FCM_URL));
 
     // Set headers
-    HttpClient.addHeader("Authorization", FCM_API_KEY);
+    HttpClient.addHeader("Authorization", String(FCM_API_KEY));
     HttpClient.addHeader("Content-Type", "application/json");
 
     // Data string
-    String data = "{\"registration_ids\": [\"" + DEVICE_FCM_KEY + "\"], \"notification\": {\"body\":\"" + body + "\", \"title\":\"" + title + "\"}}";
+    String data = "{\"registration_ids\": [\"" + String(DEVICE_FCM_KEY) + "\"], \"notification\": {\"body\":\"" + body + "\", \"title\":\"" + title + "\"}}";
 
     //Make the request
     int httpCode = HttpClient.POST(data);
@@ -231,6 +224,7 @@ void loop() {
   if (SerialPort.available())
   {
     monitorDeviceData = String(SerialPort.readString());
+    Serial.println("monitorDeviceData: " + monitorDeviceData);
     sendMessage();
   }
   
