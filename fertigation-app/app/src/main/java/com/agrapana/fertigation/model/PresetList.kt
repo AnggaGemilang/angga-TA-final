@@ -14,13 +14,13 @@ data class ParameterPreset(
 )
 
 data class ParameterPresetNow(
-    var idealMoisture: String = "",
-    var irrigationDays: String = "",
+    var idealMoisture: Int = 0,
+    var irrigationDays: Int = 0,
     var irrigationTimes: String = "",
-    var fertigationDays: String = "",
+    var fertigationDays: Int = 0,
     var fertigationTimes: String = "",
-    var fertigationDose: String = "",
-    var irrigationDose: String = "",
+    var fertigationDose: Int = 0,
+    var irrigationDose: Int = 0,
 )
 
 data class IntervalPreset(

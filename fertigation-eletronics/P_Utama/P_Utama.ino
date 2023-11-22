@@ -2,9 +2,12 @@
 #include "string.h"
 #include <LiquidCrystal_I2C.h>
 #include <ArduinoJson.h>
-#include <painlessMesh.h>
-#include <FirebaseESP32.h>
+#include <TaskScheduler.h>
+#include <WiFi.h>
+#include <HardwareSerial.h>
 
+#define RXp2 16
+#define TXp2 17
 #define FERTILIZER_TRIG_PIN 5
 #define FERTILIZER_ECHO_PIN 18
 #define WATER_TRIG_PIN 33
@@ -26,22 +29,17 @@
 #define WIFI_PASSWORD "suherman"
 // #define WIFI_SSID "Galaxy M33 5G"
 // #define WIFI_PASSWORD "anggaganteng"
-#define MESH_PREFIX "fertigation-kota203"
-#define MESH_PASSWORD "f3rt1g4t10n" 
-#define MESH_PORT 5555
 
 // RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
-
+HardwareSerial SerialPort(2);
 Scheduler userScheduler;
-painlessMesh  mesh;
-FirebaseData fbdo;
 
-String monitorDeviceData;
+String monitorDeviceData, irrigationTimes, fertigationTimes;
 int fertilizerTankVal, waterTankVal, idealMoisture;
-int irrigationInterval, fertigationInterval;
-int irrigationTime, fertigationTime; 
-int irrigationDose, fertigationDose; 
+int irrigationDays, fertigationDays;
+int irrigationDose, fertigationDose;
+int systemInterval, userInterval;
 
 String timeNow();
 int waterTank();
@@ -49,82 +47,35 @@ int fertilizerTank();
 void sendMessage();
 void readControlData();
 
-Task taskSendMessage( TASK_SECOND * 11 , TASK_FOREVER, &sendMessage );
-Task taskReadControlData( TASK_SECOND * 13 , TASK_FOREVER, &readControlData );
+// Task taskReadControlData( TASK_SECOND * 18 , TASK_FOREVER, &readControlData );
 
 void sendMessage() {
-  if(monitorDeviceData.length() > 6){
-    StaticJsonDocument<300> doc;
-    deserializeJson(doc, monitorDeviceData);
-    String source = doc["source"];
-    int moisture = doc["moisture"];
-    int waterLevel = doc["water_level"];
-    FirebaseJson updateData;
-    updateData.set("moisture",moisture);
-    updateData.set("water_level",waterLevel);
-    if(source == "PP_1"){
-      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice1/moisture", moisture);
-      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice1/water_level", waterLevel);      
-      Serial.printf("Upload to monitor device 1 msgMois=%d msgWater=%d\n", moisture, waterLevel);
-    } else if (source == "PP_2"){
-      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice2/moisture", moisture);
-      Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice2/water_level", waterLevel);
-      Serial.printf("Upload to monitor device 2 msgMois=%d msgWater=%d\n", moisture, waterLevel);
-    }
-    Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/fertilizerTank", fertilizerTankVal);
-    Firebase.setInt(fbdo,"/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/waterTank", waterTankVal);
-    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
-  }
-  taskSendMessage.setInterval((TASK_SECOND * 11));
+  Serial.println(monitorDeviceData);
 }
 
-void readControlData(){
-    idealMoisture = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture");
-    irrigationInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/irrigationInterval");
-    fertigationInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/fertigationInterval");
-    irrigationTime = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/irrigationTime");            
-    fertigationTime = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/fertigationTime");
-    irrigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose");
-    fertigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose");
-    taskReadControlData.setInterval((TASK_SECOND * 13));    
-}
-
-void receivedCallback( uint32_t from, String &msg ) {
-  if(msg.length() > 6){
-    Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());    
-    monitorDeviceData = msg.c_str();
-    fertilizerTankVal = fertilizerTank();
-    waterTankVal = waterTank();
-  }
-}
-
-void newConnectionCallback(uint32_t nodeId) {
-  Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);
-}
-
-void changedConnectionCallback() {
-  Serial.printf("Changed connections\n");
-}
-
-void nodeTimeAdjustedCallback(int32_t offset) {
-  Serial.printf("Adjusted time %u. Offset = %d\n", mesh.getNodeTime(),offset);
-}
+// void readControlData(){
+//    idealMoisture = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture");
+//    irrigationDays = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDays");
+//    fertigationDays = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDays");
+//    irrigationTimes = Firebase.getString(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationTimes");            
+//    fertigationTimes = Firebase.getString(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationTimes");
+//    irrigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose");
+//    fertigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose");
+//    systemInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/interval/systemRequest");
+//    userInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/interval/userRequest");        
+//    Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d SysInt=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, systemInterval, userInterval);
+//    Serial.printf("Get data mois=%d\n", idealMoisture);
+    
+//    taskReadControlData.setInterval((TASK_SECOND * 13));    
+// }
 
 void setup() {
   Serial.begin(115200);
+  SerialPort.begin(9600, SERIAL_8N1, 16, 17);
+
   lcd_i2c.init();
   lcd_i2c.backlight();
   
-  mesh.setDebugMsgTypes( ERROR | STARTUP );
-  mesh.init( MESH_PREFIX, MESH_PASSWORD, &userScheduler, MESH_PORT );
-  mesh.onReceive(&receivedCallback);
-  mesh.onNewConnection(&newConnectionCallback);
-  mesh.onChangedConnections(&changedConnectionCallback);
-  mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
-  mesh.stationManual(WIFI_SSID, WIFI_PASSWORD);
-  mesh.setRoot(true);
-  mesh.setContainsRoot(true);
-
   pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
   pinMode(PUMP_RELAY, OUTPUT);
@@ -145,18 +96,34 @@ void setup() {
 
 //  rtc.adjust(DateTime(__DATE__, __TIME__));
 
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  Serial.println("Firebase Connected");
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);                                  
+  Serial.print("Connecting to ");
+  Serial.print(WIFI_SSID);
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("Connected with IP: ");
+  Serial.println(WiFi.localIP());
+  Serial.println();
 
-  userScheduler.addTask( taskSendMessage );
-  userScheduler.addTask( taskReadControlData );
-  taskSendMessage.enable();
-  taskReadControlData.enable();  
+  userScheduler.init();
+//  userScheduler.addTask( taskReadControlData );
+//  taskReadControlData.enable();  
 }
 
 void loop() {
-  mesh.update();
 
+  userScheduler.execute();
+
+  if (SerialPort.available())
+  {
+    monitorDeviceData = String(SerialPort.readString());
+    sendMessage();
+  }
+  
   //  digitalWrite(PUMP_RELAY, HIGH);
   
   //  lcd_i2c.clear();
