@@ -1,16 +1,22 @@
 package com.agrapana.fertigation.ui.activity
 
+import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.OnboardingAdapter
 import com.agrapana.fertigation.data.OnboardingData
 import com.agrapana.fertigation.databinding.ActivityOnboardingBinding
 import com.google.android.material.tabs.TabLayout
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
+
 
 class OnboardingActivity : AppCompatActivity() {
 
@@ -26,6 +32,18 @@ class OnboardingActivity : AppCompatActivity() {
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
+        if (Build.VERSION.SDK_INT >= 32) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) return
+            val launcher = registerForActivityResult<String, Boolean>(
+                ActivityResultContracts.RequestPermission()
+            ) { _: Boolean? -> }
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        
         val onboardingData: MutableList<OnboardingData> = ArrayList()
         onboardingData.add(OnboardingData("Mudahkan Hidup", "Sistem ini membuat kegiatan penyiraman dan pemupukan dapat dilakukan secara efisien, dengan memungkinkan pemantauan dan pengendalian jarak jauh",
             R.drawable.onboarding_4, 420, 420,  0, 200, 0, 50))

@@ -22,7 +22,7 @@ void setup() {
 }
 
 void sendNotification(String title, String body) {
-  String DEVICE_FCM_KEY = "dTLyZndhQcqsHeTb5TRINb:APA91bG0w0DTZBrZLG1QCgQrh7uEk5uY0bG8U7yv5l39enoX-1aWxAUiEj-dharXTz18ACIlrK0nDMaXwHdraWrABvt6Z8M1jyCetmXqLLx1OxuHha7mgj_orw15u04D_oE1P9A7tVOT";
+  String DEVICE_FCM_KEY = "e0tQlw-Az2A:APA91bHtEdYptmOYWWCzEWUepfhGyq10VONGUl7ToUf91-TxWRlVUEM2ClsgE2P9GmTVGVLrnlDMNx5WY-0U4MYw7gqCr9f2MKOTWYltqC34jB8LzFd8-Pl54xwVEdxx-vCDWoyl7LPq";
   String FCM_API_KEY = "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X";
   String FCM_URL = "https://fcm.googleapis.com/fcm/send";
 
@@ -55,7 +55,7 @@ void sendNotification(String title, String body) {
 
 void loop() {
   if(statusnya == 0){
-     sendNotification("Sabihis", String(random(1,2)));
+     sendNotification("Lorem Ipsum is simply", "Lorem Ipsum is simply dummy text of the printing and typesetting industry");
      statusnya = 1; 
   }
 }

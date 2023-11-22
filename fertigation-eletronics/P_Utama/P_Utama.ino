@@ -6,6 +6,7 @@
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 #include <HardwareSerial.h>
+#include <HTTPClient.h>
 
 #define RXp2 16
 #define TXp2 17
@@ -26,6 +27,9 @@
 #define PATH_CNT "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/"
 #define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
 #define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
+#define FCM_URL "https://fcm.googleapis.com/fcm/send"
+#define FCM_API_KEY "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X";
+#define DEVICE_FCM_KEY "e0tQlw-Az2A:APA91bHtEdYptmOYWWCzEWUepfhGyq10VONGUl7ToUf91-TxWRlVUEM2ClsgE2P9GmTVGVLrnlDMNx5WY-0U4MYw7gqCr9f2MKOTWYltqC34jB8LzFd8-Pl54xwVEdxx-vCDWoyl7LPq";
 #define WIFI_SSID "SPEEDY"
 #define WIFI_PASSWORD "suherman"
 // #define WIFI_SSID "Galaxy M33 5G"
@@ -35,6 +39,7 @@
 LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
 HardwareSerial SerialPort(2);
 Scheduler userScheduler;
+HTTPClient HttpClient;
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
@@ -133,6 +138,33 @@ void readControlData(){
   }
   Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d SysInt=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, systemInterval, userInterval);
   taskReadControlData.setInterval((TASK_SECOND * 18));    
+}
+
+void sendNotification(String title, String body) {
+  if ((WiFi.status() == WL_CONNECTED)) {  
+    //Specify the URL
+    HttpClient.begin(FCM_URL);
+
+    // Set headers
+    HttpClient.addHeader("Authorization", FCM_API_KEY);
+    HttpClient.addHeader("Content-Type", "application/json");
+
+    // Data string
+    String data = "{\"registration_ids\": [\"" + DEVICE_FCM_KEY + "\"], \"notification\": {\"body\":\"" + body + "\", \"title\":\"" + title + "\"}}";
+
+    //Make the request
+    int httpCode = HttpClient.POST(data);
+
+    //Check for the returning code
+    if (httpCode == HTTP_CODE_OK) {  
+      Serial.println("Notification Sent To The Phone");
+    } else {
+      Serial.println("Error on sending notification");
+      Serial.println(httpCode);
+      Serial.println(HttpClient.getString());
+    }
+    HttpClient.end();  //Free the resources
+  }
 }
 
 void setup() {

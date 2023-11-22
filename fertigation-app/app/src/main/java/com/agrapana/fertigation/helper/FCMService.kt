@@ -6,15 +6,18 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.ui.activity.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+
 
 class FCMService : FirebaseMessagingService() {
 
@@ -46,22 +49,19 @@ class FCMService : FirebaseMessagingService() {
         ii.data = Uri.parse("custom://" + System.currentTimeMillis())
         ii.action = "actionstring" + System.currentTimeMillis()
         ii.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        val pi =
-            PendingIntent.getActivity(context, 0, ii, PendingIntent.FLAG_MUTABLE)
+        val pi = PendingIntent.getActivity(context, 0, ii, PendingIntent.FLAG_MUTABLE)
         val notification: Notification
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //Log.e("Notification", "Created in up to orio OS device");
             notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setOngoing(true)
                 .setSmallIcon(getNotificationIcon())
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setContentIntent(pi)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(Notification.CATEGORY_SERVICE)
                 .setWhen(System.currentTimeMillis())
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setContentTitle(title).build()
             val notificationManager = context.getSystemService(
@@ -76,9 +76,11 @@ class FCMService : FirebaseMessagingService() {
             notificationManager.notify(NOTIFICATION_ID, notification)
         } else {
             notification = NotificationCompat.Builder(context)
+                .setSmallIcon(getNotificationIcon())
                 .setAutoCancel(true)
                 .setContentText(message)
                 .setContentIntent(pi)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentTitle(title).build()
             val notificationManager = context.getSystemService(
@@ -91,7 +93,7 @@ class FCMService : FirebaseMessagingService() {
     private fun getNotificationIcon(): Int {
         val useWhiteIcon =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        return if (useWhiteIcon) R.mipmap.ic_launcher else R.mipmap.ic_launcher
+        return if (useWhiteIcon) R.drawable.logo4 else R.drawable.logo4
     }
 
 }
