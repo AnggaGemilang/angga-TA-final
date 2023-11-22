@@ -1,14 +1,23 @@
 #include <WiFi.h>
-#include <IOXhop_FirebaseESP32.h> 
+#include <Firebase_ESP_Client.h>
 #include <TaskScheduler.h>
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
 
 #define WIFI_SSID "SPEEDY"
 #define WIFI_PASSWORD "suherman"
 #define HARDWARE_CODE "13kjh123kj1h3j12h21312kjhasdasd"
 #define OWNER_CODE "hpoQA4Xv0hTpmsB3lgOXyrRF7S12"
-#define FIREBASE_HOST "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
-#define FIREBASE_AUTH "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
+#define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
+#define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 
+unsigned long sendDataPrevMillis = 0;
+int count = 0;
+bool signupOK = false;
+
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
 Scheduler userScheduler;
 
 String monitorDeviceData, irrigationTimes, fertigationTimes;
@@ -22,17 +31,12 @@ void readControlData();
 Task taskReadControlData( TASK_SECOND * 5 , TASK_FOREVER, &readControlData );
 
 void readControlData(){
-  idealMoisture = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture");
-  irrigationDays = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDays");
-  fertigationDays = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDays");
-  irrigationTimes = Firebase.getString("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationTimes");            
-  fertigationTimes = Firebase.getString("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationTimes");
-  irrigationDose = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose");
-  fertigationDose = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose");
-  systemInterval = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/interval/systemRequest");
-  userInterval = Firebase.getInt("/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/interval/userRequest");        
-  Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d SysInt=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, systemInterval, userInterval);
-    
+  if(Firebase.RTDB.getInt(&fbdo,"/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture")){
+    if(fbdo.dataType() == "int"){
+      idealMoisture = fbdo.intData();
+      Serial.printf("Get data mois=%d", idealMoisture);
+    }
+  }    
   taskReadControlData.setInterval((TASK_SECOND * 5));    
 }
 
@@ -54,8 +58,21 @@ void setup() {
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
   
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  Serial.print("Firebase Connected");
+  config.api_key = API_KEY;
+  config.database_url = DATABASE_URL;
+
+  if (Firebase.signUp(&config, &auth, "", "")){
+    Serial.println("Firebase Connected");
+    signupOK = true;
+  }
+  else{
+    Serial.printf("%s\n", config.signer.signupError.message.c_str());
+  }
+
+  config.token_status_callback = tokenStatusCallback;
+  
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
 
   userScheduler.addTask(taskReadControlData);
   taskReadControlData.enable();
@@ -64,4 +81,30 @@ void setup() {
 
 void loop() {
   userScheduler.execute();
+
+  if (Firebase.ready() && signupOK && (millis() - sendDataPrevMillis > 15000 || sendDataPrevMillis == 0)){
+    sendDataPrevMillis = millis();
+    // Write an Int number on the database path test/int
+    if (Firebase.RTDB.setInt(&fbdo, "test/int", count)){
+      Serial.println("PASSED");
+      Serial.println("PATH: " + fbdo.dataPath());
+      Serial.println("TYPE: " + fbdo.dataType());
+    }
+    else {
+      Serial.println("FAILED");
+      Serial.println("REASON: " + fbdo.errorReason());
+    }
+    count++;
+    
+    // Write an Float number on the database path test/float
+    if (Firebase.RTDB.setFloat(&fbdo, "test/float", 0.01 + random(0,100))){
+      Serial.println("PASSED");
+      Serial.println("PATH: " + fbdo.dataPath());
+      Serial.println("TYPE: " + fbdo.dataType());
+    }
+    else {
+      Serial.println("FAILED");
+      Serial.println("REASON: " + fbdo.errorReason());
+    }
+  }
 }

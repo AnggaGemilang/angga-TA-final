@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <TaskScheduler.h>
 #include <WiFi.h>
+#include <Firebase_ESP_Client.h>
 #include <HardwareSerial.h>
 
 #define RXp2 16
@@ -21,10 +22,10 @@
 #define PUMP_RELAY 13
 #define VALVE_RELAY_1 14
 #define VALVE_RELAY_2 15
-#define HARDWARE_CODE "13kjh123kj1h3j12h21312kjhasdasd"
-#define OWNER_CODE "hpoQA4Xv0hTpmsB3lgOXyrRF7S12"
-#define FIREBASE_HOST "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
-#define FIREBASE_AUTH "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
+#define PATH_MNT "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/"
+#define PATH_CNT "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/"
+#define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
+#define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define WIFI_SSID "SPEEDY"
 #define WIFI_PASSWORD "suherman"
 // #define WIFI_SSID "Galaxy M33 5G"
@@ -34,12 +35,17 @@
 LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
 HardwareSerial SerialPort(2);
 Scheduler userScheduler;
+FirebaseData fbdo;
+FirebaseAuth auth;
+FirebaseConfig config;
 
-String monitorDeviceData, irrigationTimes, fertigationTimes;
+String monitorDeviceData, irrigationTimes, fertigationTimes, tempLastIrrigation, tempatLastFertigation;
 int fertilizerTankVal, waterTankVal, idealMoisture;
 int irrigationDays, fertigationDays;
 int irrigationDose, fertigationDose;
 int systemInterval, userInterval;
+String path1 = PATH_MNT;
+String path2 = PATH_CNT;
 
 String timeNow();
 int waterTank();
@@ -47,27 +53,87 @@ int fertilizerTank();
 void sendMessage();
 void readControlData();
 
-// Task taskReadControlData( TASK_SECOND * 18 , TASK_FOREVER, &readControlData );
+Task taskReadControlData( TASK_SECOND * 18 , TASK_FOREVER, &readControlData );
 
 void sendMessage() {
-  Serial.println(monitorDeviceData);
+  if(monitorDeviceData.length() > 6){
+    StaticJsonDocument<300> doc;
+    deserializeJson(doc, monitorDeviceData);
+    String source = doc["source"];
+    int moisture = doc["moisture"];
+    int waterLevel = doc["water_level"];
+    if(source == "PP_1"){
+      Firebase.RTDB.setInt(&fbdo, path1.concat("monitorDevice1/moisture"), moisture);
+      Firebase.RTDB.setInt(&fbdo,path1.concat("monitorDevice1/water_level"), waterLevel);      
+      Serial.printf("Upload to monitor device 1 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+    } else if (source == "PP_2"){
+      Firebase.RTDB.setInt(&fbdo, path1.concat("monitorDevice2/moisture)"), moisture);
+      Firebase.RTDB.setInt(&fbdo, path1.concat("monitorDevice2/water_level)"), waterLevel);
+      Serial.printf("Upload to monitor device 2 msgMois=%d msgWater=%d\n", moisture, waterLevel);
+    }
+    Firebase.RTDB.setInt(&fbdo, path1.concat("primaryDevice/fertilizerTank"), fertilizerTankVal);
+    Firebase.RTDB.setInt(&fbdo, path1.concat("primaryDevice/waterTank"), waterTankVal);
+    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
+  }
 }
 
-// void readControlData(){
-//    idealMoisture = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/idealMoisture");
-//    irrigationDays = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDays");
-//    fertigationDays = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDays");
-//    irrigationTimes = Firebase.getString(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationTimes");            
-//    fertigationTimes = Firebase.getString(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationTimes");
-//    irrigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose");
-//    fertigationDose = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose");
-//    systemInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/interval/systemRequest");
-//    userInterval = Firebase.getInt(fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/interval/userRequest");        
-//    Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d SysInt=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, systemInterval, userInterval);
-//    Serial.printf("Get data mois=%d\n", idealMoisture);
-    
-//    taskReadControlData.setInterval((TASK_SECOND * 13));    
-// }
+void readControlData(){
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("idealMoisture"))){
+    if(fbdo.dataType() == "int"){
+      idealMoisture = fbdo.intData();
+    }
+  }
+
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("irrigationDays"))){
+    if(fbdo.dataType() == "int"){
+      irrigationDays = fbdo.intData();
+    }
+  }    
+
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("fertigationDays"))){
+    if(fbdo.dataType() == "int"){
+      fertigationDays = fbdo.intData();
+    }
+  }    
+
+  if(Firebase.RTDB.getString(&fbdo, path2.concat("irrigationTimes"))){
+    if(fbdo.dataType() == "string"){
+      irrigationTimes = fbdo.stringData();
+    }
+  }    
+
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("fertigationTimes"))){
+    if(fbdo.dataType() == "string"){
+      fertigationTimes = fbdo.stringData();
+    }
+  }    
+  
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("irrigationDose"))){
+    if(fbdo.dataType() == "int"){
+      irrigationDose = fbdo.intData();
+    }
+  }    
+
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("fertigationDose"))){
+    if(fbdo.dataType() == "int"){
+      fertigationDose = fbdo.intData();
+    }
+  }
+
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("systemRequest"))){
+    if(fbdo.dataType() == "int"){
+      systemInterval = fbdo.intData();
+    }
+  }    
+
+  if(Firebase.RTDB.getInt(&fbdo, path2.concat("userRequest"))){
+    if(fbdo.dataType() == "int"){
+      userInterval = fbdo.intData();
+    }
+  }
+  Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d SysInt=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, systemInterval, userInterval);
+  taskReadControlData.setInterval((TASK_SECOND * 18));    
+}
 
 void setup() {
   Serial.begin(115200);
@@ -109,13 +175,25 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.println();
 
+  config.api_key = API_KEY;
+  config.database_url = DATABASE_URL;
+
+  if (Firebase.signUp(&config, &auth, "", "")){
+    Serial.println("Firebase Connected");
+  }
+  else{
+    Serial.printf("%s\n", config.signer.signupError.message.c_str());
+  }
+  
+  Firebase.begin(&config, &auth);
+  Firebase.reconnectWiFi(true);
+
   userScheduler.init();
-//  userScheduler.addTask( taskReadControlData );
-//  taskReadControlData.enable();  
+  userScheduler.addTask( taskReadControlData );
+  taskReadControlData.enable();  
 }
 
 void loop() {
-
   userScheduler.execute();
 
   if (SerialPort.available())
