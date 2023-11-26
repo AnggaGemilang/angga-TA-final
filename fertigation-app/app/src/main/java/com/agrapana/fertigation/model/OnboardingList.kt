@@ -1,4 +1,4 @@
-package com.agrapana.fertigation.data
+package com.agrapana.fertigation.model
 
 data class OnboardingData(
     var title: String,

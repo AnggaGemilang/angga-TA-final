@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.OnboardingAdapter
-import com.agrapana.fertigation.data.OnboardingData
 import com.agrapana.fertigation.databinding.ActivityOnboardingBinding
+import com.agrapana.fertigation.model.OnboardingData
 import com.google.android.material.tabs.TabLayout
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
