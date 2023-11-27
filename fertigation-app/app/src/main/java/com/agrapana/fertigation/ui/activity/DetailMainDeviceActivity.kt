@@ -3,7 +3,6 @@ package com.agrapana.fertigation.ui.activity
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
@@ -13,14 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityDetailMainDeviceBinding
 import com.agrapana.fertigation.model.Field
-import com.agrapana.fertigation.ui.fragment.CropRecommendationFragment
-import com.agrapana.fertigation.ui.fragment.MainDeviceChartFragment
-import com.agrapana.fertigation.ui.fragment.SeekPestsFragment
-import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
@@ -62,31 +56,8 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         binding.pestWrapper.setOnClickListener {
-            val dialog = SeekPestsFragment(pestPredictionResult)
-            dialog.show(supportFragmentManager, "BottomSheetDialog")
+
         }
-
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Warmth"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Humidity"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Wind Speed"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Wind Pressure"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Light Intensity"))
-        binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Warmth"))
-
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                when (tab.position) {
-                    0 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Warmth"))
-                    1 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Humidity"))
-                    2 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Wind Speed"))
-                    3 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Wind Pressure"))
-                    4 -> replaceFragment(MainDeviceChartFragment(passedData!!.hardwareCode, "Light Intensity"))
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
     }
 
     private fun replaceFragment(fragment: Fragment?) {

@@ -15,7 +15,6 @@ import androidx.fragment.app.FragmentTransaction
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityDetailSupportDeviceBinding
 import com.agrapana.fertigation.model.Field
-import com.agrapana.fertigation.ui.fragment.MonitorDeviceChartFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
@@ -56,31 +55,6 @@ class DetailMonitorDeviceActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true);
         supportActionBar?.setDisplayShowHomeEnabled(true);
         supportActionBar?.title = identity
-
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Warmth"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Moisture"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("pH"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Nitrogen"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Phosphor"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Kalium"))
-        binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-        replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1, "Warmth"))
-
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                when (tab.position) {
-                    0 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Warmth"))
-                    1 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Moisture"))
-                    2 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"pH"))
-                    3 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Nitrogen"))
-                    4 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Phosphor"))
-                    5 -> replaceFragment(MonitorDeviceChartFragment(passedData.hardwareCode, 1,"Kalium"))
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
-
     }
 
     private fun replaceFragment(fragment: Fragment?) {

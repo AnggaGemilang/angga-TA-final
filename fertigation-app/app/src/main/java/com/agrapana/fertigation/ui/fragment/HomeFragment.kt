@@ -21,7 +21,6 @@ import com.agrapana.fertigation.*
 import com.agrapana.fertigation.adapter.FieldFilterAdapter
 import com.agrapana.fertigation.databinding.FragmentHomeBinding
 import com.agrapana.fertigation.helper.ChangeFieldListener
-import com.agrapana.fertigation.model.Suggestion
 import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.ui.activity.WorkerActivity
@@ -67,8 +66,7 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         binding.greeting.text = "Hello there, $name"
 
         binding.btnPest.setOnClickListener {
-            val dialog = SeekPestsFragment(pestPredictionResult)
-            activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
+
         }
 
         binding.toolbar.inflateMenu(R.menu.action_nav1)

@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.viewpager.widget.PagerAdapter
 import com.agrapana.fertigation.R
-import com.agrapana.fertigation.data.OnboardingData
+import com.agrapana.fertigation.model.OnboardingData
 
 class OnboardingAdapter(private var context: Context, private var onBoardingDataList : List<OnboardingData>) : PagerAdapter() {
 
@@ -27,7 +27,7 @@ class OnboardingAdapter(private var context: Context, private var onBoardingData
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
 
-        val view = LayoutInflater.from(context).inflate(R.layout.onboarding_screen_layout, null)
+        val view = LayoutInflater.from(context).inflate(R.layout.template_onboarding, null)
 
         val imageView: ImageView = view.findViewById(R.id.image)
         val title: TextView = view.findViewById(R.id.title)
