@@ -193,14 +193,14 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         binding.valSoilMoisturePlaceholder.visibility = View.VISIBLE
         binding.valSoilPhPlaceholder.visibility = View.VISIBLE
         binding.valSoilNitrogenPlaceholder.visibility = View.VISIBLE
-        binding.valSoilPhosphorPlaceholder.visibility = View.VISIBLE
-        binding.valSoilKaliumPlaceholder.visibility = View.VISIBLE
+//        binding.valSoilPhosphorPlaceholder.visibility = View.VISIBLE
+//        binding.valSoilKaliumPlaceholder.visibility = View.VISIBLE
         binding.valSoilTemperature.visibility = View.GONE
         binding.valSoilMoisture.visibility = View.GONE
         binding.valSoilPh.visibility = View.GONE
         binding.valSoilNitrogen.visibility = View.GONE
-        binding.valSoilPhosphor.visibility = View.GONE
-        binding.valSoilKalium.visibility = View.GONE
+//        binding.valSoilPhosphor.visibility = View.GONE
+//        binding.valSoilKalium.visibility = View.GONE
     }
 
     private fun showMainField(){
@@ -224,14 +224,14 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         binding.valSoilMoisturePlaceholder.visibility = View.GONE
         binding.valSoilPhPlaceholder.visibility = View.GONE
         binding.valSoilNitrogenPlaceholder.visibility = View.GONE
-        binding.valSoilPhosphorPlaceholder.visibility = View.GONE
-        binding.valSoilKaliumPlaceholder.visibility = View.GONE
+//        binding.valSoilPhosphorPlaceholder.visibility = View.GONE
+//        binding.valSoilKaliumPlaceholder.visibility = View.GONE
         binding.valSoilTemperature.visibility = View.VISIBLE
         binding.valSoilMoisture.visibility = View.VISIBLE
         binding.valSoilPh.visibility = View.VISIBLE
         binding.valSoilNitrogen.visibility = View.VISIBLE
-        binding.valSoilPhosphor.visibility = View.VISIBLE
-        binding.valSoilKalium.visibility = View.VISIBLE
+//        binding.valSoilPhosphor.visibility = View.VISIBLE
+//        binding.valSoilKalium.visibility = View.VISIBLE
     }
 
     override fun onResume() {

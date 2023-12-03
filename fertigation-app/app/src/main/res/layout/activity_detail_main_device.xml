@@ -51,35 +51,6 @@
             android:layout_marginBottom="20dp"
             android:orientation="vertical" >
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tab_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:tabTextColor="@color/white"
-                app:tabIndicatorColor="@color/white"
-                app:tabBackground="@color/green_50"
-                app:tabIndicatorGravity="bottom"
-                app:tabIndicatorHeight="5dp"
-                app:tabPaddingEnd="20dp"
-                app:tabPaddingStart="20dp"
-                app:tabMode="scrollable"
-                app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
-                app:tabIndicatorFullWidth="true" />
-
-            <FrameLayout
-                android:id="@+id/frame_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="55dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black_40"
-                android:layout_marginHorizontal="60dp"
-                android:layout_marginTop="-30dp"
-                android:backgroundTint="@color/black_40" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -107,7 +78,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_wb_sunny_24" />
+                        android:src="@drawable/baseline_settings_applications_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -120,7 +91,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Weather" />
+                            android:text="Preset Name" />
 
                         <TextView
                             android:id="@+id/val_weather"
@@ -128,13 +99,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            android:text="N/A" />
+                            android:text="Spinach" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_weather_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -161,7 +132,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_adb_24" />
+                        android:src="@drawable/baseline_location_on_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -174,7 +145,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Pests" />
+                            android:text="Field Location" />
 
                         <TextView
                             android:id="@+id/val_pest"
@@ -182,13 +153,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            android:text="N/A" />
+                            android:text="Bandung" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_pests_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -214,7 +185,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/ic_baseline_local_fire_department_24" />
+                        android:src="@drawable/baseline_water_drop_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -227,7 +198,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Warmth" />
+                            android:text="Doing Irrigation" />
 
                         <TextView
                             android:id="@+id/val_wind_temperature"
@@ -235,13 +206,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            android:text="N/A" />
+                            android:text="Yes" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_wind_warmth_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -267,7 +238,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/ic_baseline_contactless_24" />
+                        android:src="@drawable/baseline_energy_savings_leaf_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -280,21 +251,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Humidity" />
+                            android:text="Doing Fertigation" />
 
                         <TextView
                             android:id="@+id/val_wind_humidity"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
-                            android:visibility="gone"
                             android:textStyle="bold"
-                            android:text="N/A" />
+                            android:text="No" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_wind_humidity_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -320,7 +291,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_air_24" />
+                        android:src="@drawable/baseline_access_time_filled_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -333,7 +304,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Wind Speed" />
+                            android:text="RTC Accuration" />
 
                         <TextView
                             android:id="@+id/val_wind_speed"
@@ -341,13 +312,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            android:text="N/A" />
+                            android:text="30s Difference" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_wind_speed_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -373,7 +344,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_compress_24" />
+                        android:src="@drawable/baseline_shower_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -386,7 +357,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Wind Pressure" />
+                            android:text="Water Tank" />
 
                         <TextView
                             android:id="@+id/val_wind_pressure"
@@ -394,13 +365,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            android:text="N/A" />
+                            android:text="50%" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_wind_pressure_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -426,7 +397,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_lightbulb_24" />
+                        android:src="@drawable/baseline_shower_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -439,7 +410,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="Light Intensity" />
+                            android:text="Fertilizer Tank" />
 
                         <TextView
                             android:id="@+id/val_light_intensity"
@@ -447,13 +418,13 @@
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:visibility="gone"
-                            android:text="N/A" />
+                            android:text="80%" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_light_intensity_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
+                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View

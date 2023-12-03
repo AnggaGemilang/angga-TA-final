@@ -57,14 +57,6 @@ class DetailMonitorDeviceActivity : AppCompatActivity() {
         supportActionBar?.title = identity
     }
 
-    private fun replaceFragment(fragment: Fragment?) {
-        val fm = this.supportFragmentManager
-        val ft = fm.beginTransaction()
-        ft.replace(R.id.frame_container, fragment!!)
-        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-        ft.commit()
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
