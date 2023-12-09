@@ -145,13 +145,13 @@ class WorkerViewModel : ViewModel() {
                         if(it.isSuccessful) {
                             operationListener?.onSuccess()
                         } else {
-                            operationListener?.onFailure(it.exception.toString())
-                            Log.d("Error", it.exception.toString())
+                            operationListener?.onFailure(it.exception!!.message.toString())
+                            Log.d("Error", it.exception!!.message.toString())
                         }
                     }
                 } else {
-                    operationListener?.onFailure(task.exception.toString())
-                    Log.d("Error", task.exception.toString())
+                    operationListener?.onFailure(task.exception!!.message.toString())
+                    Log.d("Error", task.exception!!.message.toString())
                 }
             }
         }

@@ -88,7 +88,7 @@ class PresetViewModel : ViewModel() {
                 if(it.isSuccessful) {
                     operationListener?.onSuccess()
                 } else {
-                    operationListener?.onFailure(it.exception.toString())
+                    operationListener?.onFailure(it.exception!!.message.toString())
                 }
             }
         }
@@ -99,7 +99,7 @@ class PresetViewModel : ViewModel() {
             if(it.isSuccessful) {
                 operationListener?.onSuccess()
             } else {
-                operationListener?.onFailure(it.exception.toString())
+                operationListener?.onFailure(it.exception!!.message.toString())
             }
         }
     }
@@ -113,7 +113,7 @@ class PresetViewModel : ViewModel() {
                 if(it.isSuccessful) {
                     operationListener?.onSuccess()
                 } else {
-                    operationListener?.onFailure(it.exception.toString())
+                    operationListener?.onFailure(it.exception!!.message.toString())
                 }
             }
         }

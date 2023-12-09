@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ import com.agrapana.fertigation.*
 import com.agrapana.fertigation.adapter.FieldFilterAdapter
 import com.agrapana.fertigation.databinding.FragmentHomeBinding
 import com.agrapana.fertigation.helper.ChangeFieldListener
+import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.ui.activity.WorkerActivity
@@ -31,7 +33,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
-class HomeFragment: Fragment(), ChangeFieldListener {
+class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var prefs: SharedPreferences
@@ -42,7 +44,6 @@ class HomeFragment: Fragment(), ChangeFieldListener {
 
     private var clientId: String? = null
     private var fieldId: String? = null
-    private var pestPredictionResult: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,9 +66,8 @@ class HomeFragment: Fragment(), ChangeFieldListener {
         val name: String? = prefs.getString("client_name", "")
         binding.greeting.text = "Hello there, $name"
 
-        binding.btnPest.setOnClickListener {
-
-        }
+        initRecyclerView()
+        initViewModel()
 
         binding.toolbar.inflateMenu(R.menu.action_nav1)
         val role: String? = prefs.getString("client_role", "")
@@ -93,23 +93,10 @@ class HomeFragment: Fragment(), ChangeFieldListener {
                 }
                 R.id.logout -> {
                     val builder = AlertDialog.Builder(requireContext())
-                    val role: String? = prefs.getString("client_role", "")
                     builder.setTitle("Are You Sure?")
                     builder.setMessage("You can't get in to your account")
                     builder.setPositiveButton("YES") { _, _ ->
-                        val editor: SharedPreferences.Editor? = prefs.edit()
-                        editor?.putBoolean("login_status", true)
-                        editor?.putString("client_id", null)
-                        editor?.putString("client_name", null)
-                        editor?.putString("client_role", null)
-                        if(role == "Worker"){
-                            editor?.putString("worker_id", null)
-                            editor?.putString("worker_field_id", null)
-                        }
-                        editor?.apply()
-                        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
-                        authViewModel.logout()
-                        startActivity(Intent(activity, LoginActivity::class.java))
+                        authViewModel.logout(clientId!!)
                     }
                     builder.setNegativeButton("NO") { dialog, _ ->
                         dialog.dismiss()
@@ -134,9 +121,6 @@ class HomeFragment: Fragment(), ChangeFieldListener {
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
                 }
             })
-
-        initRecyclerView()
-        initViewModel()
     }
 
     private fun initRecyclerView() {
@@ -152,6 +136,8 @@ class HomeFragment: Fragment(), ChangeFieldListener {
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this)[FieldViewModel::class.java]
+        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
+        authViewModel.operationListener = this
     }
 
     override fun onChangeField(id: String?) {
@@ -236,5 +222,24 @@ class HomeFragment: Fragment(), ChangeFieldListener {
 
     override fun onResume() {
         super.onResume()
+    }
+
+    override fun onSuccess() {
+        val editor: SharedPreferences.Editor? = prefs.edit()
+        editor?.putBoolean("login_status", true)
+        editor?.putString("client_id", null)
+        editor?.putString("client_name", null)
+        editor?.putString("client_role", null)
+        val role: String? = prefs.getString("client_role", "")
+        if(role == "Worker"){
+            editor?.putString("worker_id", null)
+            editor?.putString("worker_field_id", null)
+        }
+        editor?.apply()
+        startActivity(Intent(activity, LoginActivity::class.java))
+    }
+
+    override fun onFailure(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 }

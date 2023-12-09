@@ -139,7 +139,7 @@ class FieldViewModel: ViewModel() {
                                             if (saved.isSuccessful) {
                                                 operationListener?.onSuccess()
                                             } else {
-                                                operationListener?.onFailure(it.exception.toString())
+                                                operationListener?.onFailure(it.exception!!.message.toString())
                                             }
                                         }
                                     }
@@ -147,7 +147,7 @@ class FieldViewModel: ViewModel() {
                                 override fun onCancelled(error: DatabaseError) {}
                             })
                         } else {
-                            operationListener?.onFailure(it.exception.toString())
+                            operationListener?.onFailure(it.exception!!.message.toString())
                         }
                     }
                 }
@@ -180,7 +180,7 @@ class FieldViewModel: ViewModel() {
                                     if (saved.isSuccessful) {
                                         operationListener?.onSuccess()
                                     } else {
-                                        operationListener?.onFailure(it.exception.toString())
+                                        operationListener?.onFailure(it.exception!!.message.toString())
                                     }
                                 }
                             }
@@ -188,7 +188,7 @@ class FieldViewModel: ViewModel() {
                         override fun onCancelled(error: DatabaseError) {}
                     })
                 } else {
-                    operationListener?.onFailure(it.exception.toString())
+                    operationListener?.onFailure(it.exception!!.message.toString())
                 }
             }
         }
