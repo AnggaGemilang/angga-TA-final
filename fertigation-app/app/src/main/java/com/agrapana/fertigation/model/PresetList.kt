@@ -16,9 +16,9 @@ data class ParameterPreset(
 )
 
 data class ParameterPresetNow(
-    var idealMoisture: Int = 0,
-    var irrigationDays: Int = 0,
-    var fertigationDays: Int = 0,
+    var idealMoisture: String = "",
+    var irrigationDays: String = "",
+    var fertigationDays: String = "",
     var irrigationTimes: String = "",
     var fertigationTimes: String = "",
     var irrigationAge: String = "",

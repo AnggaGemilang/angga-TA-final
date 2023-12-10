@@ -118,7 +118,7 @@
                 android:layout_marginTop="7dp"
                 android:inputType="phone"
                 android:digits="0123456789"
-                android:maxLength="3"
+                android:maxLength="2"
                 android:textSize="16sp"
                 android:background="@drawable/edittext_style"
                 android:hint="Enter Moisture" />
@@ -191,7 +191,7 @@
                                 android:enabled="false"
                                 android:inputType="phone"
                                 android:digits="0123456789"
-                                android:maxLength="3"
+                                android:maxLength="5"
                                 android:background="@drawable/edittext_style"
                                 android:hint="Times . ." />
 
@@ -310,7 +310,7 @@
                                 android:enabled="false"
                                 android:inputType="phone"
                                 android:digits="0123456789"
-                                android:maxLength="3"
+                                android:maxLength="5"
                                 android:background="@drawable/edittext_style"
                                 android:hint="Times . ." />
 

@@ -98,10 +98,10 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         holder.binding.childRv.layoutManager = LinearLayoutManager(holder.itemView.context)
         holder.binding.childRv.setHasFixedSize(true)
         holder.binding.childRv.adapter = adapter
-        holder.binding.wrapper.setOnClickListener(View.OnClickListener {
+        holder.binding.wrapper.setOnClickListener {
             model.isExpandable = !model.isExpandable
             notifyItemChanged(holder.adapterPosition)
-        })
+        }
 
         holder.binding.optionMenu.setOnClickListener {
             taskListener.onOptionClick(it, fields[position])

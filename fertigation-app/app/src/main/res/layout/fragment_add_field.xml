@@ -128,7 +128,9 @@
                         android:layout_marginTop="7dp"
                         android:textSize="16sp"
                         android:background="@drawable/edittext_style"
-                        android:inputType="number"
+                        android:inputType="phone"
+                        android:digits="0123456789"
+                        android:maxLength="2"
                         android:hint="Enter Land Area" />
 
                 </LinearLayout>
@@ -156,7 +158,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="7dp"
                         android:textSize="16sp"
-                        android:inputType="number"
+                        android:inputType="phone"
+                        android:digits="0123456789"
+                        android:maxLength="2"
                         android:background="@drawable/edittext_style"
                         android:hint="Enter The Number" />
 

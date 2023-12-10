@@ -80,7 +80,10 @@ class PresetViewModel : ViewModel() {
 
     fun onAddPreset(clientId: String, parameterPreset: ParameterPreset){
         if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
-            parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() || parameterPreset.irrigationTimes.isEmpty()) {
+            parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
+            parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
+            parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture.isEmpty() ||
+            parameterPreset.irrigationDose.isEmpty() || parameterPreset.fertigationDose.isEmpty()) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
             parameterPreset.id = dbPresets.push().key.toString()
@@ -108,7 +111,8 @@ class PresetViewModel : ViewModel() {
         if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
             parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
             parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
-            parameterPreset.fertigationAge.isEmpty()) {
+            parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture.isEmpty() ||
+            parameterPreset.irrigationDose.isEmpty() || parameterPreset.fertigationDose.isEmpty()) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
             Log.d("sabihis kadieu", parameterPreset.toString())

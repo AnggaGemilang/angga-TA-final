@@ -114,12 +114,14 @@ class FieldViewModel: ViewModel() {
             || field.hardwareCode.isEmpty() || field.numberOfMonitorDevice == 0) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
-            dbFields.child(clientId).addListenerForSingleValueEvent(object : ValueEventListener {
+            dbFields.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     for(snapshot in dataSnapshot.children){
-                        if (snapshot.child("hardware_code").value.toString() == field.hardwareCode) {
-                            operationListener?.onFailure("Hardware Has Been Linked To Another Account")
-                            return
+                        for(snap in snapshot.children){
+                            if (snap.key == field.hardwareCode) {
+                                operationListener?.onFailure("Hardware Has Been Linked To Another Account")
+                                return
+                            }
                         }
                     }
                     dbFields.child(clientId).child(field.hardwareCode).setValue(field).addOnCompleteListener {
@@ -128,9 +130,9 @@ class FieldViewModel: ViewModel() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     for(snapshot in dataSnapshot.children){
                                         val presetNow = ParameterPresetNow()
-                                        presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString().toInt()
-                                        presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString().toInt()
-                                        presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString().toInt()
+                                        presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString()
+                                        presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString()
+                                        presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString()
                                         presetNow.irrigationTimes = snapshot.child("fertigationTimes").value.toString()
                                         presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
                                         presetNow.irrigationAge = snapshot.child("irrigationAge").value.toString()
@@ -171,9 +173,9 @@ class FieldViewModel: ViewModel() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for(snapshot in dataSnapshot.children){
                                 val presetNow = ParameterPresetNow()
-                                presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString().toInt()
-                                presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString().toInt()
-                                presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString().toInt()
+                                presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString()
+                                presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString()
+                                presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString()
                                 presetNow.irrigationTimes = snapshot.child("fertigationTimes").value.toString()
                                 presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
                                 presetNow.irrigationAge = snapshot.child("irrigationAge").value.toString()
