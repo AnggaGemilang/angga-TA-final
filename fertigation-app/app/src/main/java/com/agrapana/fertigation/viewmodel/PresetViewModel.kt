@@ -106,9 +106,12 @@ class PresetViewModel : ViewModel() {
 
     fun onUpdatePreset(clientId: String, parameterPreset: ParameterPreset){
         if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
-            parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() || parameterPreset.irrigationTimes.isEmpty()) {
+            parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
+            parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
+            parameterPreset.fertigationAge.isEmpty()) {
             operationListener?.onFailure("Fill all blanks input")
         } else {
+            Log.d("sabihis kadieu", parameterPreset.toString())
             dbPresets.child(clientId).child("parameter").child(parameterPreset.id).setValue(parameterPreset).addOnCompleteListener {
                 if(it.isSuccessful) {
                     operationListener?.onSuccess()

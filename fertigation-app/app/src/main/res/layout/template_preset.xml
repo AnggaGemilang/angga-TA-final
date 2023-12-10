@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
-            android:paddingEnd="15dp"
+            android:paddingEnd="10dp"
             android:orientation="vertical" >
 
             <TextView
@@ -93,10 +93,26 @@
                 android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_fertigation_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fertigation Age: "
+                android:layout_marginTop="3dp"
+                android:textSize="15sp" />
+
+            <TextView
                 android:id="@+id/tv_fertigation_dose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fertigation Dose: "
+                android:layout_marginTop="3dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_irrigation_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Irrigation Age: "
                 android:layout_marginTop="3dp"
                 android:textSize="15sp" />
 

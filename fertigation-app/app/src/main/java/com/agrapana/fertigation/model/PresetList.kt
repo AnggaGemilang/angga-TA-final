@@ -6,21 +6,25 @@ data class ParameterPreset(
     var imageUrl: String = "",
     var idealMoisture: String = "",
     var irrigationDays: String = "",
-    var irrigationTimes: String = "",
     var fertigationDays: String = "",
+    var irrigationTimes: String = "",
     var fertigationTimes: String = "",
-    var fertigationDose: String = "",
+    var irrigationAge: String = "",
+    var fertigationAge: String = "",
     var irrigationDose: String = "",
+    var fertigationDose: String = "",
 )
 
 data class ParameterPresetNow(
     var idealMoisture: Int = 0,
     var irrigationDays: Int = 0,
-    var irrigationTimes: String = "",
     var fertigationDays: Int = 0,
+    var irrigationTimes: String = "",
     var fertigationTimes: String = "",
-    var fertigationDose: Int = 0,
-    var irrigationDose: Int = 0,
+    var irrigationAge: String = "",
+    var fertigationAge: String = "",
+    var irrigationDose: String = "",
+    var fertigationDose: String = "",
 )
 
 data class IntervalPreset(

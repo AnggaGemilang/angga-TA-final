@@ -32,10 +32,12 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         Glide.with(holder.imageView.context)
             .load(parameterPresets[position].imageUrl)
             .into(holder.imageView);
-        holder.irrigationDose.text = "Irrigation Dose: ${parameterPresets[position].irrigationDose} mL"
-        holder.fertigationDose.text = "Fertigation Dose: ${parameterPresets[position].fertigationDose} mL"
-        holder.tvDoIrrigation.text = "Irrigation: Pukul \n${parameterPresets[position].irrigationTimes}/${parameterPresets[position].irrigationDays} hari"
-        holder.tvDoFertigation.text = "Fertigation: Pukul \n${parameterPresets[position].fertigationTimes}/${parameterPresets[position].fertigationDays} hari"
+        holder.irrigationAge.text = "I. Age: ${parameterPresets[position].irrigationAge} HST"
+        holder.fertigationAge.text = "F. Age: ${parameterPresets[position].fertigationAge} HST"
+        holder.irrigationDose.text = "I. Dose: ${parameterPresets[position].irrigationDose} mL"
+        holder.fertigationDose.text = "F. Dose: ${parameterPresets[position].fertigationDose} mL"
+        holder.tvDoIrrigation.text = "I. Times: ${parameterPresets[position].irrigationTimes}/${parameterPresets[position].irrigationDays} hari"
+        holder.tvDoFertigation.text = "F. Times: ${parameterPresets[position].fertigationTimes}/${parameterPresets[position].fertigationDays} hari"
         holder.optionMenu.setOnClickListener {
             taskListener.onOptionClick(it, parameterPresets[position])
         }
@@ -90,6 +92,8 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         var tvDoIrrigation: TextView
         var fertigationDose: TextView
         var irrigationDose: TextView
+        var fertigationAge: TextView
+        var irrigationAge: TextView
         var optionMenu: ImageButton
         var imageView: ImageView
 
@@ -99,6 +103,8 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
             tvIdealMoisture = view.findViewById(R.id.tv_ideal_moisture)
             tvDoFertigation = view.findViewById(R.id.tv_do_fertigation)
             tvDoIrrigation = view.findViewById(R.id.tv_do_irrigation)
+            fertigationAge = view.findViewById(R.id.tv_fertigation_age)
+            irrigationAge = view.findViewById(R.id.tv_irrigation_age)
             fertigationDose = view.findViewById(R.id.tv_fertigation_dose)
             irrigationDose = view.findViewById(R.id.tv_irrigation_dose)
             optionMenu = view.findViewById(R.id.option_menu)

@@ -12,12 +12,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.forEachIndexed
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
@@ -58,24 +58,61 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             binding.presetName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("preset_name"))
             binding.idealMoisture.text = Editable.Factory.getInstance().newEditable(arguments?.getString("ideal_moisture"))
             binding.fertigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_days"))
-//            binding.fertigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_times"))
+
+            val irrigationTimes = (arguments?.getString("irrigation_times"))!!.split(",")
+            irrigationTimes.forEachIndexed { index, _ ->
+                if(index == 0){
+                    binding.irrigationTimes.text = Editable.Factory.getInstance().newEditable(irrigationTimes[index])
+                } else {
+                    addView("iTimes", irrigationTimes[index], "")
+                }
+            }
+
+            val fertigationTimes = (arguments?.getString("fertigation_times"))!!.split(",")
+            irrigationTimes.forEachIndexed { index, _ ->
+                if(index == 0){
+                    binding.fertigationTimes.text = Editable.Factory.getInstance().newEditable(fertigationTimes[index])
+                } else {
+                    addView("fTimes", irrigationTimes[index], "")
+                }
+            }
+
+            val irrigationAges = (arguments?.getString("irrigation_ages"))!!.split(",")
+            val irrigationDoses = (arguments?.getString("irrigation_doses"))!!.split(",")
+            irrigationAges.forEachIndexed { index, _ ->
+                if(index == 0){
+                    binding.plantAgeIrrigation.text = Editable.Factory.getInstance().newEditable(irrigationAges[index])
+                    binding.irrigationDose.text = Editable.Factory.getInstance().newEditable(irrigationDoses[index])
+                } else {
+                    addView("iDoses", irrigationAges[index], irrigationDoses[index])
+                }
+            }
+
+            val fertigationAges = (arguments?.getString("fertigation_ages"))!!.split(",")
+            val fertigationDoses = (arguments?.getString("fertigation_doses"))!!.split(",")
+            fertigationAges.forEachIndexed { index, _ ->
+                if(index == 0){
+                    binding.plantAgeFertigation.text = Editable.Factory.getInstance().newEditable(fertigationAges[index])
+                    binding.fertigationDose.text = Editable.Factory.getInstance().newEditable(fertigationDoses[index])
+                } else {
+                    addView("fDoses", fertigationAges[index], fertigationDoses[index])
+                }
+            }
+
             binding.irrigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_days"))
-//            binding.irrigationTimes.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_times"))
-            binding.irrigationDose.text = Editable.Factory.getInstance().newEditable(arguments?.getString("irrigation_dose"))
-//            binding.fertigationDose.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_dose"))
         }
 
         binding.addItimesInput.setOnClickListener {
-            addView("iTimes")
+            addView("iTimes", "", "")
         }
         binding.addFtimesInput.setOnClickListener {
-            addView("fTimes")
+            addView("fTimes", "", "")
         }
         binding.addIdoseInput.setOnClickListener {
-            addView("iDoses")
+            addView("iDoses", "", "")
         }
         binding.addFdoseInput.setOnClickListener {
-            addView("fDoses")
+            addView("fDoses", "", "")
         }
         binding.open.setOnClickListener {
             selectImageFromGallery()
@@ -112,24 +149,57 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             val presetName = binding.presetName.text.toString().trim()
             val idealMoisture = binding.idealMoisture.text.toString().trim()
             val irrigationDays = binding.irrigationDays.text.toString().trim()
-//            val irrigationTimes = binding.irrigationTimes.text.toString().trim()
+
+            val irrigationTimesList: LinearLayout = view.findViewById(R.id.irrigation_times_list) as LinearLayout
+            var irrigationTimesVal: String = binding.irrigationTimes.text.toString().trim()
+            irrigationTimesList.forEachIndexed { index, _ ->
+                val editText = irrigationTimesList.getChildAt(index).findViewById(R.id.irrigation_times) as EditText
+                irrigationTimesVal += "," + editText.text.toString().trim()
+            }
+
             val fertigationDays = binding.fertigationDays.text.toString().trim()
-//            val fertigationTimes = binding.fertigationTimes.text.toString().trim()
-//            val fertigationDose = binding.fertigationDose.text.toString().trim()
-            val irrigationDose = binding.irrigationDose.text.toString().trim()
+            val fertigationTimesList: LinearLayout = view.findViewById(R.id.fertigation_times_list) as LinearLayout
+            var fertigationTimesVal: String = binding.fertigationTimes.text.toString().trim()
+            fertigationTimesList.forEachIndexed { index, _ ->
+                val editText = fertigationTimesList.getChildAt(index).findViewById(R.id.fertigation_times) as EditText
+                fertigationTimesVal += "," + editText.text.toString().trim()
+            }
+
+            val irrigationAgeList: LinearLayout = view.findViewById(R.id.irrigation_doses_list) as LinearLayout
+            var irrigationAgeVal: String = binding.plantAgeIrrigation.text.toString().trim()
+            var irrigationDoseVal: String = binding.irrigationDose.text.toString().trim()
+            irrigationAgeList.forEachIndexed { index, _ ->
+                val editTextAge = irrigationAgeList.getChildAt(index).findViewById(R.id.plant_age_irrigation) as EditText
+                val editTextDose = irrigationAgeList.getChildAt(index).findViewById(R.id.irrigation_dose) as EditText
+                irrigationAgeVal += "," + editTextAge.text.toString().trim()
+                irrigationDoseVal += "," + editTextDose.text.toString().trim()
+            }
+
+            val fertigationAgeList: LinearLayout = view.findViewById(R.id.fertigation_doses_list) as LinearLayout
+            var fertigationAgeVal: String = binding.plantAgeFertigation.text.toString().trim()
+            var fertigationDoseVal: String = binding.fertigationDose.text.toString().trim()
+            irrigationAgeList.forEachIndexed { index, _ ->
+                val editTextAge = fertigationAgeList.getChildAt(index).findViewById(R.id.plant_age_fertigation) as EditText
+                val editTextDose = irrigationAgeList.getChildAt(index).findViewById(R.id.irrigation_dose) as EditText
+                fertigationAgeVal += "," + editTextAge.text.toString().trim()
+                fertigationDoseVal += "," + editTextDose.text.toString().trim()
+            }
+
             val parameterPreset = ParameterPreset()
             parameterPreset.presetName = presetName
             parameterPreset.idealMoisture = idealMoisture
             parameterPreset.irrigationDays = irrigationDays
-//            parameterPreset.irrigationTimes = irrigationTimes
+            parameterPreset.irrigationTimes = irrigationTimesVal
             parameterPreset.fertigationDays = fertigationDays
-//            parameterPreset.fertigationTimes = fertigationTimes
-//            parameterPreset.fertigationDose = fertigationDose
-            parameterPreset.irrigationDose = irrigationDose
+            parameterPreset.fertigationTimes = fertigationTimesVal
+            parameterPreset.irrigationAge = irrigationAgeVal
+            parameterPreset.fertigationAge = fertigationAgeVal
+            parameterPreset.irrigationDose = irrigationDoseVal
+            parameterPreset.fertigationDose = fertigationDoseVal
 
             if(arguments?.getString("status") == "update") {
+                parameterPreset.id = arguments?.getString("id")!!
                 if(linkImage == null){
-                    parameterPreset.id = arguments?.getString("id")!!
                     parameterPreset.imageUrl = arguments?.getString("imageURL")!!
                     viewModel.onUpdatePreset(userId, parameterPreset)
                 } else {
@@ -178,13 +248,16 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
         }
     }
 
-    private fun addView(usedFor: String) {
+    private fun addView(usedFor: String, firstData: String, secondData: String) {
         when (usedFor){
             "iTimes" -> {
                 val templateView: View = layoutInflater.inflate(R.layout.template_irrigation_times_input, null, false)
                 val imageClose = templateView.findViewById<View>(R.id.close_button) as ImageView
                 val openTimePicker = templateView.findViewById<View>(R.id.irrigation_time_picker) as ImageView
                 val irrigationTimeEd = templateView.findViewById<View>(R.id.irrigation_times) as EditText
+                if(firstData.isNotEmpty()){
+                    irrigationTimeEd.setText(firstData)
+                }
                 openTimePicker.setOnClickListener {
                     val cal = Calendar.getInstance()
                     val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
@@ -202,6 +275,9 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 val imageClose = templateView.findViewById<View>(R.id.close_button) as ImageView
                 val openTimePicker = templateView.findViewById<View>(R.id.fertigation_time_picker) as ImageView
                 val fertigationTimesEd = templateView.findViewById<View>(R.id.fertigation_times) as EditText
+                if(firstData.isNotEmpty()){
+                    fertigationTimesEd.setText(firstData)
+                }
                 openTimePicker.setOnClickListener {
                     val cal = Calendar.getInstance()
                     val timeSetListener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
@@ -218,12 +294,28 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 val templateView: View = layoutInflater.inflate(R.layout.template_irrigation_dose_input, null, false)
                 val imageClose = templateView.findViewById<View>(R.id.close_button) as ImageView
                 imageClose.setOnClickListener { removeView("iDoses", templateView) }
+                if(firstData.isNotEmpty()){
+                    val irrigationDose = templateView.findViewById<View>(R.id.irrigation_dose) as EditText
+                    irrigationDose.setText(firstData)
+                }
+                if(secondData.isNotEmpty()){
+                    val irrigationAge = templateView.findViewById<View>(R.id.plant_age_irrigation) as EditText
+                    irrigationAge.setText(secondData)
+                }
                 binding.irrigationDosesList.addView(templateView)
             }
             "fDoses" -> {
                 val templateView: View = layoutInflater.inflate(R.layout.template_fertigation_dose_input, null, false)
                 val imageClose = templateView.findViewById<View>(R.id.close_button) as ImageView
                 imageClose.setOnClickListener { removeView("fDoses", templateView) }
+                if(firstData.isNotEmpty()){
+                    val fertigationDose = templateView.findViewById<View>(R.id.fertigation_dose) as EditText
+                    fertigationDose.setText(firstData)
+                }
+                if(secondData.isNotEmpty()){
+                    val fertigationAge = templateView.findViewById<View>(R.id.plant_age_fertigation) as EditText
+                    fertigationAge.setText(secondData)
+                }
                 binding.fertigationDosesList.addView(templateView)
             }
         }

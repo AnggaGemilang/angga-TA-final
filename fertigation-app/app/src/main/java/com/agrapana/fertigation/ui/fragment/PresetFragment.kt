@@ -122,8 +122,10 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
                     bundle.putString("fertigation_times", parameterPreset.fertigationTimes)
                     bundle.putString("irrigation_days", parameterPreset.irrigationDays)
                     bundle.putString("irrigation_times", parameterPreset.irrigationTimes)
-                    bundle.putString("fertigation_dose", parameterPreset.fertigationDose)
-                    bundle.putString("irrigation_dose", parameterPreset.irrigationDose)
+                    bundle.putString("irrigation_ages", parameterPreset.irrigationAge)
+                    bundle.putString("fertigation_ages", parameterPreset.fertigationAge)
+                    bundle.putString("fertigation_doses", parameterPreset.fertigationDose)
+                    bundle.putString("irrigation_doses", parameterPreset.irrigationDose)
                     dialog.arguments = bundle
                     activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
                 }
