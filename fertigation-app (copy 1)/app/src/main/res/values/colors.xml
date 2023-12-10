@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="main_color">#E5E0B8</color>
+    <color name="text_color">#5F604D</color>
+
+    <color name="brown_70">#3C3C3C</color>
+    <color name="brown_30">#8E7979</color>
+
+    <color name="green_75">#2B503F</color>
+    <color name="green_50">#517866</color>
+    <color name="green_40">#517866</color>
+    <color name="green_20">#6C9280</color>
+
+    <color name="green_light_100">#64C568</color>
+    <color name="green_light_50">#B7FFB0</color>
+    <color name="green_light_20">#B7C498</color>
+
+    <color name="grey_75">#73555555</color>
+    <color name="grey_50">#8C555555</color>
+    <color name="grey_20">#D9D9D9</color>
+
+    <color name="purple_100">#FF6200EE</color>
+    <color name="purple_75">#FFBB86FC</color>
+    <color name="purple_50">#FFB5F8</color>
+
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <color name="blue_100">#FF3700B3</color>
+    <color name="blue_50">#29C9F4</color>
+    <color name="blue_20">#CAF1FD</color>
+
+    <color name="yellow_100">#FFD600</color>
+    <color name="yellow_75">#F6B644</color>
+    <color name="yellow_50">#F6B644</color>
+    <color name="yellow_20">#FBDFA4</color>
+
+    <color name="black">#FF000000</color>
+    <color name="black_20">#17414141</color>
+    <color name="black_40">#4D000000</color>
+
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_75">#9FFFFFFF</color>
+
+    <color name="red_50">#FF6464</color>
+    <color name="red_20">#FFA4A4</color>
+
+    <color name="shimmer_placeholder">#dddddd</color>
+    <color name="shimmer_placeholder2">#858585</color>
+
+</resources>

@@ -4,5 +4,4 @@ interface OperationListener {
 
     fun onSuccess()
     fun onFailure(message: String)
-
 }

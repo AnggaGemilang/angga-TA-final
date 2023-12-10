@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="System">
+
+        <EditTextPreference
+            app:key="system_request"
+            app:icon="@drawable/baseline_redo_24"
+            app:title="System Request (second)"
+            app:defaultValue="5"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="user_request"
+            app:icon="@drawable/ic_baseline_refresh_24"
+            app:title="User Request (second)"
+            app:defaultValue="5"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
