@@ -49,6 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="20dp"
+            android:paddingBottom="35dp"
             android:orientation="vertical" >
 
             <LinearLayout
@@ -62,9 +63,62 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:layout_marginBottom="10dp"
+                    android:textSize="22sp"
+                    android:layout_marginBottom="7dp"
                     android:text="Real-time Monitoring" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/gradient_green"
+                        app:tint="@color/green_20"
+                        android:padding="12dp"
+                        android:src="@drawable/baseline_access_time_filled_24" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:paddingTop="3dp"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Taken Time" />
+
+                        <TextView
+                            android:id="@+id/val_taken_at"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            android:text="N/A" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/val_taken_at_placeholder"
+                            android:layout_width="match_parent"
+                            android:layout_marginVertical="2dp"
+                            android:layout_height="25dp" >
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/shimmer_placeholder2" />
+
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -94,18 +148,18 @@
                             android:text="Preset Name" />
 
                         <TextView
-                            android:id="@+id/val_weather"
+                            android:id="@+id/val_preset_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="Spinach" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_weather_placeholder"
+                            android:id="@+id/val_preset_name_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -148,18 +202,18 @@
                             android:text="Field Location" />
 
                         <TextView
-                            android:id="@+id/val_pest"
+                            android:id="@+id/val_field_loc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="Bandung" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_pests_placeholder"
+                            android:id="@+id/val_field_loc_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -201,18 +255,18 @@
                             android:text="Doing Irrigation" />
 
                         <TextView
-                            android:id="@+id/val_wind_temperature"
+                            android:id="@+id/val_watering_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="Yes" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_wind_warmth_placeholder"
+                            android:id="@+id/val_watering_status_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -254,18 +308,18 @@
                             android:text="Doing Fertigation" />
 
                         <TextView
-                            android:id="@+id/val_wind_humidity"
+                            android:id="@+id/val_fertilizing_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="No" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_wind_humidity_placeholder"
+                            android:id="@+id/val_fertilizing_status_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -291,7 +345,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_access_time_filled_24" />
+                        android:src="@drawable/baseline_heat_pump_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -304,21 +358,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
-                            android:text="RTC Accuration" />
+                            android:text="Pump Status" />
 
                         <TextView
-                            android:id="@+id/val_wind_speed"
+                            android:id="@+id/val_pump_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="30s Difference" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_wind_speed_placeholder"
+                            android:id="@+id/val_pump_status_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -344,7 +398,113 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_shower_24" />
+                        android:src="@drawable/baseline_circle_24" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:paddingTop="3dp"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Water Valve Status" />
+
+                        <TextView
+                            android:id="@+id/val_water_valve_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            android:text="N/A" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/val_water_valve_status_placeholder"
+                            android:layout_width="match_parent"
+                            android:layout_marginVertical="2dp"
+                            android:layout_height="25dp" >
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/shimmer_placeholder2" />
+
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/gradient_green"
+                        app:tint="@color/green_20"
+                        android:padding="12dp"
+                        android:src="@drawable/baseline_group_work_24" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:paddingTop="3dp"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:text="Fertilizer Valve Status" />
+
+                        <TextView
+                            android:id="@+id/val_fertilizer_valve_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            android:text="N/A" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/val_fertilizer_valve_status_placeholder"
+                            android:layout_width="match_parent"
+                            android:layout_marginVertical="2dp"
+                            android:layout_height="25dp" >
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/shimmer_placeholder2" />
+
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal" >
+
+                    <ImageView
+                        android:layout_width="65dp"
+                        android:layout_height="65dp"
+                        android:background="@drawable/gradient_green"
+                        app:tint="@color/green_20"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_baseline_contactless_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -360,18 +520,18 @@
                             android:text="Water Tank" />
 
                         <TextView
-                            android:id="@+id/val_wind_pressure"
+                            android:id="@+id/val_water_tank"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="50%" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_wind_pressure_placeholder"
+                            android:id="@+id/val_water_tank_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View
@@ -397,7 +557,7 @@
                         android:background="@drawable/gradient_green"
                         app:tint="@color/green_20"
                         android:padding="12dp"
-                        android:src="@drawable/baseline_shower_24" />
+                        android:src="@drawable/ic_baseline_contactless_24" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -413,18 +573,18 @@
                             android:text="Fertilizer Tank" />
 
                         <TextView
-                            android:id="@+id/val_light_intensity"
+                            android:id="@+id/val_fertilizer_tank"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="22sp"
                             android:textStyle="bold"
-                            android:text="80%" />
+                            android:visibility="gone"
+                            android:text="N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/val_light_intensity_placeholder"
+                            android:id="@+id/val_fertilizer_tank_placeholder"
                             android:layout_width="match_parent"
                             android:layout_marginVertical="2dp"
-                            android:visibility="gone"
                             android:layout_height="25dp" >
 
                             <View

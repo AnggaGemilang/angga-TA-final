@@ -10,10 +10,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.adapter.FieldAdapter
@@ -29,6 +31,7 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
     private lateinit var adapter: FieldAdapter
     private lateinit var viewModel: FieldViewModel
     private lateinit var prefs: SharedPreferences
+    private lateinit var window: Window
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,6 +79,18 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
         }
         initViewModel()
         binding.recyclerView.adapter = adapter
+
+        window = requireActivity().window
+        binding.scrollView.setOnScrollChangeListener(
+            NestedScrollView.OnScrollChangeListener {
+                    _, _, scrollY, _, _ ->
+                if(scrollY > 531){
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
+                }
+            }
+        )
     }
 
     private fun initViewModel() {

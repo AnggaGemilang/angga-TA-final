@@ -8,10 +8,12 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
@@ -28,6 +30,7 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
     private lateinit var viewModel: PresetViewModel
     private lateinit var prefs: SharedPreferences
     private val adapter = PresetAdapter(this)
+    private lateinit var window: Window
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +52,17 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
         if(role == "Worker"){
             binding.toolbar.menu.findItem(R.id.add).isVisible = false
         }
+        window = requireActivity().window
+        binding.scrollView.setOnScrollChangeListener(
+            NestedScrollView.OnScrollChangeListener {
+                    _, _, scrollY, _, _ ->
+                if(scrollY > 531){
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
+                }
+            }
+        )
         binding.toolbar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.add -> {
@@ -145,6 +159,16 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
             }
             false
         }
+
+        binding.scrollView.setOnScrollChangeListener(
+            NestedScrollView.OnScrollChangeListener {
+                    _, _, scrollY, _, _ ->
+                if(scrollY > 451){
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                } else {
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
+                }
+            })
     }
 
     override fun onSuccess() {

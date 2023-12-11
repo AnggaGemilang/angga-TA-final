@@ -41,12 +41,12 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var prefs: SharedPreferences
     private lateinit var fieldAdapter: FieldFilterAdapter
+    private lateinit var authViewModel: AuthViewModel
     private lateinit var fieldViewModel: FieldViewModel
     private lateinit var fieldFilterViewModel: FieldFilterViewModel
-    private lateinit var authViewModel: AuthViewModel
     private lateinit var presetViewModel: PresetViewModel
-    private lateinit var monitorDeviceViewModel: MonitorDeviceViewModel
     private lateinit var primaryDeviceViewModel: PrimaryDeviceViewModel
+    private lateinit var monitorDeviceViewModel: MonitorDeviceViewModel
     private lateinit var window: Window
 
     private var clientId: String? = null
@@ -117,11 +117,10 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
         val dtf = DateTimeFormatter.ofPattern("dd MMM")
         val localDate = LocalDate.now()
         binding.txtTanggalHome.text = dtf.format(localDate)
-
         binding.scrollView.setOnScrollChangeListener(
             NestedScrollView.OnScrollChangeListener {
                     _, _, scrollY, _, _ ->
-                if(scrollY > 251){
+                if(scrollY > 558){
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                 } else {
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
@@ -232,10 +231,10 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
         // Monitoring Bawah
 
-        binding.valTemperaturePlaceholder.visibility = View.VISIBLE
-        binding.valSoilMoisturePlaceholder.visibility = View.VISIBLE
-        binding.valWaterLevel.visibility = View.VISIBLE
+        binding.valWaterTankPlaceholder.visibility = View.VISIBLE
+        binding.valFertilizerTankPlaceholder.visibility = View.VISIBLE
         binding.valMoisturePlaceholder.visibility = View.VISIBLE
+        binding.valWaterLevel.visibility = View.VISIBLE
         binding.valWaterTank.visibility = View.GONE
         binding.valFertilizerTank.visibility = View.GONE
         binding.valWaterLevel.visibility = View.GONE
@@ -266,8 +265,8 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
         // Monitoring Bawah
 
-        binding.valTemperaturePlaceholder.visibility = View.GONE
-        binding.valSoilMoisturePlaceholder.visibility = View.GONE
+        binding.valWaterTankPlaceholder.visibility = View.GONE
+        binding.valFertilizerTankPlaceholder.visibility = View.GONE
         binding.valWaterLevel.visibility = View.GONE
         binding.valMoisturePlaceholder.visibility = View.GONE
         binding.valWaterTank.visibility = View.VISIBLE

@@ -600,7 +600,7 @@
                             android:layout_height="25dp" >
 
                             <View
-                                android:layout_width="120dp"
+                                android:layout_width="180dp"
                                 android:layout_height="match_parent"
                                 android:background="@color/shimmer_placeholder2"
                                 android:layout_gravity="left" />
@@ -662,10 +662,10 @@
                                         android:textSize="18sp"
                                         android:layout_marginTop="2dp"
                                         android:visibility="gone"
-                                        android:text="20%" />
+                                        android:text="N/A" />
 
                                     <com.facebook.shimmer.ShimmerFrameLayout
-                                        android:id="@+id/val_temperature_placeholder"
+                                        android:id="@+id/val_water_tank_placeholder"
                                         android:layout_width="match_parent"
                                         android:layout_marginTop="2dp"
                                         android:layout_marginBottom="2dp"
@@ -728,10 +728,10 @@
                                         android:visibility="gone"
                                         android:layout_marginTop="2dp"
                                         android:textSize="18sp"
-                                        android:text="80%" />
+                                        android:text="N/A" />
 
                                     <com.facebook.shimmer.ShimmerFrameLayout
-                                        android:id="@+id/val_soil_moisture_placeholder"
+                                        android:id="@+id/val_fertilizer_tank_placeholder"
                                         android:layout_width="match_parent"
                                         android:layout_marginTop="2dp"
                                         android:layout_marginBottom="2dp"
