@@ -21,7 +21,7 @@ class FieldViewModel: ViewModel() {
     private val dbControlling = FirebaseDatabase.getInstance().getReference("controlling")
     var operationListener: OperationListener? = null
 
-    private val _fields = MutableLiveData<List<Field>?>()
+    val _fields = MutableLiveData<List<Field>?>()
     val fields: MutableLiveData<List<Field>?>
         get() = _fields
 

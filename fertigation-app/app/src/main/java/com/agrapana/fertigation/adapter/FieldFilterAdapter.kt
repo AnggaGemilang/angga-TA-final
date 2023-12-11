@@ -44,7 +44,7 @@ class FieldFilterAdapter(val context: Context): RecyclerView.Adapter<FieldFilter
         textViewList[0].setTextColor(ContextCompat.getColor(context, R.color.white))
 
         if(position == 0){
-            changeFieldListener?.onChangeField(fieldList[position].hardwareCode)
+            changeFieldListener?.onChangeField(fieldList[position].hardwareCode, fieldList[position].presetId)
         }
 
         if(cardViewList.size == fieldList.size){
@@ -63,7 +63,7 @@ class FieldFilterAdapter(val context: Context): RecyclerView.Adapter<FieldFilter
             }
             holder.binding.txtName.setTextColor(ContextCompat.getColor(context, R.color.white))
             holder.binding.cardViewFilter.background.setTint(ContextCompat.getColor(context, R.color.green_20))
-            changeFieldListener?.onChangeField(fieldList[position].hardwareCode)
+            changeFieldListener?.onChangeField(fieldList[position].hardwareCode, fieldList[position].presetId)
         }
     }
 

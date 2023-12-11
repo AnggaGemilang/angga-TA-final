@@ -59,6 +59,7 @@ class PresetViewModel : ViewModel() {
             val parameterPresets = mutableListOf<ParameterPreset>()
             if (snapshot.exists()) {
                 for (dataSnapshot in snapshot.children) {
+                    Log.d("sabihis", dataSnapshot.toString())
                     val parameterPreset = dataSnapshot.getValue(ParameterPreset::class.java)
                     parameterPreset?.id = dataSnapshot.key.toString()
                     parameterPreset?.let { parameterPresets.add(it) }
@@ -76,6 +77,10 @@ class PresetViewModel : ViewModel() {
 
     fun fetchPresets(id: String) {
         dbPresets.child(id).child("parameter").addListenerForSingleValueEvent(valueEventListener)
+    }
+
+    fun fetchPresetById(ownerId: String, presetId: String) {
+        dbPresets.child(ownerId).child("parameter").orderByKey().equalTo(presetId).addListenerForSingleValueEvent(valueEventListener)
     }
 
     fun onAddPreset(clientId: String, parameterPreset: ParameterPreset){

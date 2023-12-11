@@ -31,7 +31,7 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
         holder.tvIdealMoisture.text = "Moisture: ${parameterPresets[position].idealMoisture}%"
         Glide.with(holder.imageView.context)
             .load(parameterPresets[position].imageUrl)
-            .into(holder.imageView);
+            .into(holder.imageView)
         holder.irrigationAge.text = "I. Age: ${parameterPresets[position].irrigationAge} HST"
         holder.fertigationAge.text = "F. Age: ${parameterPresets[position].fertigationAge} HST"
         holder.irrigationDose.text = "I. Dose: ${parameterPresets[position].irrigationDose} mL"

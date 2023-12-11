@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -27,23 +26,30 @@ import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.ui.activity.WorkerActivity
 import com.agrapana.fertigation.viewmodel.AuthViewModel
+import com.agrapana.fertigation.viewmodel.FieldFilterViewModel
 import com.agrapana.fertigation.viewmodel.FieldViewModel
+import com.agrapana.fertigation.viewmodel.MonitorDeviceViewModel
+import com.agrapana.fertigation.viewmodel.PresetViewModel
+import com.agrapana.fertigation.viewmodel.PrimaryDeviceViewModel
+import com.bumptech.glide.Glide
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
-import kotlin.collections.ArrayList
 
 class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var prefs: SharedPreferences
-    private lateinit var recyclerViewAdapter: FieldFilterAdapter
-    private lateinit var viewModel: FieldViewModel
+    private lateinit var fieldAdapter: FieldFilterAdapter
+    private lateinit var fieldViewModel: FieldViewModel
+    private lateinit var fieldFilterViewModel: FieldFilterViewModel
     private lateinit var authViewModel: AuthViewModel
+    private lateinit var presetViewModel: PresetViewModel
+    private lateinit var monitorDeviceViewModel: MonitorDeviceViewModel
+    private lateinit var primaryDeviceViewModel: PrimaryDeviceViewModel
     private lateinit var window: Window
 
     private var clientId: String? = null
-    private var fieldId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -115,7 +121,7 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
         binding.scrollView.setOnScrollChangeListener(
             NestedScrollView.OnScrollChangeListener {
                     _, _, scrollY, _, _ ->
-                if(scrollY > 451){
+                if(scrollY > 251){
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                 } else {
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
@@ -128,96 +134,146 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
             activity, LinearLayoutManager.HORIZONTAL, false
         )
         binding.recyclerView.layoutManager = linearLayoutManager
-        recyclerViewAdapter = FieldFilterAdapter(activity!!)
-        recyclerViewAdapter.changeFieldListener = this
-        binding.recyclerView.adapter = recyclerViewAdapter
-        recyclerViewAdapter.notifyDataSetChanged()
+        fieldAdapter = FieldFilterAdapter(activity!!)
+        fieldAdapter.changeFieldListener = this
+        binding.recyclerView.adapter = fieldAdapter
+        fieldAdapter.notifyDataSetChanged()
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this)[FieldViewModel::class.java]
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         authViewModel.operationListener = this
+        fieldViewModel = ViewModelProvider(this)[FieldViewModel::class.java]
+        fieldViewModel.fetchFields(clientId!!)
+        fieldViewModel.fields.observe(viewLifecycleOwner) {
+            if (it!!.isNotEmpty()) {
+                binding.valFilterFieldPlaceholder.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+                fieldAdapter.setFieldList(it)
+                Log.d("sabihis22", "field")
+            } else {
+                binding.valFilterFieldPlaceholder.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+            }
+        }
+        fieldFilterViewModel = ViewModelProvider(this)[FieldFilterViewModel::class.java]
+        fieldFilterViewModel.fields.observe(viewLifecycleOwner) { fields ->
+            if (fields!!.isNotEmpty()) {
+                binding.valFieldLoc.text = fields[0].address
+                Log.d("sabihis22", "fieldFilter")
+            }
+        }
+        presetViewModel = ViewModelProvider(this)[PresetViewModel::class.java]
+        presetViewModel.presets.observe(viewLifecycleOwner) {presets ->
+            if (presets!!.isNotEmpty()) {
+                binding.valPresetName.text = presets[0].presetName
+                Glide.with(requireContext())
+                    .load(presets[0].imageUrl)
+                    .into(binding.valPresetImg)
+            }
+        }
+        primaryDeviceViewModel = ViewModelProvider(this)[PrimaryDeviceViewModel::class.java]
+        primaryDeviceViewModel.primaryDevices.observe(viewLifecycleOwner) { primaryDevice ->
+            if (primaryDevice!!.isNotEmpty()) {
+                binding.valWateringStatus.text = primaryDevice[0].wateringStatus
+                binding.valFertilizingStatus.text = primaryDevice[0].fertilizingStatus
+                binding.valFertilizerValve.text = primaryDevice[0].fertilizerValve
+                binding.valWaterValve.text = primaryDevice[0].waterValve
+                binding.valPump.text = primaryDevice[0].pumpStatus
+                binding.valFertilizerTank.text = primaryDevice[0].fertilizerTank.toString() + "%"
+                binding.valWaterTank.text = primaryDevice[0].waterTank.toString() + "%"
+                binding.valDataTaken.text = "Taken at " + primaryDevice[0].takenAt
+            }
+        }
+        monitorDeviceViewModel = ViewModelProvider(this)[MonitorDeviceViewModel::class.java]
+        monitorDeviceViewModel.monitorDevices.observe(viewLifecycleOwner) { monitorDevice ->
+            if (monitorDevice!!.isNotEmpty()) {
+                var moisture = 0; var waterLevel = 0
+                for(monitor in monitorDevice){
+                    moisture += monitor.moisture
+                    waterLevel += monitor.waterLevel
+                }
+                binding.valMoisture.text = (moisture / monitorDevice.size).toString() + "%"
+                binding.valWaterLevel.text = (waterLevel / monitorDevice.size).toDouble().toString()
+            }
+            showMainField()
+        }
     }
 
-    override fun onChangeField(id: String?) {
-        fieldId = id
-    }
-
-    private fun hideAdditionalField(){
-        binding.valPest.visibility = View.GONE
-        binding.valPestPlaceholder.visibility = View.VISIBLE
-        binding.valWeather.visibility = View.GONE
-        binding.valWeatherPlaceholder.visibility = View.VISIBLE
-    }
-
-    private fun showAdditionalField(){
-        binding.valPestPlaceholder.visibility = View.GONE
-        binding.valPest.visibility = View.VISIBLE
-        binding.valWeatherPlaceholder.visibility = View.GONE
-        binding.valWeather.visibility = View.VISIBLE
+    override fun onChangeField(fieldId: String?, presetId: String?) {
+        hideMainField()
+        fieldFilterViewModel.fetchFieldsByWorker(clientId!!, fieldId!!)
+        presetViewModel.fetchPresetById(clientId!!, presetId!!)
+        primaryDeviceViewModel.fetchMonitoringData(clientId!!, fieldId)
+        monitorDeviceViewModel.fetchMonitoringData(clientId!!, fieldId)
     }
 
     private fun hideMainField(){
 
         // Monitoring Atas
-
-        binding.valWindTemperaturePlaceholder.visibility = View.VISIBLE
-        binding.valWindHumidityPlaceholder.visibility = View.VISIBLE
-        binding.valWindSpeedPlaceholder.visibility = View.VISIBLE
-        binding.valPressurePlaceholder.visibility = View.VISIBLE
-        binding.valLightPlaceholder.visibility = View.VISIBLE
-        binding.valWindTemperature.visibility = View.GONE
-        binding.valWindHumidity.visibility = View.GONE
-        binding.valWindSpeed.visibility = View.GONE
-        binding.valPressure.visibility = View.GONE
-        binding.valLight.visibility = View.GONE
+        binding.valWateringPlaceholder.visibility = View.VISIBLE
+        binding.valPresetImgPlaceholder.visibility = View.VISIBLE
+        binding.valPresetNamePlaceholder.visibility = View.VISIBLE
+        binding.valFieldLocPlaceholder.visibility = View.VISIBLE
+        binding.valFertilizingPlaceholder.visibility = View.VISIBLE
+        binding.valPumpPlaceholder.visibility = View.VISIBLE
+        binding.valWaterValvePlaceholder.visibility = View.VISIBLE
+        binding.valFertilizerValvePlaceholder.visibility = View.VISIBLE
+        binding.valTakenAtPlaceholder.visibility = View.VISIBLE
+        binding.valWateringStatus.visibility = View.GONE
+        binding.valFertilizingStatus.visibility = View.GONE
+        binding.valPresetImg.visibility = View.GONE
+        binding.valPump.visibility = View.GONE
+        binding.valFieldLoc.visibility = View.GONE
+        binding.valWaterValve.visibility = View.GONE
+        binding.valFertilizerValve.visibility = View.GONE
+        binding.valPresetName.visibility = View.GONE
+        binding.valDataTaken.visibility = View.GONE
 
         // Monitoring Bawah
 
         binding.valTemperaturePlaceholder.visibility = View.VISIBLE
         binding.valSoilMoisturePlaceholder.visibility = View.VISIBLE
-        binding.valSoilPhPlaceholder.visibility = View.VISIBLE
-        binding.valSoilNitrogenPlaceholder.visibility = View.VISIBLE
-//        binding.valSoilPhosphorPlaceholder.visibility = View.VISIBLE
-//        binding.valSoilKaliumPlaceholder.visibility = View.VISIBLE
-        binding.valSoilTemperature.visibility = View.GONE
-        binding.valSoilMoisture.visibility = View.GONE
-        binding.valSoilPh.visibility = View.GONE
-        binding.valSoilNitrogen.visibility = View.GONE
-//        binding.valSoilPhosphor.visibility = View.GONE
-//        binding.valSoilKalium.visibility = View.GONE
+        binding.valWaterLevel.visibility = View.VISIBLE
+        binding.valMoisturePlaceholder.visibility = View.VISIBLE
+        binding.valWaterTank.visibility = View.GONE
+        binding.valFertilizerTank.visibility = View.GONE
+        binding.valWaterLevel.visibility = View.GONE
+        binding.valMoisture.visibility = View.GONE
     }
 
     private fun showMainField(){
 
         // Monitoring Atas
-
-        binding.valWindTemperaturePlaceholder.visibility = View.GONE
-        binding.valWindHumidityPlaceholder.visibility = View.GONE
-        binding.valWindSpeedPlaceholder.visibility = View.GONE
-        binding.valPressurePlaceholder.visibility = View.GONE
-        binding.valLightPlaceholder.visibility = View.GONE
-        binding.valWindTemperature.visibility = View.VISIBLE
-        binding.valWindHumidity.visibility = View.VISIBLE
-        binding.valWindSpeed.visibility = View.VISIBLE
-        binding.valPressure.visibility = View.VISIBLE
-        binding.valLight.visibility = View.VISIBLE
+        binding.valWateringPlaceholder.visibility = View.GONE
+        binding.valPresetImgPlaceholder.visibility = View.GONE
+        binding.valPresetNamePlaceholder.visibility = View.GONE
+        binding.valFieldLocPlaceholder.visibility = View.GONE
+        binding.valFertilizingPlaceholder.visibility = View.GONE
+        binding.valTakenAtPlaceholder.visibility = View.GONE
+        binding.valPumpPlaceholder.visibility = View.GONE
+        binding.valWaterValvePlaceholder.visibility = View.GONE
+        binding.valFertilizerValvePlaceholder.visibility = View.GONE
+        binding.valWateringStatus.visibility = View.VISIBLE
+        binding.valFertilizingStatus.visibility = View.VISIBLE
+        binding.valPresetImg.visibility = View.VISIBLE
+        binding.valPump.visibility = View.VISIBLE
+        binding.valFieldLoc.visibility = View.VISIBLE
+        binding.valWaterValve.visibility = View.VISIBLE
+        binding.valFertilizerValve.visibility = View.VISIBLE
+        binding.valPresetName.visibility = View.VISIBLE
+        binding.valDataTaken.visibility = View.VISIBLE
 
         // Monitoring Bawah
 
         binding.valTemperaturePlaceholder.visibility = View.GONE
         binding.valSoilMoisturePlaceholder.visibility = View.GONE
-        binding.valSoilPhPlaceholder.visibility = View.GONE
-        binding.valSoilNitrogenPlaceholder.visibility = View.GONE
-//        binding.valSoilPhosphorPlaceholder.visibility = View.GONE
-//        binding.valSoilKaliumPlaceholder.visibility = View.GONE
-        binding.valSoilTemperature.visibility = View.VISIBLE
-        binding.valSoilMoisture.visibility = View.VISIBLE
-        binding.valSoilPh.visibility = View.VISIBLE
-        binding.valSoilNitrogen.visibility = View.VISIBLE
-//        binding.valSoilPhosphor.visibility = View.VISIBLE
-//        binding.valSoilKalium.visibility = View.VISIBLE
+        binding.valWaterLevel.visibility = View.GONE
+        binding.valMoisturePlaceholder.visibility = View.GONE
+        binding.valWaterTank.visibility = View.VISIBLE
+        binding.valFertilizerTank.visibility = View.VISIBLE
+        binding.valWaterLevel.visibility = View.VISIBLE
+        binding.valMoisture.visibility = View.VISIBLE
     }
 
     override fun onResume() {

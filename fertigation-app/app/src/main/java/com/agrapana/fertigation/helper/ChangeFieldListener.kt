@@ -1,5 +1,5 @@
 package com.agrapana.fertigation.helper
 
 interface ChangeFieldListener {
-    fun onChangeField(id: String?)
+    fun onChangeField(fieldId: String?, presetId: String?)
 }
