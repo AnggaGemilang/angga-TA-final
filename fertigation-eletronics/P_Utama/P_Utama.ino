@@ -45,7 +45,9 @@ FirebaseConfig config;
 String monitorDeviceData, irrigationTimes, fertigationTimes, tempLastIrrigation, tempatLastFertigation;
 int fertilizerTankVal, waterTankVal, idealMoisture;
 int irrigationDays, fertigationDays;
-int irrigationDose, fertigationDose, userInterval;
+// int irrigationDose, fertigationDose, userInterval;
+int irrigationDose = 750, fertigationDose = 500, userInterval;
+int irrigationDuration, fertigationDuration;
 
 String timeNow();
 int waterTank();
@@ -115,12 +117,14 @@ void readControlData(){
   if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose")){
     if(fbdo.dataType() == "int"){
       irrigationDose = fbdo.intData();
+      irrigationDuration = (int)((((float)irrigationDose / (float)160) / (float)58.3) * (float)3600);
     }
   }    
 
   if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose")){
     if(fbdo.dataType() == "int"){
       fertigationDose = fbdo.intData();
+      fertigationDuration = (int)((((float)fertigationDose / (float)160) / (float)58.3) * (float)3600);
     }
   }
 
@@ -187,31 +191,31 @@ void setup() {
 
 //  rtc.adjust(DateTime(__DATE__, __TIME__));
 
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);                                  
-  Serial.print("Connecting to ");
-  Serial.print(WIFI_SSID);
-  while (WiFi.status() != WL_CONNECTED) 
-  {
-    Serial.print(".");
-    delay(500);
-  }
-  Serial.println();
-  Serial.print("Connected with IP: ");
-  Serial.println(WiFi.localIP());
-  Serial.println();
-
-  config.api_key = API_KEY;
-  config.database_url = DATABASE_URL;
-
-  if (Firebase.signUp(&config, &auth, "", "")){
-    Serial.println("Firebase Connected");
-  }
-  else{
-    Serial.printf("%s\n", config.signer.signupError.message.c_str());
-  }
-  
-  Firebase.begin(&config, &auth);
-  Firebase.reconnectWiFi(true);
+//  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);                                  
+//  Serial.print("Connecting to ");
+//  Serial.print(WIFI_SSID);
+//  while (WiFi.status() != WL_CONNECTED) 
+//  {
+//    Serial.print(".");
+//    delay(500);
+//  }
+//  Serial.println();
+//  Serial.print("Connected with IP: ");
+//  Serial.println(WiFi.localIP());
+//  Serial.println();
+//
+//  config.api_key = API_KEY;
+//  config.database_url = DATABASE_URL;
+//
+//  if (Firebase.signUp(&config, &auth, "", "")){
+//    Serial.println("Firebase Connected");
+//  }
+//  else{
+//    Serial.printf("%s\n", config.signer.signupError.message.c_str());
+//  }
+//  
+//  Firebase.begin(&config, &auth);
+//  Firebase.reconnectWiFi(true);
 
   userScheduler.init();
   userScheduler.addTask( taskReadControlData );
@@ -227,7 +231,7 @@ void loop() {
     Serial.println("monitorDeviceData: " + monitorDeviceData);
     sendMessage();
   }
-  
+
   //  digitalWrite(PUMP_RELAY, HIGH);
   
   //  lcd_i2c.clear();
