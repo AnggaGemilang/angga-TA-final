@@ -62,7 +62,6 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         initViewModel()
-
     }
 
     private fun initViewModel() {

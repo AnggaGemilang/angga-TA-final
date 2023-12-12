@@ -106,7 +106,6 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
             viewModel.getRealtimeUpdates(ownerId)
         }
         viewModel.field.observe(viewLifecycleOwner) {
-            Log.d("sabihis", "Kadieu Teuu")
             adapter.addField(it)
             binding.notFound.visibility = View.GONE
             binding.recyclerView.visibility = View.VISIBLE

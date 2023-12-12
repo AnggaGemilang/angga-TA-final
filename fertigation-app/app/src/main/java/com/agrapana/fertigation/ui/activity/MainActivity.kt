@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         val token: String = FirebaseInstanceId.getInstance().token!!
-        Log.d("token: ", token)
 
         val w = window
         w.setFlags(

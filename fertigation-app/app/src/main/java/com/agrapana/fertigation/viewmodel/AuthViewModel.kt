@@ -47,10 +47,8 @@ class AuthViewModel : ViewModel() {
                                         userNow.password = snapshot.child("password").value.toString()
                                         userNow.role = snapshot.child("role").value.toString()
                                         userNow.name = snapshot.child("name").value.toString()
-                                        Log.d("sabihis", "nanang123")
                                         dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(userNow).addOnCompleteListener { saved ->
                                             if (saved.isSuccessful) {
-                                                Log.d("sabihis2", "nanang123")
                                                 authResponse.value = AuthResponse(
                                                     snapshot.key,
                                                     snapshot.child("name").value.toString(),
@@ -89,7 +87,6 @@ class AuthViewModel : ViewModel() {
                         })
                 } else {
                     authListener?.onFailure("Account Not Found")
-                    Log.d("hasil", it.exception!!.message.toString())
                 }
             }
         }

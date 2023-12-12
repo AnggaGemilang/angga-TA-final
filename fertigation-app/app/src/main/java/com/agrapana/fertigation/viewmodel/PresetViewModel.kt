@@ -59,7 +59,6 @@ class PresetViewModel : ViewModel() {
             val parameterPresets = mutableListOf<ParameterPreset>()
             if (snapshot.exists()) {
                 for (dataSnapshot in snapshot.children) {
-                    Log.d("sabihis", dataSnapshot.toString())
                     val parameterPreset = dataSnapshot.getValue(ParameterPreset::class.java)
                     parameterPreset?.id = dataSnapshot.key.toString()
                     parameterPreset?.let { parameterPresets.add(it) }

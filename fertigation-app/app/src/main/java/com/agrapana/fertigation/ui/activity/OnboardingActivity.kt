@@ -17,7 +17,6 @@ import com.agrapana.fertigation.model.OnboardingData
 import com.google.android.material.tabs.TabLayout
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
-
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding

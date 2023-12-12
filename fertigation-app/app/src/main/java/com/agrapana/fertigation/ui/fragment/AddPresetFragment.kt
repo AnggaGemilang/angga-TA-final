@@ -255,9 +255,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                                 .addOnSuccessListener { taskSnapshot ->
                                     taskSnapshot.storage.downloadUrl.addOnSuccessListener {
                                         val imageUrl = it.toString()
-                                        Log.d("Warko", "Sabihis bener kuduna kadieu")
                                         parameterPreset.imageUrl = imageUrl
-                                        Log.d("Warko 2", parameterPreset.toString())
                                         viewModel.onUpdatePreset(userId, parameterPreset)
                                     }
                                 }
@@ -399,7 +397,6 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 binding.irrigationTimesList.removeView(view)
                 binding.addFtimesInput.isEnabled = binding.irrigationTimesList.size != binding.fertigationTimesList.size
                 if(binding.fertigationTimesList.size > binding.irrigationTimesList.size){
-                    Log.d("sabihis", "suwarko ke sini")
                     removeView("fTimes", binding.fertigationTimesList.getChildAt(binding.fertigationTimesList.size-1))
                 }
             }

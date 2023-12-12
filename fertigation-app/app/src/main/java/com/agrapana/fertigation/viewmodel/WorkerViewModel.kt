@@ -53,7 +53,6 @@ class WorkerViewModel : ViewModel() {
         }
 
         override fun onChildAdded(snapshot: DataSnapshot, p1: String?) {
-            Log.d("warko 3", "sini")
             val worker = snapshot.getValue(Worker::class.java)
             _worker.value = worker!!
         }

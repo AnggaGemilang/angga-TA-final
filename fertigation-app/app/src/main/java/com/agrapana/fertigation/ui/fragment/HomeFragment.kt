@@ -149,7 +149,6 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
                 binding.valFilterFieldPlaceholder.visibility = View.GONE
                 binding.recyclerView.visibility = View.VISIBLE
                 fieldAdapter.setFieldList(it)
-                Log.d("sabihis22", "field")
             } else {
                 binding.valFilterFieldPlaceholder.visibility = View.VISIBLE
                 binding.recyclerView.visibility = View.GONE
@@ -159,7 +158,6 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
         fieldFilterViewModel.fields.observe(viewLifecycleOwner) { fields ->
             if (fields!!.isNotEmpty()) {
                 binding.valFieldLoc.text = fields[0].address
-                Log.d("sabihis22", "fieldFilter")
             }
         }
         presetViewModel = ViewModelProvider(this)[PresetViewModel::class.java]
