@@ -7,6 +7,7 @@
 #include <Firebase_ESP_Client.h>
 #include <HardwareSerial.h>
 #include <HTTPClient.h>
+#include "StringSplitter.h"
 
 #define RXp2 16
 #define TXp2 17
@@ -43,11 +44,11 @@ FirebaseAuth auth;
 FirebaseConfig config;
 
 String monitorDeviceData, irrigationTimes, fertigationTimes, tempLastIrrigation, tempatLastFertigation;
+String irrigationDose = "750", fertigationDose = "500", irrigationAge, fertigationAge;
 int fertilizerTankVal, waterTankVal, idealMoisture;
-int irrigationDays, fertigationDays;
-// int irrigationDose, fertigationDose, userInterval;
-int irrigationDose = 750, fertigationDose = 500, userInterval;
+int irrigationDays, fertigationDays, userInterval;
 int irrigationDuration, fertigationDuration;
+unsigned long lastIrrigation, lastFertigation;
 
 String timeNow();
 int waterTank();
@@ -117,14 +118,14 @@ void readControlData(){
   if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose")){
     if(fbdo.dataType() == "int"){
       irrigationDose = fbdo.intData();
-      irrigationDuration = (int)((((float)irrigationDose / (float)160) / (float)58.3) * (float)3600);
+      // irrigationDuration = (int)((((float)irrigationDose / (float)160) / (float)58.3) * (float)3600);
     }
   }    
 
   if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose")){
     if(fbdo.dataType() == "int"){
       fertigationDose = fbdo.intData();
-      fertigationDuration = (int)((((float)fertigationDose / (float)160) / (float)58.3) * (float)3600);
+      // fertigationDuration = (int)((((float)fertigationDose / (float)160) / (float)58.3) * (float)3600);
     }
   }
 
@@ -258,4 +259,23 @@ void loop() {
 
   // Serial.print("Waktu: ");
   // Serial.println(timeNow());
+
+  StringSplitter *fertigationAgeSplitter = new StringSplitter(fertigationAge, ',', 3);
+  StringSplitter *fertigationDoseSplitter = new StringSplitter(fertigationDose, ',', 3);
+  StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
+  StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
+  StringSplitter *irrigationDoseSplitter = new StringSplitter(irrigationDose, ',', 3);
+  StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);    
+
+  if(irrigationDays > 1){
+    unsigned long selisihWaktu = millis() - lastIrrigation;
+    unsigned long jumlahHari = selisihWaktu / (1000UL * 60UL * 60UL * 24UL);
+    if (jumlahHari >= irrigationDays) {
+      Serial.println("Selisih waktu lebih dari 4 hari.");
+    }
+  } else {
+    
+  }
+
+  delay(2000);
 }

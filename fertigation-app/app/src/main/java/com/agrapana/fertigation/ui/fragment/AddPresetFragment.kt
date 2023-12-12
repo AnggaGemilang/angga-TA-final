@@ -199,9 +199,20 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
 
             if(arguments?.getString("status") == "update") {
                 parameterPreset.id = arguments?.getString("id")!!
-                if(linkImage == null){
+                if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
+                    parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
+                    parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
+                    parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture.isEmpty() ||
+                    parameterPreset.irrigationDose.isEmpty() || parameterPreset.fertigationDose.isEmpty()) {
+                    Toast.makeText(requireContext(), "Fill all blanks input", Toast.LENGTH_LONG).show()
+                    progressDialog!!.dismiss()
+                } else if(parameterPreset.fertigationDays.toInt() > 45 || parameterPreset.irrigationDays.toInt() > 45){
+                    Toast.makeText(requireContext(), "Days interval cannot greater that 45", Toast.LENGTH_LONG).show()
+                    progressDialog!!.dismiss()
+                } else if(linkImage == null){
                     parameterPreset.imageUrl = arguments?.getString("imageURL")!!
                     viewModel.onUpdatePreset(userId, parameterPreset)
+                    progressDialog!!.dismiss()
                 } else {
                     val storageReference = FirebaseStorage.getInstance()
                         .getReferenceFromUrl(arguments?.getString("imageURL")!!)
@@ -226,9 +237,20 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                     }
                 }
             } else {
-                if(linkImage == null){
+                if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
+                    parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
+                    parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
+                    parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture.isEmpty() ||
+                    parameterPreset.irrigationDose.isEmpty() || parameterPreset.fertigationDose.isEmpty()) {
+                    Toast.makeText(requireContext(), "Fill all blanks input", Toast.LENGTH_LONG).show()
+                    progressDialog!!.dismiss()
+                } else if(linkImage == null){
                     progressDialog!!.dismiss()
                     Toast.makeText(context, "Fill all blanks input", Toast.LENGTH_SHORT).show()
+                    progressDialog!!.dismiss()
+                } else if(parameterPreset.fertigationDays.toInt() > 45 || parameterPreset.irrigationDays.toInt() > 45){
+                    Toast.makeText(requireContext(), "Days interval cannot greater that 45", Toast.LENGTH_LONG).show()
+                    progressDialog!!.dismiss()
                 } else {
                     val fileName = UUID.randomUUID().toString() +".png"
                     val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
