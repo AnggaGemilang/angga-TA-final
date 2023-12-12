@@ -18,6 +18,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEachIndexed
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.FragmentAddPresetBinding
@@ -58,6 +60,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             binding.presetName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("preset_name"))
             binding.idealMoisture.text = Editable.Factory.getInstance().newEditable(arguments?.getString("ideal_moisture"))
             binding.fertigationDays.text = Editable.Factory.getInstance().newEditable(arguments?.getString("fertigation_days"))
+            binding.addFtimesInput.isEnabled = binding.irrigationTimesList.size != binding.fertigationTimesList.size
 
             val irrigationTimes = (arguments?.getString("irrigation_times"))!!.split(",")
             irrigationTimes.forEachIndexed { index, _ ->
@@ -210,30 +213,60 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                     Toast.makeText(requireContext(), "Days interval cannot greater that 45", Toast.LENGTH_LONG).show()
                     progressDialog!!.dismiss()
                 } else if(linkImage == null){
-                    parameterPreset.imageUrl = arguments?.getString("imageURL")!!
-                    viewModel.onUpdatePreset(userId, parameterPreset)
-                    progressDialog!!.dismiss()
+                    val splittedIrrigationTimes = parameterPreset.irrigationTimes.split(",")
+                    val splittedFertigationTimes = parameterPreset.fertigationTimes.split(",")
+                    var equalValue = 0
+                    splittedFertigationTimes.forEach { fertigationData ->
+                        splittedIrrigationTimes.forEach { irrigationData ->
+                            if(irrigationData == fertigationData){
+                                equalValue++
+                            }
+                        }
+                    }
+                    if(equalValue != splittedFertigationTimes.size){
+                        Toast.makeText(requireContext(), "Fertigation times must be equal to Irrigation times", Toast.LENGTH_LONG).show()
+                        progressDialog!!.dismiss()
+                    } else {
+                        parameterPreset.imageUrl = arguments?.getString("imageURL")!!
+                        viewModel.onUpdatePreset(userId, parameterPreset)
+                        progressDialog!!.dismiss()
+                    }
                 } else {
-                    val storageReference = FirebaseStorage.getInstance()
-                        .getReferenceFromUrl(arguments?.getString("imageURL")!!)
-                    storageReference.delete().addOnSuccessListener {
-                        val fileName = UUID.randomUUID().toString() +".png"
-                        val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
-                        refStorage.putFile(linkImage!!)
-                            .addOnSuccessListener { taskSnapshot ->
-                                taskSnapshot.storage.downloadUrl.addOnSuccessListener {
-                                    val imageUrl = it.toString()
-                                    Log.d("Warko", "Sabihis bener kuduna kadieu")
-                                    parameterPreset.imageUrl = imageUrl
-                                    Log.d("Warko 2", parameterPreset.toString())
-                                    viewModel.onUpdatePreset(userId, parameterPreset)
+                    val splittedIrrigationTimes = parameterPreset.irrigationTimes.split(",")
+                    val splittedFertigationTimes = parameterPreset.fertigationTimes.split(",")
+                    var equalValue = 0
+                    splittedFertigationTimes.forEach { fertigationData ->
+                        splittedIrrigationTimes.forEach { irrigationData ->
+                            if(irrigationData == fertigationData){
+                                equalValue++
+                            }
+                        }
+                    }
+                    if(equalValue != splittedFertigationTimes.size){
+                        Toast.makeText(requireContext(), "Fertigation times must be equal to Irrigation times", Toast.LENGTH_LONG).show()
+                        progressDialog!!.dismiss()
+                    } else {
+                        val storageReference = FirebaseStorage.getInstance()
+                            .getReferenceFromUrl(arguments?.getString("imageURL")!!)
+                        storageReference.delete().addOnSuccessListener {
+                            val fileName = UUID.randomUUID().toString() +".png"
+                            val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
+                            refStorage.putFile(linkImage!!)
+                                .addOnSuccessListener { taskSnapshot ->
+                                    taskSnapshot.storage.downloadUrl.addOnSuccessListener {
+                                        val imageUrl = it.toString()
+                                        Log.d("Warko", "Sabihis bener kuduna kadieu")
+                                        parameterPreset.imageUrl = imageUrl
+                                        Log.d("Warko 2", parameterPreset.toString())
+                                        viewModel.onUpdatePreset(userId, parameterPreset)
+                                    }
                                 }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.d("gagal", e.message.toString())
-                            }
-                    }.addOnFailureListener {
-                        Log.d("gagal", it.message.toString())
+                                .addOnFailureListener { e ->
+                                    Log.d("gagal", e.message.toString())
+                                }
+                        }.addOnFailureListener {
+                            Log.d("gagal", it.message.toString())
+                        }
                     }
                 }
             } else {
@@ -252,19 +285,34 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                     Toast.makeText(requireContext(), "Days interval cannot greater that 45", Toast.LENGTH_LONG).show()
                     progressDialog!!.dismiss()
                 } else {
-                    val fileName = UUID.randomUUID().toString() +".png"
-                    val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
-                    refStorage.putFile(linkImage!!)
-                        .addOnSuccessListener { taskSnapshot ->
-                            taskSnapshot.storage.downloadUrl.addOnSuccessListener {
-                                val imageUrl = it.toString()
-                                parameterPreset.imageUrl = imageUrl
-                                viewModel.onAddPreset(userId, parameterPreset)
+                    val splittedIrrigationTimes = parameterPreset.irrigationTimes.split(",")
+                    val splittedFertigationTimes = parameterPreset.fertigationTimes.split(",")
+                    var equalValue = 0
+                    splittedFertigationTimes.forEach { fertigationData ->
+                        splittedIrrigationTimes.forEach { irrigationData ->
+                            if(irrigationData == fertigationData){
+                                equalValue++
                             }
                         }
-                        .addOnFailureListener { e ->
-                            Log.d("gagal", e.message.toString())
-                        }
+                    }
+                    if(equalValue != splittedFertigationTimes.size){
+                        Toast.makeText(requireContext(), "Fertigation times must be equal to Irrigation times", Toast.LENGTH_LONG).show()
+                        progressDialog!!.dismiss()
+                    } else {
+                        val fileName = UUID.randomUUID().toString() +".png"
+                        val refStorage = FirebaseStorage.getInstance().reference.child("thumbnail_preset/$fileName")
+                        refStorage.putFile(linkImage!!)
+                            .addOnSuccessListener { taskSnapshot ->
+                                taskSnapshot.storage.downloadUrl.addOnSuccessListener {
+                                    val imageUrl = it.toString()
+                                    parameterPreset.imageUrl = imageUrl
+                                    viewModel.onAddPreset(userId, parameterPreset)
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.d("gagal", e.message.toString())
+                            }
+                    }
                 }
             }
         }
@@ -291,6 +339,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 }
                 imageClose.setOnClickListener { removeView("iTimes", templateView) }
                 binding.irrigationTimesList.addView(templateView)
+                binding.addFtimesInput.isEnabled = binding.irrigationTimesList.size != binding.fertigationTimesList.size
             }
             "fTimes" -> {
                 val templateView: View = layoutInflater.inflate(R.layout.template_fertigation_times_input, null, false)
@@ -311,6 +360,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 }
                 imageClose.setOnClickListener { removeView("fTimes", templateView) }
                 binding.fertigationTimesList.addView(templateView)
+                binding.addFtimesInput.isEnabled = binding.irrigationTimesList.size != binding.fertigationTimesList.size
             }
             "iDoses" -> {
                 val templateView: View = layoutInflater.inflate(R.layout.template_irrigation_dose_input, null, false)
@@ -347,9 +397,15 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
         when (usedFor){
             "iTimes" -> {
                 binding.irrigationTimesList.removeView(view)
+                binding.addFtimesInput.isEnabled = binding.irrigationTimesList.size != binding.fertigationTimesList.size
+                if(binding.fertigationTimesList.size > binding.irrigationTimesList.size){
+                    Log.d("sabihis", "suwarko ke sini")
+                    removeView("fTimes", binding.fertigationTimesList.getChildAt(binding.fertigationTimesList.size-1))
+                }
             }
             "fTimes" -> {
                 binding.fertigationTimesList.removeView(view)
+                binding.addFtimesInput.isEnabled = binding.irrigationTimesList.size != binding.fertigationTimesList.size
             }
             "iDoses" -> {
                 binding.irrigationDosesList.removeView(view)
