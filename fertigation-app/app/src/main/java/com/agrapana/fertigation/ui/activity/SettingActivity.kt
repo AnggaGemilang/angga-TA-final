@@ -2,12 +2,15 @@ package com.agrapana.fertigation.ui.activity
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
+import android.text.InputType
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProviders
-import androidx.preference.Preference
+import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivitySettingBinding
@@ -93,20 +96,14 @@ class SettingActivity : AppCompatActivity() {
             viewModel = ViewModelProviders.of(this)[PresetViewModel::class.java]
             viewModel.operationListener = this
 
-            val systemRequest: Preference = findPreference("system_request")!!
-            val userRequest: Preference = findPreference("user_request")!!
-
-            systemRequest.setOnPreferenceChangeListener { _, newValue ->
-                val intervalPreset = IntervalPreset()
-                intervalPreset.systemRequest = newValue.toString().toInt()
-                intervalPreset.userRequest = userRequest.summary.toString().toInt()
-                viewModel.onUpdateIntervalPreset(clientId, intervalPreset)
-                true
+            val userRequest: EditTextPreference = findPreference("user_request")!!
+            userRequest.setOnBindEditTextListener { editText ->
+                editText.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+                val maxLength = 4
+                editText.filters = arrayOf<InputFilter>(LengthFilter(maxLength))
             }
-
             userRequest.setOnPreferenceChangeListener { _, newValue ->
                 val intervalPreset = IntervalPreset()
-                intervalPreset.systemRequest = systemRequest.summary.toString().toInt()
                 intervalPreset.userRequest = newValue.toString().toInt()
                 viewModel.onUpdateIntervalPreset(clientId, intervalPreset)
                 true

@@ -109,7 +109,7 @@ class AuthViewModel : ViewModel() {
                     val user = User(firebaseAuth.currentUser!!.uid, name, email, password, "Owner", true)
                     dbUsers.child(firebaseAuth.currentUser!!.uid).setValue(user).addOnCompleteListener { saveUser ->
                         if(saveUser.isSuccessful) {
-                            val intervalPreset = IntervalPreset(5,5)
+                            val intervalPreset = IntervalPreset(5)
                             dbControlling.child(firebaseAuth.currentUser!!.uid).child("interval").setValue(intervalPreset).addOnCompleteListener { savePreset ->
                                 if(savePreset.isSuccessful) {
                                     authResponse.value = AuthResponse(firebaseAuth.currentUser!!.uid, name, "Owner")

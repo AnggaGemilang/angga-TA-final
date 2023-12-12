@@ -1,18 +1,14 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory app:title="System">
 
         <EditTextPreference
-            app:key="system_request"
-            app:icon="@drawable/baseline_redo_24"
-            app:title="System Request (second)"
-            app:defaultValue="5"
-            app:useSimpleSummaryProvider="true" />
-
-        <EditTextPreference
             app:key="user_request"
             app:icon="@drawable/ic_baseline_refresh_24"
-            app:title="User Request (second)"
+            app:title="User Request (seconds)"
+            android:inputType="phone"
+            android:digits="0123456789"
             app:defaultValue="5"
             app:useSimpleSummaryProvider="true" />
 
