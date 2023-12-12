@@ -1,19 +1,16 @@
 package com.agrapana.fertigation.viewmodel
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.AuthListener
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.AuthResponse
 import com.agrapana.fertigation.model.IntervalPreset
-import com.agrapana.fertigation.model.ParameterPresetNow
 import com.agrapana.fertigation.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 

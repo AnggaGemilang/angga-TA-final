@@ -18,7 +18,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEachIndexed
-import androidx.core.view.get
 import androidx.core.view.size
 import androidx.lifecycle.ViewModelProviders
 import com.agrapana.fertigation.R
@@ -150,8 +149,8 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             val userId: String = prefs.getString("client_id", "")!!
 
             val presetName = binding.presetName.text.toString().trim()
-            val idealMoisture = binding.idealMoisture.text.toString().trim()
-            val irrigationDays = binding.irrigationDays.text.toString().trim()
+            val idealMoisture = binding.idealMoisture.text.toString().trim().toInt()
+            val irrigationDays = binding.irrigationDays.text.toString().trim().toInt()
 
             val irrigationTimesList: LinearLayout = view.findViewById(R.id.irrigation_times_list) as LinearLayout
             var irrigationTimesVal: String = binding.irrigationTimes.text.toString().trim()
@@ -160,7 +159,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                 irrigationTimesVal += "," + editText.text.toString().trim()
             }
 
-            val fertigationDays = binding.fertigationDays.text.toString().trim()
+            val fertigationDays = binding.fertigationDays.text.toString().trim().toInt()
             val fertigationTimesList: LinearLayout = view.findViewById(R.id.fertigation_times_list) as LinearLayout
             var fertigationTimesVal: String = binding.fertigationTimes.text.toString().trim()
             fertigationTimesList.forEachIndexed { index, _ ->
@@ -197,16 +196,16 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             parameterPreset.fertigationTimes = fertigationTimesVal
             parameterPreset.irrigationAge = irrigationAgeVal
             parameterPreset.fertigationAge = fertigationAgeVal
-            parameterPreset.irrigationDose = irrigationDoseVal
-            parameterPreset.fertigationDose = fertigationDoseVal
+            parameterPreset.irrigationDoses = irrigationDoseVal
+            parameterPreset.fertigationDoses = fertigationDoseVal
 
             if(arguments?.getString("status") == "update") {
                 parameterPreset.id = arguments?.getString("id")!!
-                if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
-                    parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
+                if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays == 0 ||
+                    parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays == 0 ||
                     parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
-                    parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture.isEmpty() ||
-                    parameterPreset.irrigationDose.isEmpty() || parameterPreset.fertigationDose.isEmpty()) {
+                    parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture == 0 ||
+                    parameterPreset.irrigationDoses.isEmpty() || parameterPreset.fertigationDoses.isEmpty()) {
                     Toast.makeText(requireContext(), "Fill all blanks input", Toast.LENGTH_LONG).show()
                     progressDialog!!.dismiss()
                 } else if(parameterPreset.fertigationDays.toInt() > 45 || parameterPreset.irrigationDays.toInt() > 45){
@@ -268,11 +267,11 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                     }
                 }
             } else {
-                if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays.isEmpty() ||
-                    parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays.isEmpty() ||
+                if(parameterPreset.presetName.isEmpty() || parameterPreset.fertigationDays == 0 ||
+                    parameterPreset.fertigationTimes.isEmpty() || parameterPreset.irrigationDays == 0 ||
                     parameterPreset.irrigationTimes.isEmpty() || parameterPreset.irrigationAge.isEmpty() ||
-                    parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture.isEmpty() ||
-                    parameterPreset.irrigationDose.isEmpty() || parameterPreset.fertigationDose.isEmpty()) {
+                    parameterPreset.fertigationAge.isEmpty() || parameterPreset.idealMoisture == 0 ||
+                    parameterPreset.irrigationDoses.isEmpty() || parameterPreset.fertigationDoses.isEmpty()) {
                     Toast.makeText(requireContext(), "Fill all blanks input", Toast.LENGTH_LONG).show()
                     progressDialog!!.dismiss()
                 } else if(linkImage == null){

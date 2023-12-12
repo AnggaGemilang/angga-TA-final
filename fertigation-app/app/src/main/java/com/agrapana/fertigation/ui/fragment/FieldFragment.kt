@@ -145,7 +145,7 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
                     bundle.putString("field_name", field.name)
                     bundle.putString("field_address", field.address)
                     bundle.putString("preset_id", field.presetId)
-                    bundle.putString("field_area", field.landArea)
+                    bundle.putString("field_area", field.landArea.toString())
                     bundle.putString("created_at", field.createdAt)
                     bundle.putString("hardware_code", field.hardwareCode)
                     bundle.putString("number_of_monitor_device", field.numberOfMonitorDevice.toString())

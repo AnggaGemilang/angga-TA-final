@@ -6,11 +6,11 @@ data class MonitoringMonitorDevice(
 )
 
 data class MonitoringPrimaryDevice(
-    var fertilizerTank: Long = 0,
+    var fertilizerTank: Int = 0,
     var fertilizerValve: String = "",
     var fertilizingStatus: String = "",
     var pumpStatus: String = "",
-    var waterTank: Long = 0,
+    var waterTank: Int = 0,
     var waterValve: String = "",
     var wateringStatus: String = "",
     var takenAt: String = ""

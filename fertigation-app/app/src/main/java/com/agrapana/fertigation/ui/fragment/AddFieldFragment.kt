@@ -59,7 +59,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
 
         presetViewModel.fetchPresets(clientId)
         presetViewModel.presets.observe(viewLifecycleOwner) {
-            presetsName.add("Choose Preset")
+            presetsName.add("Pick Preset")
             if (it!!.isNotEmpty()) {
                 for (preset in it) {
                     presetsName.add(preset.presetName)
@@ -112,17 +112,13 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                 AppCompatActivity.MODE_PRIVATE
             )
             val userId: String = prefs.getString("client_id", "")!!
-
-            val fieldName = binding.fieldName.text.toString().trim()
-            val fieldAddress = binding.fieldAddress.text.toString().trim()
-            val fieldArea = binding.fieldArea.text.toString().trim()
-            val numberOfMonitorDevice = binding.numberOfMonitorDevice.text.toString().trim()
             val field = Field()
-            field.name = fieldName
-            field.address = fieldAddress
-            field.landArea = fieldArea
+            field.name = binding.fieldName.text.toString().trim()
+            field.address = binding.fieldAddress.text.toString().trim()
+            field.initialPlantAge = binding.initialPlantAge.text.toString().trim().toInt()
+            field.landArea = binding.fieldArea.text.toString().trim().toInt()
             field.presetId = presets[presetsName.indexOf(binding.presetName.selectedItem.toString())-1].id
-            field.numberOfMonitorDevice = numberOfMonitorDevice.toInt()
+            field.numberOfMonitorDevice = binding.numberOfMonitorDevice.text.toString().trim().toInt()
 
             if(arguments?.getString("status") == "update") {
                 progressDialog = ProgressDialog(requireContext())
@@ -141,7 +137,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
                     progressDialog!!.setMessage("System is working . . .")
                     progressDialog!!.show()
                     field.createdAt = DateTimeFormatter
-                        .ofPattern("yyyy-MM-dd HH:mm")
+                        .ofPattern("dd,MM,yyyy,HH,mm,ss")
                         .withZone(ZoneOffset.UTC)
                         .format(Instant.now())
                     field.hardwareCode = hardwareCode!!

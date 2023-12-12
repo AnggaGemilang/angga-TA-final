@@ -131,15 +131,15 @@ class PresetFragment : Fragment(), PresetAdapter.TaskListener, OperationListener
                     bundle.putString("id", parameterPreset.id)
                     bundle.putString("preset_name", parameterPreset.presetName)
                     bundle.putString("imageURL", parameterPreset.imageUrl)
-                    bundle.putString("ideal_moisture", parameterPreset.idealMoisture)
-                    bundle.putString("fertigation_days", parameterPreset.fertigationDays)
+                    bundle.putString("ideal_moisture", parameterPreset.idealMoisture.toString())
+                    bundle.putString("fertigation_days", parameterPreset.fertigationDays.toString())
                     bundle.putString("fertigation_times", parameterPreset.fertigationTimes)
-                    bundle.putString("irrigation_days", parameterPreset.irrigationDays)
+                    bundle.putString("irrigation_days", parameterPreset.irrigationDays.toString())
                     bundle.putString("irrigation_times", parameterPreset.irrigationTimes)
                     bundle.putString("irrigation_ages", parameterPreset.irrigationAge)
                     bundle.putString("fertigation_ages", parameterPreset.fertigationAge)
-                    bundle.putString("fertigation_doses", parameterPreset.fertigationDose)
-                    bundle.putString("irrigation_doses", parameterPreset.irrigationDose)
+                    bundle.putString("fertigation_doses", parameterPreset.fertigationDoses)
+                    bundle.putString("irrigation_doses", parameterPreset.irrigationDoses)
                     dialog.arguments = bundle
                     activity?.let { it1 -> dialog.show(it1.supportFragmentManager, "BottomSheetDialog") }
                 }

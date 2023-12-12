@@ -1,13 +1,10 @@
 package com.agrapana.fertigation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.agrapana.fertigation.helper.OperationListener
 import com.agrapana.fertigation.model.Field
-import com.agrapana.fertigation.model.ParameterPreset
-import com.agrapana.fertigation.model.ParameterPresetNow
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

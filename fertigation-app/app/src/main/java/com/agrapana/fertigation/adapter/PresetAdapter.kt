@@ -34,8 +34,8 @@ class PresetAdapter(taskListener: TaskListener) : RecyclerView.Adapter<PresetAda
             .into(holder.imageView)
         holder.irrigationAge.text = "I. Age: ${parameterPresets[position].irrigationAge} HST"
         holder.fertigationAge.text = "F. Age: ${parameterPresets[position].fertigationAge} HST"
-        holder.irrigationDose.text = "I. Dose: ${parameterPresets[position].irrigationDose} mL"
-        holder.fertigationDose.text = "F. Dose: ${parameterPresets[position].fertigationDose} mL"
+        holder.irrigationDose.text = "I. Dose: ${parameterPresets[position].irrigationDoses} mL"
+        holder.fertigationDose.text = "F. Dose: ${parameterPresets[position].fertigationDoses} mL"
         holder.tvDoIrrigation.text = "I. Times: ${parameterPresets[position].irrigationTimes}/${parameterPresets[position].irrigationDays} hari"
         holder.tvDoFertigation.text = "F. Times: ${parameterPresets[position].fertigationTimes}/${parameterPresets[position].fertigationDays} hari"
         holder.optionMenu.setOnClickListener {
