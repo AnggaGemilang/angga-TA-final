@@ -43,12 +43,13 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String monitorDeviceData, irrigationTimes, fertigationTimes, tempLastIrrigation, tempatLastFertigation;
+String monitorDeviceData, irrigationTimes="10:57", fertigationTimes, fertigationStatus;
 String irrigationDose = "750", fertigationDose = "500", irrigationAge, fertigationAge;
 int fertilizerTankVal, waterTankVal, idealMoisture;
-int irrigationDays, fertigationDays, userInterval;
+int irrigationDays = 2, fertigationDays, userInterval;
 int irrigationDuration, fertigationDuration;
-unsigned long lastIrrigation, lastFertigation;
+unsigned long lastIrrigation, lastFertigation, lastDayIrrigation, lastDayFertigation;
+bool irrigationStatus = false;
 
 String timeNow();
 int waterTank();
@@ -265,17 +266,75 @@ void loop() {
   StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
   StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
   StringSplitter *irrigationDoseSplitter = new StringSplitter(irrigationDose, ',', 3);
-  StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);    
 
   if(irrigationDays > 1){
-    unsigned long selisihWaktu = millis() - lastIrrigation;
-    unsigned long jumlahHari = selisihWaktu / (1000UL * 60UL * 60UL * 24UL);
-    if (jumlahHari >= irrigationDays) {
-      Serial.println("Selisih waktu lebih dari 4 hari.");
+    Serial.print("lastDayIrrigation: ");
+    Serial.println(lastDayIrrigation);
+    if(lastDayIrrigation == 0){
+      StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
+      int itemCount = irrigationTimesSplitter->getItemCount();
+      for(int i = 0; i < itemCount; i++){
+        String item = irrigationTimesSplitter->getItemAtIndex(i);
+        if(item == "10:57"){
+          Serial.println("Nyala1");
+          // Nyalain pompa sama solenoid valve
+          irrigationStatus = true;
+          lastIrrigation = millis();
+          if(i == 0){
+            lastDayIrrigation = millis();
+          }
+        }
+      }
+    } else {
+      if(irrigationStatus == false){
+        unsigned long elapsedTime = millis() - lastDayIrrigation;
+//        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
+//        if(dayCounter >= lastIrrigation){
+        if (elapsedTime >= 120000UL) {
+          StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
+          int itemCount = irrigationTimesSplitter->getItemCount();
+          for(int i = 0; i < itemCount; i++){
+            String item = irrigationTimesSplitter->getItemAtIndex(i);
+            if(item == "10:57"){
+              Serial.println("Nyala2");
+              // Nyalain pompa sama solenoid valve
+              irrigationStatus = true;
+              lastIrrigation = millis();
+              if(i == 0){
+                lastDayIrrigation = millis();
+              }
+            }
+          }
+        }
+      }      
     }
   } else {
-    
+    if(irrigationStatus == false){
+      StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
+      int itemCount = irrigationTimesSplitter->getItemCount();
+      for(int i = 0; i < itemCount; i++){
+        String item = irrigationTimesSplitter->getItemAtIndex(i);
+        if(item == "10:57"){
+          Serial.println("Nyala3");
+          // Nyalain pompa sama solenoid valve
+          irrigationStatus = true;
+          lastIrrigation = millis();
+        }
+      }
+    }    
   }
+
+  if(irrigationStatus == true){
+    // if(millis() >= (lastIrrigation+(irrigationDuration * 1000))){
+    if(millis() >= (lastIrrigation+120000UL)){
+      Serial.println("Mati");
+      irrigationStatus = false;
+      // Nyalain pompa sama solenoid valve
+    }
+  }
+
+  Serial.print("irrigationStatus: ");
+  Serial.println(irrigationStatus);
 
   delay(2000);
 }
