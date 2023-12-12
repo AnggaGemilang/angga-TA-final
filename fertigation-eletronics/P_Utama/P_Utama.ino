@@ -8,6 +8,7 @@
 #include <HardwareSerial.h>
 #include <HTTPClient.h>
 #include "StringSplitter.h"
+#include <Time.h>
 
 #define RXp2 16
 #define TXp2 17
@@ -24,6 +25,7 @@
 #define PUMP_RELAY 13
 #define VALVE_RELAY_1 14
 #define VALVE_RELAY_2 15
+#define SECS_PER_DAY 86400
 #define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
 #define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define FCM_URL "https://fcm.googleapis.com/fcm/send"
@@ -43,12 +45,12 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String monitorDeviceData, irrigationTimes="10:57", fertigationTimes, fertigationStatus;
-String irrigationDose = "750", fertigationDose = "500", irrigationAge, fertigationAge;
-int moistureVal, waterLevelVal;
-int fertilizerTankVal, waterTankVal, idealMoisture;
-int irrigationDays = 2, fertigationDays, userInterval;
-int irrigationDuration, fertigationDuration;
+String monitorDeviceData, irrigationTimes="10:57", fertigationTimes, fertigationStatus = "off";
+String irrigationDoses = "750", fertigationDoses = "500", irrigationAge, fertigationAge, initialPlantPlanting = "1,12,2023,1,20,00";
+int moistureVal, waterLevelVal, initialPlantAge = 2;
+int fertilizerTankVal, waterTankVal, idealMoisture, plantAgeNow;
+int irrigationDays = 2, fertigationDays, userInterval, fertigationDose;
+int irrigationDuration, fertigationDuration, irrigationDose;
 unsigned long lastIrrigation, lastFertigation, lastDayIrrigation, lastDayFertigation;
 bool irrigationStatus = false, autoIrrigationStatus = false;
 
@@ -99,6 +101,31 @@ void readControlData(){
     }
   }    
 
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/initialPlantAge")){
+    if(fbdo.dataType() == "int"){
+      initialPlantAge = fbdo.intData();
+      StringSplitter *plantPlantingSplitter = new StringSplitter(initialPlantPlanting, ',', 6);
+      tmElements_t tanggalAwal;
+      tanggalAwal.Second = plantPlantingSplitter->getItemAtIndex(5).toInt();
+      tanggalAwal.Minute = plantPlantingSplitter->getItemAtIndex(4).toInt();
+      tanggalAwal.Hour = plantPlantingSplitter->getItemAtIndex(3).toInt();
+      tanggalAwal.Day = plantPlantingSplitter->getItemAtIndex(0).toInt();
+      tanggalAwal.Month = plantPlantingSplitter->getItemAtIndex(1).toInt();
+      tanggalAwal.Year = plantPlantingSplitter->getItemAtIndex(2).toInt() - 1970;
+      
+      tmElements_t tanggalAkhir;
+      tanggalAkhir.Second = 45;
+      tanggalAkhir.Minute = 30;
+      tanggalAkhir.Hour = 12;
+      tanggalAkhir.Day = 5;
+      tanggalAkhir.Month = 1;
+      tanggalAkhir.Year = 2023 - 1970; 
+            
+      int perbedaan = getDifferenceDays(tanggalAwal, tanggalAkhir);
+      plantAgeNow = initialPlantAge + perbedaan;
+    }
+  }    
+
   if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDays")){
     if(fbdo.dataType() == "int"){
       fertigationDays = fbdo.intData();
@@ -117,17 +144,17 @@ void readControlData(){
     }
   }    
   
-  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDose")){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/irrigationDoses")){
     if(fbdo.dataType() == "int"){
-      irrigationDose = fbdo.intData();
-      // irrigationDuration = (int)((((float)irrigationDose / (float)160) / (float)58.3) * (float)3600);
+      irrigationDoses = fbdo.intData();
+      irrigationDuration = (int)((((float)irrigationDose / (float)160) / (float)58.3) * (float)3600);
     }
   }    
 
-  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDose")){
+  if(Firebase.RTDB.getInt(&fbdo, "/controlling/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/parameter/13kjh123kj1h3j12h21312kjhasdasd/fertigationDoses")){
     if(fbdo.dataType() == "int"){
       fertigationDose = fbdo.intData();
-      // fertigationDuration = (int)((((float)fertigationDose / (float)160) / (float)58.3) * (float)3600);
+      fertigationDuration = (int)((((float)fertigationDose / (float)160) / (float)58.3) * (float)3600);
     }
   }
 
@@ -136,26 +163,17 @@ void readControlData(){
       userInterval = fbdo.intData();
     }
   }
-  Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDose, fertigationDose, userInterval);
+  Serial.printf("Get data mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDose=%d FerDose=%d UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDoses, fertigationDoses, userInterval);
   taskReadControlData.setInterval((TASK_SECOND * 18));    
 }
 
 void sendNotification(String title, String body) {
   if ((WiFi.status() == WL_CONNECTED)) {  
-    //Specify the URL
     HttpClient.begin(String(FCM_URL));
-
-    // Set headers
     HttpClient.addHeader("Authorization", String(FCM_API_KEY));
     HttpClient.addHeader("Content-Type", "application/json");
-
-    // Data string
     String data = "{\"registration_ids\": [\"" + String(DEVICE_FCM_KEY) + "\"], \"notification\": {\"body\":\"" + body + "\", \"title\":\"" + title + "\"}}";
-
-    //Make the request
     int httpCode = HttpClient.POST(data);
-
-    //Check for the returning code
     if (httpCode == HTTP_CODE_OK) {  
       Serial.println("Notification Sent To The Phone");
     } else {
@@ -163,8 +181,16 @@ void sendNotification(String title, String body) {
       Serial.println(httpCode);
       Serial.println(HttpClient.getString());
     }
-    HttpClient.end();  //Free the resources
+    HttpClient.end();
   }
+}
+
+int getDifferenceDays(tmElements_t startDate, tmElements_t endDate) {
+  time_t started = makeTime(startDate);
+  time_t ended = makeTime(endDate);
+  time_t differenceSeconds = ended - started;
+  int differenceDays = differenceSeconds / SECS_PER_DAY;
+  return differenceDays;
 }
 
 void setup() {
@@ -262,13 +288,7 @@ void loop() {
   // Serial.print("Waktu: ");
   // Serial.println(timeNow());
 
-  StringSplitter *fertigationAgeSplitter = new StringSplitter(fertigationAge, ',', 3);
-  StringSplitter *fertigationDoseSplitter = new StringSplitter(fertigationDose, ',', 3);
-  StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
-  StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
-  StringSplitter *irrigationDoseSplitter = new StringSplitter(irrigationDose, ',', 3);
-
-  if(autoIrrigationStatus == false && irrigationStatus == false){
+  if(autoIrrigationStatus == false && irrigationStatus == false && fertigationStatus == "off"){
     if((double)moistureVal <= (double)(0.3*idealMoisture)){
         Serial.println("Nyala1");
         // Nyalain pompa sama solenoid valve
@@ -276,17 +296,98 @@ void loop() {
     }
   }
 
-  if(irrigationStatus == false && autoIrrigationStatus == false){
+  if(irrigationStatus == false && autoIrrigationStatus == false && fertigationStatus == "off"){
+    if(fertigationDays > 1){
+      if(lastDayFertigation == 0){
+        StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
+        int itemCount = fertigationTimesSplitter->getItemCount();
+        for(int i = 0; i < itemCount; i++){
+          String item = fertigationTimesSplitter->getItemAtIndex(i);
+          if(item == "10:57"){           
+            StringSplitter *fertigationAgeSplitter = new StringSplitter(fertigationAge, ',', 3);
+            int itemCount2 = fertigationAgeSplitter->getItemCount();
+            for(int i = itemCount2; i >= 1; i--){
+              if(plantAgeNow >= fertigationAgeSplitter->getItemAtIndex(i).toInt()){
+                StringSplitter *fertigationDosesSplitter = new StringSplitter(fertigationDoses, ',', 3);
+                fertigationDose = fertigationDosesSplitter->getItemAtIndex(i).toInt();
+              }
+            }
+            // Nyalain pompa sama solenoid valve
+            fertigationStatus = "irrigation1";
+            lastFertigation = millis();
+            if(i == 0){
+              lastDayFertigation = millis();
+            } 
+          }
+        }
+      } else {
+        unsigned long elapsedTime = millis() - lastDayFertigation;
+//        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
+//        if(dayCounter >= lastFertigation){
+        if (elapsedTime >= 120000UL) {
+          StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
+          int itemCount = fertigationTimesSplitter->getItemCount();
+          for(int i = 0; i < itemCount; i++){
+            String item = fertigationTimesSplitter->getItemAtIndex(i);
+            if(item == "10:57"){           
+              StringSplitter *fertigationAgeSplitter = new StringSplitter(fertigationAge, ',', 3);
+              int itemCount2 = fertigationAgeSplitter->getItemCount();
+              for(int i = itemCount2; i >= 1; i--){
+                if(plantAgeNow >= fertigationAgeSplitter->getItemAtIndex(i).toInt()){
+                  StringSplitter *fertigationDosesSplitter = new StringSplitter(fertigationDoses, ',', 3);
+                  fertigationDose = fertigationDosesSplitter->getItemAtIndex(i).toInt();
+                }
+              }
+              // Nyalain pompa sama solenoid valve
+              fertigationStatus = true;
+              lastFertigation = millis();
+              if(i == 0){
+                lastDayFertigation = millis();
+              }
+            }
+          }
+        }
+      }
+    } else {
+      StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
+      int itemCount = fertigationTimesSplitter->getItemCount();
+      for(int i = 0; i < itemCount; i++){
+        String item = fertigationTimesSplitter->getItemAtIndex(i);
+        if(item == "10:57"){           
+          StringSplitter *fertigationAgeSplitter = new StringSplitter(fertigationAge, ',', 3);
+          int itemCount2 = fertigationAgeSplitter->getItemCount();
+          for(int i = itemCount2; i >= 1; i--){
+            if(plantAgeNow >= fertigationAgeSplitter->getItemAtIndex(i).toInt()){
+              StringSplitter *fertigationDosesSplitter = new StringSplitter(fertigationDoses, ',', 3);
+              fertigationDose = fertigationDosesSplitter->getItemAtIndex(i).toInt();
+            }
+          }
+          Serial.println("Nyala3");
+          // Nyalain pompa sama solenoid valve
+          fertigationStatus = "irrigation1";
+          lastFertigation = millis();
+        }
+      }
+    }    
+  }
+
+  if(irrigationStatus == false && autoIrrigationStatus == false && fertigationStatus == "off"){
     if(irrigationDays > 1){
-      Serial.println(lastDayIrrigation);
       if(lastDayIrrigation == 0){
         StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
         int itemCount = irrigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = irrigationTimesSplitter->getItemAtIndex(i);
           if(item == "10:57"){
-            if(moistureVal > idealMoisture){
-              Serial.println("Nyala1");
+            if(moistureVal > idealMoisture){             
+              StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
+              int itemCount2 = irrigationAgeSplitter->getItemCount();
+              for(int i = itemCount2; i >= 1; i--){
+                if(plantAgeNow >= irrigationAgeSplitter->getItemAtIndex(i).toInt()){
+                  StringSplitter *irrigationDosesSplitter = new StringSplitter(irrigationDoses, ',', 3);
+                  irrigationDose = irrigationDosesSplitter->getItemAtIndex(i).toInt();
+                }
+              }
               // Nyalain pompa sama solenoid valve
               irrigationStatus = true;
               lastIrrigation = millis();
@@ -299,53 +400,63 @@ void loop() {
           }
         }
       } else {
-        if(irrigationStatus == false){
-          unsigned long elapsedTime = millis() - lastDayIrrigation;
-  //        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
-  //        if(dayCounter >= lastIrrigation){
-          if (elapsedTime >= 120000UL) {
-            StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
-            int itemCount = irrigationTimesSplitter->getItemCount();
-            for(int i = 0; i < itemCount; i++){
-              String item = irrigationTimesSplitter->getItemAtIndex(i);
-              if(item == "10:57"){
-                Serial.println("Nyala2");
-                // Nyalain pompa sama solenoid valve
-                irrigationStatus = true;
-                lastIrrigation = millis();
-                if(i == 0){
-                  lastDayIrrigation = millis();
+        unsigned long elapsedTime = millis() - lastDayIrrigation;
+//        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
+//        if(dayCounter >= lastIrrigation){
+        if (elapsedTime >= 120000UL) {
+          StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
+          int itemCount = irrigationTimesSplitter->getItemCount();
+          for(int i = 0; i < itemCount; i++){
+            String item = irrigationTimesSplitter->getItemAtIndex(i);
+            if(item == "10:57"){            
+              StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
+              int itemCount2 = irrigationAgeSplitter->getItemCount();
+              for(int i = itemCount2; i >= 1; i--){
+                if(plantAgeNow >= irrigationAgeSplitter->getItemAtIndex(i).toInt()){
+                  StringSplitter *irrigationDosesSplitter = new StringSplitter(irrigationDoses, ',', 3);
+                  irrigationDose = irrigationDosesSplitter->getItemAtIndex(i).toInt();
                 }
+              }
+              // Nyalain pompa sama solenoid valve
+              irrigationStatus = true;
+              lastIrrigation = millis();
+              if(i == 0){
+                lastDayIrrigation = millis();
               }
             }
           }
-        }      
+        }
       }
     } else {
-      if(irrigationStatus == false){
-        StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
-        int itemCount = irrigationTimesSplitter->getItemCount();
-        for(int i = 0; i < itemCount; i++){
-          String item = irrigationTimesSplitter->getItemAtIndex(i);
-          if(item == "10:57"){
-            Serial.println("Nyala3");
-            // Nyalain pompa sama solenoid valve
-            irrigationStatus = true;
-            lastIrrigation = millis();
+      StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
+      int itemCount = irrigationTimesSplitter->getItemCount();
+      for(int i = 0; i < itemCount; i++){
+        String item = irrigationTimesSplitter->getItemAtIndex(i);
+        if(item == "10:57"){          
+          StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
+          int itemCount2 = irrigationAgeSplitter->getItemCount();
+          for(int i = itemCount2; i >= 1; i--){
+            if(plantAgeNow >= irrigationAgeSplitter->getItemAtIndex(i).toInt()){
+              StringSplitter *irrigationDosesSplitter = new StringSplitter(irrigationDoses, ',', 3);
+              irrigationDose = irrigationDosesSplitter->getItemAtIndex(i).toInt();
+            }
           }
+          // Nyalain pompa sama solenoid valve
+          irrigationStatus = true;
+          lastIrrigation = millis();
         }
-      }    
+      }
     }    
   }
 
-  if(autoIrrigationStatus == true && irrigationStatus == false){
+  if(autoIrrigationStatus == true && irrigationStatus == false && fertigationStatus == "off"){
     if(moistureVal >= idealMoisture){
       irrigationStatus = false;
       // Nyalain pompa sama solenoid valve      
     }
   }
 
-  if(irrigationStatus == true && autoIrrigationStatus == false){
+  if(irrigationStatus == true && autoIrrigationStatus == false && fertigationStatus == "off"){
     // if(millis() >= (lastIrrigation+(irrigationDuration * 1000))){
     if(millis() >= (lastIrrigation+120000UL)){
       Serial.println("Mati");
@@ -354,8 +465,34 @@ void loop() {
     }
   }
 
-  Serial.print("irrigationStatus: ");
-  Serial.println(irrigationStatus);
+  if(fertigationStatus == "irrigation1" && autoIrrigationStatus == false && irrigationStatus == false){
+    // if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
+    if(millis() >= (lastFertigation+120000UL)){
+      fertigationStatus = "fertigation";
+      lastFertigation = millis();
+      // Nyalain pompa sama solenoid valve
+    }
+  }
+
+  if(fertigationStatus == "fertigation" && autoIrrigationStatus == false && irrigationStatus == false){
+    // if(millis() >= (lastFertigation+(fertigationDuration * 1000))){
+    if(millis() >= (lastFertigation+120000UL)){
+      Serial.println("Mati");
+      fertigationStatus = "irrigation2";
+      lastFertigation = millis();
+      // Nyalain pompa sama solenoid valve
+    }
+  }
+
+  if(fertigationStatus == "irrigation2" && autoIrrigationStatus == false && irrigationStatus == false){
+    // if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
+    if(millis() >= (lastFertigation+120000UL)){
+      Serial.println("Mati");
+      fertigationStatus = "irrigation2";
+      lastFertigation = millis();
+      // Nyalain pompa sama solenoid valve
+    }
+  }
 
   delay(2000);
 }
