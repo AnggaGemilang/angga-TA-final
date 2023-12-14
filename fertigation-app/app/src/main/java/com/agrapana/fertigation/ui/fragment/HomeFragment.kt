@@ -22,6 +22,7 @@ import com.agrapana.fertigation.adapter.FieldFilterAdapter
 import com.agrapana.fertigation.databinding.FragmentHomeBinding
 import com.agrapana.fertigation.helper.ChangeFieldListener
 import com.agrapana.fertigation.helper.OperationListener
+import com.agrapana.fertigation.model.Field
 import com.agrapana.fertigation.ui.activity.LoginActivity
 import com.agrapana.fertigation.ui.activity.SettingActivity
 import com.agrapana.fertigation.ui.activity.WorkerActivity
@@ -35,6 +36,7 @@ import com.bumptech.glide.Glide
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
 class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
@@ -146,13 +148,19 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
         fieldViewModel.fetchFields(clientId!!)
         fieldViewModel.fields.observe(viewLifecycleOwner) {
             if (it!!.isNotEmpty()) {
-                binding.valFilterFieldPlaceholder.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
+                binding.dataFound.visibility = View.VISIBLE
+                binding.dataNotFound.visibility = View.GONE
                 fieldAdapter.setFieldList(it)
             } else {
-                binding.valFilterFieldPlaceholder.visibility = View.VISIBLE
-                binding.recyclerView.visibility = View.GONE
+                binding.dataFound.visibility = View.GONE
+                binding.dataNotFound.visibility = View.VISIBLE
+                val fieldList: ArrayList<Field> = ArrayList()
+                fieldList.add(Field("Create Field Now", "N/A", 0, 0, "N/A", "N/A", 0, "N/A", false))
+                fieldAdapter.setFieldList(fieldList)
+                showMainField()
             }
+            binding.valFilterFieldPlaceholder.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
         }
         fieldFilterViewModel = ViewModelProvider(this)[FieldFilterViewModel::class.java]
         fieldFilterViewModel.fields.observe(viewLifecycleOwner) { fields ->
@@ -206,7 +214,6 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
     }
 
     private fun hideMainField(){
-
         // Monitoring Atas
         binding.valWateringPlaceholder.visibility = View.VISIBLE
         binding.valPresetImgPlaceholder.visibility = View.VISIBLE

@@ -142,7 +142,45 @@
                         android:paddingHorizontal="8dp"
                         android:orientation="vertical" >
 
+                        <RelativeLayout
+                            android:id="@+id/data_not_found"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="gone" >
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingVertical="15dp"
+                                android:layout_alignParentTop="true"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_alignParentStart="true">
+
+                                <ImageView
+                                    android:layout_width="70dp"
+                                    android:layout_height="70dp"
+                                    android:layout_gravity="center_vertical|center_horizontal"
+                                    android:src="@drawable/ic_baseline_data_exploration_24"
+                                    app:tint="@color/green_75" />
+
+                                <TextView
+                                    android:id="@+id/txt_notfound"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Plant not found"
+                                    android:layout_gravity="center_vertical|center_horizontal"
+                                    android:textSize="17sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/green_75" />
+
+                            </LinearLayout>
+
+                        </RelativeLayout>
+
                         <LinearLayout
+                            android:id="@+id/data_found"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="horizontal" >
@@ -589,7 +627,7 @@
                             android:visibility="gone"
                             android:layout_marginTop="2dp"
                             android:layout_marginStart="12dp"
-                            android:text="Taken at 20-20-2021 10:00" />
+                            android:text="Taken at N/A" />
 
                         <com.facebook.shimmer.ShimmerFrameLayout
                             android:id="@+id/val_taken_at_placeholder"
