@@ -29,7 +29,9 @@ class PrimaryDeviceViewModel: ViewModel() {
                 }
                 _primaryDevices.value = monitoringPrimaryDevices
             } else {
-                _primaryDevices.value = monitoringPrimaryDevices
+                val dataNotFound = mutableListOf<MonitoringPrimaryDevice>()
+                dataNotFound.add(MonitoringPrimaryDevice(0, "N/A", "N/A", "N/A", 0, "N/A", "N/A", "N/A",))
+                _primaryDevices.value = dataNotFound
             }
         }
     }

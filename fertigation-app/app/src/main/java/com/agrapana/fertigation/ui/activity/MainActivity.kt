@@ -1,20 +1,17 @@
 package com.agrapana.fertigation.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.ActivityMainBinding
+import com.agrapana.fertigation.helper.InternetDisruption
 import com.agrapana.fertigation.ui.fragment.FieldFragment
 import com.agrapana.fertigation.ui.fragment.HomeFragment
 import com.agrapana.fertigation.ui.fragment.PresetFragment
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.iid.FirebaseInstanceIdReceiver
 import org.imaginativeworld.oopsnointernet.NoInternetDialog
 
 class MainActivity : AppCompatActivity() {
@@ -27,9 +24,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        startService(Intent(this, InternetDisruption::class.java))
 
-        val token: String = FirebaseInstanceId.getInstance().token!!
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         val w = window
         w.setFlags(

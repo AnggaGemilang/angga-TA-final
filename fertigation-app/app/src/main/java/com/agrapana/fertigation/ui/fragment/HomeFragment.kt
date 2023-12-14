@@ -172,13 +172,14 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
         primaryDeviceViewModel = ViewModelProvider(this)[PrimaryDeviceViewModel::class.java]
         primaryDeviceViewModel.primaryDevices.observe(viewLifecycleOwner) { primaryDevice ->
             if (primaryDevice!!.isNotEmpty()) {
+                Log.d("sabihis", primaryDevice.toString())
                 binding.valWateringStatus.text = primaryDevice[0].wateringStatus
                 binding.valFertilizingStatus.text = primaryDevice[0].fertilizingStatus
                 binding.valFertilizerValve.text = primaryDevice[0].fertilizerValve
                 binding.valWaterValve.text = primaryDevice[0].waterValve
                 binding.valPump.text = primaryDevice[0].pumpStatus
-                binding.valFertilizerTank.text = primaryDevice[0].fertilizerTank.toString() + "%"
-                binding.valWaterTank.text = primaryDevice[0].waterTank.toString() + "%"
+                binding.valFertilizerTank.text = if (primaryDevice[0].waterTank != 0) primaryDevice[0].fertilizerTank.toString() + "%" else "N/A"
+                binding.valWaterTank.text = if (primaryDevice[0].waterTank != 0) primaryDevice[0].waterTank.toString() + "%" else "N/A"
                 binding.valDataTaken.text = "Taken at " + primaryDevice[0].takenAt
             }
         }
@@ -190,8 +191,8 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
                     moisture += monitor.moisture
                     waterLevel += monitor.waterLevel
                 }
-                binding.valMoisture.text = (moisture / monitorDevice.size).toString() + "%"
-                binding.valWaterLevel.text = (waterLevel / monitorDevice.size).toDouble().toString()
+                binding.valMoisture.text = if (monitorDevice[0].moisture != 0) (moisture / monitorDevice.size).toString() + "%" else "N/A"
+                binding.valWaterLevel.text = if (monitorDevice[0].waterLevel != 0) (waterLevel / monitorDevice.size).toDouble().toString() else "N/A"
             }
             showMainField()
         }

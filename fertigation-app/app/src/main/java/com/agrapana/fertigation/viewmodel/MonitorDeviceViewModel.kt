@@ -27,7 +27,9 @@ class MonitorDeviceViewModel: ViewModel() {
                 }
                 _monitorDevices.value = monitoringMonitorDevices
             } else {
-                _monitorDevices.value = monitoringMonitorDevices
+                val dataNotFound = mutableListOf<MonitoringMonitorDevice>()
+                dataNotFound.add(MonitoringMonitorDevice(0, 0))
+                _monitorDevices.value = dataNotFound
             }
         }
     }
