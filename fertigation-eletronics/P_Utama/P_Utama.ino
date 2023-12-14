@@ -45,7 +45,7 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String monitorDeviceData, irrigationTimes="10:57", fertigationTimes, fertigationStatus = "off";
+String monitorDeviceData, irrigationTimes="10:57", fertigationTimes, fertigationStatus = "off", r_time;
 String irrigationDoses = "750", fertigationDoses = "500", irrigationAge, fertigationAge, initialPlantPlanting = "1,12,2023,1,20,00";
 int moistureVal, waterLevelVal, initialPlantAge = 2;
 int fertilizerTankVal, waterTankVal, idealMoisture, plantAgeNow;
@@ -76,6 +76,7 @@ void sendMessage() {
       Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice/2/moisture", moistureVal);
       Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice/2/waterLevel", waterLevelVal);
     }
+    r_time = timeNow();
     fertilizerTankVal = fertilizerTank();
     waterTankVal =  waterTank();
     Firebase.RTDB.setInt(&fbdo, "/monitoring/hpoQA4Xv0hTpmsB3lgOXyrRF7S12/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/fertilizerTank", fertilizerTankVal);
@@ -293,6 +294,10 @@ void loop() {
         Serial.println("Nyala1");
         // Nyalain pompa sama solenoid valve
         autoIrrigationStatus = true;
+        delay(10000);
+        if(waterLevelVal < 700){
+          sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+        }
     }
   }
 
@@ -318,6 +323,10 @@ void loop() {
             if(i == 0){
               lastDayFertigation = millis();
             } 
+            delay(10000);
+            if(waterLevelVal < 700){
+              sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+            }
           }
         }
       } else {
@@ -344,6 +353,10 @@ void loop() {
               if(i == 0){
                 lastDayFertigation = millis();
               }
+              delay(10000);
+              if(waterLevelVal < 700){
+                sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+              }
             }
           }
         }
@@ -366,6 +379,10 @@ void loop() {
           // Nyalain pompa sama solenoid valve
           fertigationStatus = "irrigation1";
           lastFertigation = millis();
+          delay(10000);
+          if(waterLevelVal < 700){
+            sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+          }
         }
       }
     }    
@@ -394,6 +411,10 @@ void loop() {
               if(i == 0){
                 lastDayIrrigation = millis();
               } 
+              delay(10000);
+              if(waterLevelVal < 700){
+                sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+              }
             } else {
               sendNotification("Kelembaban berlebih", "Kegiatan penyiraman dilewati");
             }
@@ -423,6 +444,10 @@ void loop() {
               if(i == 0){
                 lastDayIrrigation = millis();
               }
+              delay(10000);
+              if(waterLevelVal < 700){
+                sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+              }
             }
           }
         }
@@ -444,6 +469,10 @@ void loop() {
           // Nyalain pompa sama solenoid valve
           irrigationStatus = true;
           lastIrrigation = millis();
+          delay(10000);
+          if(waterLevelVal < 700){
+            sendNotification("air gk sampe", "segera cek kemungkinan kerusakan pada pompa");
+          }          
         }
       }
     }    
@@ -452,7 +481,7 @@ void loop() {
   if(autoIrrigationStatus == true && irrigationStatus == false && fertigationStatus == "off"){
     if(moistureVal >= idealMoisture){
       irrigationStatus = false;
-      // Nyalain pompa sama solenoid valve      
+      // Matiin pompa sama solenoid valve      
     }
   }
 
@@ -461,7 +490,7 @@ void loop() {
     if(millis() >= (lastIrrigation+120000UL)){
       Serial.println("Mati");
       irrigationStatus = false;
-      // Nyalain pompa sama solenoid valve
+      // Matiin pompa sama solenoid valve
     }
   }
 
@@ -470,7 +499,7 @@ void loop() {
     if(millis() >= (lastFertigation+120000UL)){
       fertigationStatus = "fertigation";
       lastFertigation = millis();
-      // Nyalain pompa sama solenoid valve
+      // Matiin pompa sama solenoid valve
     }
   }
 
@@ -480,7 +509,7 @@ void loop() {
       Serial.println("Mati");
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
-      // Nyalain pompa sama solenoid valve
+      // Matiin solenoid valve air dan nyalain solenoid valve pupuk
     }
   }
 
@@ -490,9 +519,17 @@ void loop() {
       Serial.println("Mati");
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
-      // Nyalain pompa sama solenoid valve
+      // Matiin pompa sama solenoid valve
     }
   }
 
+  time_t t = now();
+  int timeFromLib = hour(t)*60 + minute(t);
+  StringSplitter *RTCtime = new StringSplitter(r_time, ',', 2);
+  int timeFromRTC = RTCtime->getItemAtIndex(0).toInt() * 60 + RTCtime->getItemAtIndex(1).toInt();
+  if(timeFromRTC - timeFromLib >= 60){
+    sendNotification("Waktu Telat", "segera cek kemungkinan kerusakan pada sensor RTC");
+  }
+  
   delay(2000);
 }
