@@ -163,17 +163,17 @@
                                     android:layout_height="70dp"
                                     android:layout_gravity="center_vertical|center_horizontal"
                                     android:src="@drawable/ic_baseline_data_exploration_24"
-                                    app:tint="@color/green_75" />
+                                    app:tint="@color/green_50" />
 
                                 <TextView
                                     android:id="@+id/txt_notfound"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Plant not found"
+                                    android:text="Field not found"
                                     android:layout_gravity="center_vertical|center_horizontal"
                                     android:textSize="17sp"
                                     android:textStyle="bold"
-                                    android:textColor="@color/green_75" />
+                                    android:textColor="@color/green_50" />
 
                             </LinearLayout>
 
