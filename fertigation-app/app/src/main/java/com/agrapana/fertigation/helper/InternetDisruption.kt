@@ -132,7 +132,8 @@ class InternetDisruption: Service() {
                                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                                         for (primaryDeviceSnapshot in dataSnapshot.children) {
                                             val takeAt = primaryDeviceSnapshot.getValue(MonitoringPrimaryDevice::class.java)!!.takenAt
-                                            val localTime = LocalTime.parse(takeAt, DateTimeFormatter.ofPattern("HH:mm"))
+                                            val localDateTime = LocalDateTime.parse(takeAt, DateTimeFormatter.ofPattern("dd:MM:yyyy HH:mm"))
+                                            val localTime = localDateTime.toLocalTime()
                                             val localTimeAfter = localTime.plus(userRequest.toLong()/60, ChronoUnit.MINUTES)
                                             val localTimeNow = LocalDateTime.now(ZoneId.of("Asia/Jakarta")).toLocalTime()
                                             if(localTimeAfter < localTimeNow){
