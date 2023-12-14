@@ -172,7 +172,6 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
         primaryDeviceViewModel = ViewModelProvider(this)[PrimaryDeviceViewModel::class.java]
         primaryDeviceViewModel.primaryDevices.observe(viewLifecycleOwner) { primaryDevice ->
             if (primaryDevice!!.isNotEmpty()) {
-                Log.d("sabihis", primaryDevice.toString())
                 binding.valWateringStatus.text = primaryDevice[0].wateringStatus
                 binding.valFertilizingStatus.text = primaryDevice[0].fertilizingStatus
                 binding.valFertilizerValve.text = primaryDevice[0].fertilizerValve

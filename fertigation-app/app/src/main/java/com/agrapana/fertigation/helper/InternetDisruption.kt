@@ -13,28 +13,40 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import com.agrapana.fertigation.R
+import com.agrapana.fertigation.model.Controlling
+import com.agrapana.fertigation.model.IntervalPreset
+import com.agrapana.fertigation.model.MonitoringPrimaryDevice
 import com.agrapana.fertigation.ui.activity.MainActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 
 class InternetDisruption: Service() {
 
-    private lateinit var primaryDeviceReference: DatabaseReference
-    private lateinit var intervalReference: DatabaseReference
+    private lateinit var monitoringReference: DatabaseReference
+    private lateinit var controllingReference: DatabaseReference
+    private lateinit var fieldReference: DatabaseReference
     private lateinit var prefs: SharedPreferences
     private lateinit var ownerId: String
-    private lateinit var fieldId: String
+    private lateinit var scheduler: ScheduledExecutorService
     private var NOTIFICATION_CHANNEL_ID = "kota203.fertigation.notification"
     private val NOTIFICATION_ID = 100
-    private val interval = 300000
-    private val handler = Handler()
+    private val interval = 1800
 
     private fun showNotification(
         context: Context,
@@ -92,35 +104,52 @@ class InternetDisruption: Service() {
         return if (useWhiteIcon) R.drawable.logo4 else R.drawable.logo4
     }
 
-    override fun onCreate() {
-        super.onCreate()
-        prefs = this.getSharedPreferences("prefs",
-            AppCompatActivity.MODE_PRIVATE
-        )!!
-        ownerId = prefs.getString("client_id", "")!!
-        ownerId = prefs.getString("client_id", "")!!
-    }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        fetchDataFromFirebase()
+        scheduler = Executors.newScheduledThreadPool(1)
+        val runnableTask = Runnable {
+            fetchDataFromFirebase()
+        }
+        scheduler.scheduleAtFixedRate(runnableTask, 0, interval.toLong(), TimeUnit.SECONDS)
         return START_NOT_STICKY
     }
 
     private fun fetchDataFromFirebase() {
-        primaryDeviceReference = FirebaseDatabase.getInstance().getReference("path/to/data")
-        primaryDeviceReference.addListenerForSingleValueEvent(object : ValueEventListener {
+        prefs = this.getSharedPreferences("prefs",
+            AppCompatActivity.MODE_PRIVATE
+        )!!
+        ownerId = prefs.getString("client_id", "")!!
+        fieldReference = FirebaseDatabase.getInstance().getReference("fields")
+        fieldReference.child(ownerId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (childSnapshot in dataSnapshot.children) {
-                    val data = childSnapshot.getValue(String::class.java)
-                    // Lakukan sesuatu dengan data yang diterima
+                for (fieldSnapshot in dataSnapshot.children) {
+                    if(fieldSnapshot.exists()){
+                        controllingReference = FirebaseDatabase.getInstance().getReference("controlling")
+                        controllingReference.child(ownerId).child("interval").addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                val userRequest = dataSnapshot.getValue(IntervalPreset::class.java)!!.userRequest
+                                monitoringReference = FirebaseDatabase.getInstance().getReference("monitoring")
+                                monitoringReference.child(ownerId).child(fieldSnapshot.key.toString()).child("primaryDevice").addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                        for (primaryDeviceSnapshot in dataSnapshot.children) {
+                                            val takeAt = primaryDeviceSnapshot.getValue(MonitoringPrimaryDevice::class.java)!!.takenAt
+                                            val localTime = LocalTime.parse(takeAt, DateTimeFormatter.ofPattern("HH:mm"))
+                                            val localTimeAfter = localTime.plus(userRequest.toLong()/60, ChronoUnit.MINUTES)
+                                            val localTimeNow = LocalDateTime.now(ZoneId.of("Asia/Jakarta")).toLocalTime()
+                                            if(localTimeAfter < localTimeNow){
+                                                showNotification(applicationContext, "Kemungkinkan terdapat gangguan internet pada alat", "Masih belum ada pembaharuan baru")
+                                            }
+                                        }
+                                    }
+                                    override fun onCancelled(databaseError: DatabaseError) {}
+                                })
+                            }
+                            override fun onCancelled(databaseError: DatabaseError) {}
+                        })
+                    }
                 }
             }
-
             override fun onCancelled(databaseError: DatabaseError) {}
         })
-        handler.postDelayed({
-            fetchDataFromFirebase()
-        }, interval.toLong())
     }
 
     override fun onBind(intent: Intent?): IBinder? {
