@@ -136,7 +136,10 @@ class InternetDisruption: Service() {
                                             val localTime = localDateTime.toLocalTime()
                                             val localTimeAfter = localTime.plus(userRequest.toLong()/60, ChronoUnit.MINUTES)
                                             val localTimeNow = LocalDateTime.now(ZoneId.of("Asia/Jakarta")).toLocalTime()
-                                            if(localTimeAfter < localTimeNow){
+                                            Log.d("sabihis", localTimeNow.toString())
+                                            Log.d("sabihis", localTimeAfter.toString())
+                                            if((localTimeNow.hour < 12 && localTimeAfter.hour >= 12) || localTimeAfter.hour < 12 && localTimeNow.hour >= 12
+                                                || localTimeAfter < localTimeNow){
                                                 showNotification(applicationContext, "Kemungkinkan terdapat gangguan internet pada alat", "Masih belum ada pembaharuan baru")
                                             }
                                         }

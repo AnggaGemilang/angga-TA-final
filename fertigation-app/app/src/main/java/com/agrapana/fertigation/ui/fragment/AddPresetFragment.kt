@@ -208,7 +208,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                     parameterPreset.irrigationDoses.isEmpty() || parameterPreset.fertigationDoses.isEmpty()) {
                     Toast.makeText(requireContext(), "Fill all blanks input", Toast.LENGTH_LONG).show()
                     progressDialog!!.dismiss()
-                } else if(parameterPreset.fertigationDays.toInt() > 45 || parameterPreset.irrigationDays.toInt() > 45){
+                } else if(parameterPreset.fertigationDays > 45 || parameterPreset.irrigationDays > 45){
                     Toast.makeText(requireContext(), "Days interval cannot greater that 45", Toast.LENGTH_LONG).show()
                     progressDialog!!.dismiss()
                 } else if(linkImage == null){
@@ -245,6 +245,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                         Toast.makeText(requireContext(), "Fertigation times must be equal to Irrigation times", Toast.LENGTH_LONG).show()
                         progressDialog!!.dismiss()
                     } else {
+                        Log.d("sabihis", "kuduna kadieu")
                         val storageReference = FirebaseStorage.getInstance()
                             .getReferenceFromUrl(arguments?.getString("imageURL")!!)
                         storageReference.delete().addOnSuccessListener {
@@ -256,6 +257,7 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
                                         val imageUrl = it.toString()
                                         parameterPreset.imageUrl = imageUrl
                                         viewModel.onUpdatePreset(userId, parameterPreset)
+                                        progressDialog!!.dismiss()
                                     }
                                 }
                                 .addOnFailureListener { e ->

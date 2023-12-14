@@ -147,6 +147,7 @@ class FieldFragment : Fragment(), FieldAdapter.TaskListener, OperationListener {
                     bundle.putString("preset_id", field.presetId)
                     bundle.putString("field_area", field.landArea.toString())
                     bundle.putString("created_at", field.createdAt)
+                    bundle.putString("plant_age", field.initialPlantAge.toString())
                     bundle.putString("hardware_code", field.hardwareCode)
                     bundle.putString("number_of_monitor_device", field.numberOfMonitorDevice.toString())
                     dialog.arguments = bundle

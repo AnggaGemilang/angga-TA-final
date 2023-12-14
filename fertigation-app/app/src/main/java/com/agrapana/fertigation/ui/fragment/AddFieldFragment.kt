@@ -98,6 +98,7 @@ class AddFieldFragment : RoundedBottomSheetDialogFragment(), OperationListener {
             binding.fieldName.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_name"))
             binding.fieldAddress.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_address"))
             binding.fieldArea.text = Editable.Factory.getInstance().newEditable(arguments?.getString("field_area"))
+            binding.initialPlantAge.text = Editable.Factory.getInstance().newEditable(arguments?.getString("plant_age"))
             binding.numberOfMonitorDevice.text = Editable.Factory.getInstance().newEditable(arguments?.getString("number_of_monitor_device"))
         } else {
             binding.numberOfMonitorDevice.text = Editable.Factory.getInstance().newEditable("1")
