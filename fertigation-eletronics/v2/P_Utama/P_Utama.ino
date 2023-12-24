@@ -63,6 +63,11 @@ Task taskReadControlData( TASK_SECOND * 18 , TASK_FOREVER, &readControlData );
 void sendMessage() {
   fertilizerTankVal = fertilizerTank();
   waterTankVal =  waterTank();
+
+//  DateTime now = rtc.now();
+//  String formattedDateTime = now.toString("dd/MM/yyyy HH:mm");
+
+//  Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "takenAt", formattedDateTime);
   Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "fertilizerTank", fertilizerTankVal);
   if(Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "waterTank", waterTankVal)){
     Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);

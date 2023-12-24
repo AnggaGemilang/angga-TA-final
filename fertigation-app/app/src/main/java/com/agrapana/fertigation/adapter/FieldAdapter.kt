@@ -84,7 +84,7 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
 
         val originalFormat = DateTimeFormatter.ofPattern("dd,MM,yyyy,HH,mm,ss")
         val dateTime: LocalDateTime = LocalDateTime.parse(model.createdAt, originalFormat)
-        val newFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+        val newFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
         holder.binding.tvCreated.text = dateTime.format(newFormat)
 
         val isExpandable = model.isExpandable
