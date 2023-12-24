@@ -34,7 +34,8 @@ void setup() {
   
   pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
   pinMode(FERTILIZER_ECHO_PIN, INPUT);
-  pinMode(PUMP_RELAY, OUTPUT);
+  pinMode(VALVE_RELAY_1, OUTPUT);
+  pinMode(VALVE_RELAY_2, OUTPUT);
   pinMode(WATER_TRIG_PIN, OUTPUT);
   pinMode(WATER_ECHO_PIN, INPUT);
 
@@ -43,7 +44,6 @@ void setup() {
   lcd_i2c.print("Welcome To");
   lcd_i2c.setCursor(0, 1);
   lcd_i2c.print("*** KoTA 203 ***");
-  delay(2000);
 
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
@@ -54,7 +54,15 @@ void setup() {
 }
 
 void loop() {
-  //  digitalWrite(PUMP_RELAY, HIGH);
+  digitalWrite(VALVE_RELAY_1, HIGH);
+
+  delay(5000);
+
+  digitalWrite(VALVE_RELAY_1, LOW);
+  digitalWrite(VALVE_RELAY_2, HIGH);
+
+  delay(5000);
+  digitalWrite(VALVE_RELAY_2, LOW);
   
   //  lcd_i2c.clear();
   //  lcd_i2c.setCursor(0, 0);
@@ -76,12 +84,11 @@ void loop() {
   //  lcd_i2c.setCursor(0, 1);
   //  lcd_i2c.print("Fertilizer: 20%");
   
-  DateTime now = rtc.now();
   Serial.print("Waktu: ");
   Serial.println(timeNow());
-  Serial.println();
+  Serial.print("Fertilizer Tank: ");
   Serial.println(fertilizerTank());
-  Serial.println();
+  Serial.print("Water Tank: ");
   Serial.println(waterTank());    
   Serial.println("============");
   delay(2000);

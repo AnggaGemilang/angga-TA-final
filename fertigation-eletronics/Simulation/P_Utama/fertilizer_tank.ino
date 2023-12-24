@@ -19,15 +19,15 @@ int fertilizerTank() {
   volume = TANK_SURFACE_AREA * waterHeight;
   percentage = ((double)volume / TANK_MAX_VOLUME) * 100;
     
-  Serial.print("Percentage (%): ");
-  Serial.print(percentage);
-  Serial.println(" %");
-  Serial.print("distance (cm): ");
-  Serial.print(distance);
-  Serial.println("cm");
-  Serial.print("volume (mL): ");
-  Serial.print(volume);
-  Serial.println(" mL");  
+//  Serial.print("Percentage (%): ");
+//  Serial.print(percentage);
+//  Serial.println(" %");
+//  Serial.print("distance (cm): ");
+//  Serial.print(distance);
+//  Serial.println("cm");
+//  Serial.print("volume (mL): ");
+//  Serial.print(volume);
+//  Serial.println(" mL");  
 
   return percentage;
 }
