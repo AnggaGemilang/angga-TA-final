@@ -182,9 +182,8 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
             if (primaryDevice!!.isNotEmpty()) {
                 binding.valWateringStatus.text = primaryDevice[0].wateringStatus
                 binding.valFertilizingStatus.text = primaryDevice[0].fertilizingStatus
-                binding.valFertilizerValve.text = primaryDevice[0].fertilizerValve
-                binding.valWaterValve.text = primaryDevice[0].waterValve
-                binding.valPump.text = primaryDevice[0].pumpStatus
+                binding.valFertilizerPumpStatus.text = primaryDevice[0].fertilizerPumpStatus
+                binding.valWaterPumpStatus.text = primaryDevice[0].waterPumpStatus
                 binding.valFertilizerTank.text = if (primaryDevice[0].waterTank != 0) primaryDevice[0].fertilizerTank.toString() + "%" else "N/A"
                 binding.valWaterTank.text = if (primaryDevice[0].waterTank != 0) primaryDevice[0].waterTank.toString() + "%" else "N/A"
                 binding.valDataTaken.text = "Taken at " + primaryDevice[0].takenAt
@@ -215,22 +214,21 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
     private fun hideMainField(){
         // Monitoring Atas
-        binding.valWateringPlaceholder.visibility = View.VISIBLE
         binding.valPresetImgPlaceholder.visibility = View.VISIBLE
         binding.valPresetNamePlaceholder.visibility = View.VISIBLE
         binding.valFieldLocPlaceholder.visibility = View.VISIBLE
+        binding.valWateringPlaceholder.visibility = View.VISIBLE
         binding.valFertilizingPlaceholder.visibility = View.VISIBLE
-        binding.valPumpPlaceholder.visibility = View.VISIBLE
-        binding.valWaterValvePlaceholder.visibility = View.VISIBLE
-        binding.valFertilizerValvePlaceholder.visibility = View.VISIBLE
+        binding.valWaterPumpStatusPlaceholder.visibility = View.VISIBLE
+        binding.valFertilizerPumpStatusPlaceholder.visibility = View.VISIBLE
         binding.valTakenAtPlaceholder.visibility = View.VISIBLE
+
         binding.valWateringStatus.visibility = View.GONE
         binding.valFertilizingStatus.visibility = View.GONE
         binding.valPresetImg.visibility = View.GONE
-        binding.valPump.visibility = View.GONE
+        binding.valWaterPumpStatus.visibility = View.GONE
+        binding.valFertilizerPumpStatus.visibility = View.GONE
         binding.valFieldLoc.visibility = View.GONE
-        binding.valWaterValve.visibility = View.GONE
-        binding.valFertilizerValve.visibility = View.GONE
         binding.valPresetName.visibility = View.GONE
         binding.valDataTaken.visibility = View.GONE
 
@@ -238,8 +236,9 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
 
         binding.valWaterTankPlaceholder.visibility = View.VISIBLE
         binding.valFertilizerTankPlaceholder.visibility = View.VISIBLE
+        binding.valWaterLevelPlaceholder.visibility = View.VISIBLE
         binding.valMoisturePlaceholder.visibility = View.VISIBLE
-        binding.valWaterLevel.visibility = View.VISIBLE
+
         binding.valWaterTank.visibility = View.GONE
         binding.valFertilizerTank.visibility = View.GONE
         binding.valWaterLevel.visibility = View.GONE
@@ -247,33 +246,32 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
     }
 
     private fun showMainField(){
-
         // Monitoring Atas
-        binding.valWateringPlaceholder.visibility = View.GONE
         binding.valPresetImgPlaceholder.visibility = View.GONE
         binding.valPresetNamePlaceholder.visibility = View.GONE
         binding.valFieldLocPlaceholder.visibility = View.GONE
+        binding.valWateringPlaceholder.visibility = View.GONE
         binding.valFertilizingPlaceholder.visibility = View.GONE
+        binding.valWaterPumpStatusPlaceholder.visibility = View.GONE
+        binding.valFertilizerPumpStatusPlaceholder.visibility = View.GONE
         binding.valTakenAtPlaceholder.visibility = View.GONE
-        binding.valPumpPlaceholder.visibility = View.GONE
-        binding.valWaterValvePlaceholder.visibility = View.GONE
-        binding.valFertilizerValvePlaceholder.visibility = View.GONE
+
+        binding.valPresetImg.visibility = View.VISIBLE
+        binding.valPresetName.visibility = View.VISIBLE
+        binding.valFieldLoc.visibility = View.VISIBLE
         binding.valWateringStatus.visibility = View.VISIBLE
         binding.valFertilizingStatus.visibility = View.VISIBLE
-        binding.valPresetImg.visibility = View.VISIBLE
-        binding.valPump.visibility = View.VISIBLE
-        binding.valFieldLoc.visibility = View.VISIBLE
-        binding.valWaterValve.visibility = View.VISIBLE
-        binding.valFertilizerValve.visibility = View.VISIBLE
-        binding.valPresetName.visibility = View.VISIBLE
+        binding.valWaterPumpStatus.visibility = View.VISIBLE
+        binding.valFertilizerPumpStatus.visibility = View.VISIBLE
         binding.valDataTaken.visibility = View.VISIBLE
 
         // Monitoring Bawah
 
         binding.valWaterTankPlaceholder.visibility = View.GONE
         binding.valFertilizerTankPlaceholder.visibility = View.GONE
-        binding.valWaterLevel.visibility = View.GONE
+        binding.valWaterLevelPlaceholder.visibility = View.GONE
         binding.valMoisturePlaceholder.visibility = View.GONE
+
         binding.valWaterTank.visibility = View.VISIBLE
         binding.valFertilizerTank.visibility = View.VISIBLE
         binding.valWaterLevel.visibility = View.VISIBLE

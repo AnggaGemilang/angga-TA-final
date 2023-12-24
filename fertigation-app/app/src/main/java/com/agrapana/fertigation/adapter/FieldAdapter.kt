@@ -1,14 +1,18 @@
 package com.agrapana.fertigation.adapter
 
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.databinding.TemplateFieldBinding
 import com.agrapana.fertigation.model.Field
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener): RecyclerView.Adapter<FieldAdapter.MyViewHolder>() {
 
@@ -69,6 +73,7 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         return fields.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
         var nestedList: MutableList<String> = ArrayList()
@@ -77,8 +82,10 @@ class FieldAdapter(val context: Context, taskListener: FieldAdapter.TaskListener
         holder.binding.tvAddress.text = model.address
         holder.binding.tvArea.text = "${model.landArea} hA"
 
-        val dateParts = model.createdAt.trim().split("\\s+".toRegex())
-        holder.binding.tvCreated.text = dateParts[0]
+        val originalFormat = DateTimeFormatter.ofPattern("dd,MM,yyyy,HH,mm,ss")
+        val dateTime: LocalDateTime = LocalDateTime.parse(model.createdAt, originalFormat)
+        val newFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+        holder.binding.tvCreated.text = dateTime.format(newFormat)
 
         val isExpandable = model.isExpandable
         holder.binding.expandableLayout.visibility = if (isExpandable) View.VISIBLE else View.GONE

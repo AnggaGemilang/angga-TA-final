@@ -408,47 +408,7 @@
                                 android:layout_weight="1"
                                 android:layout_gravity="center_horizontal"
                                 android:gravity="center_horizontal"
-                                android:tooltipText="Pump Status"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
-                                    android:src="@drawable/baseline_heat_pump_24" />
-
-                                <TextView
-                                    android:id="@+id/val_pump"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="5dp"
-                                    android:textSize="14sp"
-                                    android:visibility="gone"
-                                    android:text="N/A" />
-
-                                <com.facebook.shimmer.ShimmerFrameLayout
-                                    android:id="@+id/val_pump_placeholder"
-                                    android:layout_width="30dp"
-                                    android:layout_height="15dp"
-                                    android:layout_marginTop="5dp"
-                                    android:layout_marginBottom="2dp" >
-
-                                    <View
-                                        android:layout_width="80dp"
-                                        android:layout_height="match_parent"
-                                        android:background="@color/shimmer_placeholder2"
-                                        android:layout_gravity="center_horizontal" />
-
-                                </com.facebook.shimmer.ShimmerFrameLayout>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:layout_gravity="center_horizontal"
-                                android:gravity="center_horizontal"
-                                android:tooltipText="Water Valve Status"
+                                android:tooltipText="Water Pump Status"
                                 android:orientation="vertical">
 
                                 <ImageView
@@ -457,7 +417,7 @@
                                     android:src="@drawable/baseline_circle_24" />
 
                                 <TextView
-                                    android:id="@+id/val_water_valve"
+                                    android:id="@+id/val_water_pump_status"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="5dp"
@@ -466,7 +426,7 @@
                                     android:text="N/A" />
 
                                 <com.facebook.shimmer.ShimmerFrameLayout
-                                    android:id="@+id/val_water_valve_placeholder"
+                                    android:id="@+id/val_water_pump_status_placeholder"
                                     android:layout_width="30dp"
                                     android:layout_height="15dp"
                                     android:layout_marginTop="5dp"
@@ -488,7 +448,7 @@
                                 android:layout_weight="1"
                                 android:layout_gravity="center_horizontal"
                                 android:gravity="center_horizontal"
-                                android:tooltipText="Fertilizer Valve Status"
+                                android:tooltipText="Fertilizer Pump Status"
                                 android:orientation="vertical">
 
                                 <ImageView
@@ -497,7 +457,7 @@
                                     android:src="@drawable/baseline_group_work_24" />
 
                                 <TextView
-                                    android:id="@+id/val_fertilizer_valve"
+                                    android:id="@+id/val_fertilizer_pump_status"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:visibility="gone"
@@ -506,7 +466,7 @@
                                     android:text="N/A" />
 
                                 <com.facebook.shimmer.ShimmerFrameLayout
-                                    android:id="@+id/val_fertilizer_valve_placeholder"
+                                    android:id="@+id/val_fertilizer_pump_status_placeholder"
                                     android:layout_width="30dp"
                                     android:layout_height="15dp"
                                     android:layout_marginTop="5dp"

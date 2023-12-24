@@ -129,6 +129,8 @@ class FieldViewModel: ViewModel() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     for(snapshot in dataSnapshot.children){
                                         val presetNow = Controlling()
+                                        presetNow.initialPlantAge = field.initialPlantAge
+                                        presetNow.initialPlantPlanting = field.createdAt
                                         presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString().toInt()
                                         presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString().toInt()
                                         presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString().toInt()
@@ -173,6 +175,8 @@ class FieldViewModel: ViewModel() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             for(snapshot in dataSnapshot.children){
                                 val presetNow = Controlling()
+                                presetNow.initialPlantAge = field.initialPlantAge
+                                presetNow.initialPlantPlanting = field.createdAt
                                 presetNow.idealMoisture = snapshot.child("idealMoisture").value.toString().toInt()
                                 presetNow.irrigationDays = snapshot.child("irrigationDays").value.toString().toInt()
                                 presetNow.fertigationDays = snapshot.child("fertigationDays").value.toString().toInt()
@@ -180,8 +184,8 @@ class FieldViewModel: ViewModel() {
                                 presetNow.fertigationTimes = snapshot.child("fertigationTimes").value.toString()
                                 presetNow.irrigationAge = snapshot.child("irrigationAge").value.toString()
                                 presetNow.fertigationAge = snapshot.child("fertigationAge").value.toString()
-                                presetNow.irrigationDoses = snapshot.child("irrigationDose").value.toString()
-                                presetNow.fertigationDoses = snapshot.child("fertigationDose").value.toString()
+                                presetNow.irrigationDoses = snapshot.child("irrigationDoses").value.toString()
+                                presetNow.fertigationDoses = snapshot.child("fertigationDoses").value.toString()
                                 dbControlling.child(clientId).child("parameter").child(field.hardwareCode).setValue(presetNow).addOnCompleteListener { saved ->
                                     if (saved.isSuccessful) {
                                         operationListener?.onSuccess()

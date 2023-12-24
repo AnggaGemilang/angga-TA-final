@@ -48,7 +48,7 @@ int irrigationDays = 2, fertigationDays, userInterval, fertigationDose;
 int irrigationDuration, fertigationDuration, irrigationDose, moistureVal,waterLevelVal;
 unsigned long lastIrrigation, lastFertigation, lastDayIrrigation, lastDayFertigation;
 bool irrigationStatus = false, autoIrrigationStatus = false;
-String BASE_URL_MONITORING = "/monitoring/2X0JeST2hUe8K5qLpk5f6gCC0zO2/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/";
+String BASE_URL_MONITORING = "/monitoring/2X0JeST2hUe8K5qLpk5f6gCC0zO2/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/1/";
 String BASE_URL_CONTROLLING = "/controlling/2X0JeST2hUe8K5qLpk5f6gCC0zO2/parameter/13kjh123kj1h3j12h21312kjhasdasd/";
 String BASE_URL_MONITORING_2 = "/monitoring/2X0JeST2hUe8K5qLpk5f6gCC0zO2/13kjh123kj1h3j12h21312kjhasdasd/monitorDevice/1/";
 
@@ -248,6 +248,12 @@ void setup() {
   if(Firebase.RTDB.getInt(&fbdo, BASE_URL_CONTROLLING + "initialPlantAge")){
     if(fbdo.dataType() == "int"){
       initialPlantAge = fbdo.intData();
+    }
+  }
+
+  if(Firebase.RTDB.getInt(&fbdo, BASE_URL_CONTROLLING + "initialPlantPlanting")){
+    if(fbdo.dataType() == "string"){
+      initialPlantPlanting = fbdo.stringData();
       StringSplitter *plantPlantingSplitter = new StringSplitter(initialPlantPlanting, ',', 6);
       tmElements_t tanggalAwal;
       tanggalAwal.Second = plantPlantingSplitter->getItemAtIndex(5).toInt();

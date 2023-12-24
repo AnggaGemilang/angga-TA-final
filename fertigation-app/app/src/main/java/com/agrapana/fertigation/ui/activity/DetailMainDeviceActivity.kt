@@ -85,9 +85,8 @@ class DetailMainDeviceActivity : AppCompatActivity() {
             if (primaryDevice!!.isNotEmpty()) {
                 binding.valWateringStatus.text = primaryDevice[0].wateringStatus
                 binding.valFertilizingStatus.text = primaryDevice[0].fertilizingStatus
-                binding.valFertilizerValveStatus.text = primaryDevice[0].fertilizerValve
-                binding.valWaterValveStatus.text = primaryDevice[0].waterValve
-                binding.valPumpStatus.text = primaryDevice[0].pumpStatus
+                binding.valFertilizerPumpStatus.text = primaryDevice[0].fertilizerPumpStatus
+                binding.valWaterPumpStatus.text = primaryDevice[0].waterPumpStatus
                 binding.valFertilizerTank.text = primaryDevice[0].fertilizerTank.toString() + "%"
                 binding.valWaterTank.text = primaryDevice[0].waterTank.toString() + "%"
                 binding.valTakenAt.text = primaryDevice[0].takenAt
@@ -141,11 +140,11 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.valTakenAtPlaceholder.visibility = View.VISIBLE
         binding.valWateringStatus.visibility = View.GONE
         binding.valFertilizingStatus.visibility = View.GONE
-        binding.valPumpStatus.visibility = View.GONE
+        binding.valWaterPumpStatus.visibility = View.GONE
         binding.valWaterTank.visibility = View.GONE
         binding.valFertilizerTank.visibility = View.GONE
         binding.valFieldLoc.visibility = View.GONE
-        binding.valWaterValveStatus.visibility = View.GONE
+        binding.valFertilizerPumpStatus.visibility = View.GONE
         binding.valFertilizerValveStatus.visibility = View.GONE
         binding.valPresetName.visibility = View.GONE
         binding.valTakenAt.visibility = View.GONE
@@ -164,11 +163,11 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.valFertilizerValveStatusPlaceholder.visibility = View.GONE
         binding.valWateringStatus.visibility = View.VISIBLE
         binding.valFertilizingStatus.visibility = View.VISIBLE
-        binding.valPumpStatus.visibility = View.VISIBLE
+        binding.valWaterPumpStatus.visibility = View.VISIBLE
         binding.valFertilizerTank.visibility = View.VISIBLE
         binding.valWaterTank.visibility = View.VISIBLE
         binding.valFieldLoc.visibility = View.VISIBLE
-        binding.valWaterValveStatus.visibility = View.VISIBLE
+        binding.valFertilizerPumpStatus.visibility = View.VISIBLE
         binding.valFertilizerValveStatus.visibility = View.VISIBLE
         binding.valPresetName.visibility = View.VISIBLE
         binding.valTakenAt.visibility = View.VISIBLE

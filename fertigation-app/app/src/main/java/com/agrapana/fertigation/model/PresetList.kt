@@ -26,7 +26,7 @@ data class Controlling(
     var irrigationDoses: String = "",
     var fertigationDoses: String = "",
     var initialPlantAge: Int = 0,
-    var createdAt: String = ""
+    var initialPlantPlanting: String = ""
 )
 
 data class IntervalPreset(
