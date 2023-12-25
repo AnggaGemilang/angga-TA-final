@@ -20,8 +20,8 @@
 #define TANK_MAX_VOLUME 2106
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
-#define PUMP_RELAY_1 14
-#define PUMP_RELAY_2 15
+#define PUMP_RELAY_1 14 // Pupuk
+#define PUMP_RELAY_2 15 // Air
 #define SECS_PER_DAY 86400
 #define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"
 #define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
@@ -41,9 +41,9 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String monitorDeviceData, irrigationTimes="10:57", fertigationTimes, fertigationStatus = "off", r_time;
-String irrigationDoses = "750", fertigationDoses = "500", irrigationAge, fertigationAge, initialPlantPlanting = "1,12,2023,1,20,00";
-int fertilizerTankVal, waterTankVal, idealMoisture, plantAgeNow, initialPlantAge = 2;
+String monitorDeviceData, irrigationTimes, fertigationTimes, fertigationStatus = "off", r_time;
+String irrigationDoses, fertigationDoses, irrigationAge, fertigationAge, initialPlantPlanting;
+int fertilizerTankVal, waterTankVal, idealMoisture, plantAgeNow, initialPlantAge;
 int irrigationDays = 2, fertigationDays, userInterval, fertigationDose;
 int irrigationDuration, fertigationDuration, irrigationDose, moistureVal,waterLevelVal;
 unsigned long lastIrrigation, lastFertigation, lastDayIrrigation, lastDayFertigation;
@@ -64,10 +64,10 @@ void sendMessage() {
   fertilizerTankVal = fertilizerTank();
   waterTankVal =  waterTank();
 
-//  DateTime now = rtc.now();
-//  String formattedDateTime = now.toString("dd/MM/yyyy HH:mm");
+  DateTime now = rtc.now();
+  String formattedDateTime = now.toString("dd/MM/yyyy HH:mm");
 
-//  Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "takenAt", formattedDateTime);
+  Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "takenAt", formattedDateTime);
   Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "fertilizerTank", fertilizerTankVal);
   if(Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "waterTank", waterTankVal)){
     Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
@@ -215,14 +215,13 @@ void setup() {
   lcd_i2c.print("Welcome To");
   lcd_i2c.setCursor(0, 1);
   lcd_i2c.print("*** KoTA 203 ***");
-  delay(2000);
 
-//  if (!rtc.begin()) {
-//    Serial.println("Couldn't find RTC");
-//    while(1);
-//  }
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while(1);
+  }
 
-//  rtc.adjust(DateTime(__DATE__, __TIME__));
+  rtc.adjust(DateTime(__DATE__, __TIME__));
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);                                  
   Serial.print("Connecting to ");
@@ -296,31 +295,14 @@ void setup() {
 
 void loop() {
   userScheduler.execute();
-  
-  //  lcd_i2c.clear();
-  //  lcd_i2c.setCursor(0, 0);
-  //  lcd_i2c.print("Moisture(1): 20%");
-  //  lcd_i2c.setCursor(0, 1);
-  //  lcd_i2c.print("Water(2): 20 cm");
 
-  //  lcd_i2c.clear();
-  //  lcd_i2c.setCursor(0, 0);
-  //  lcd_i2c.print("Moisture(2): 20%");
-  //  lcd_i2c.setCursor(0, 1);
-  //  lcd_i2c.print("Water(2): 20 cm");
-
-  //  lcd_i2c.clear();
-  //  lcd_i2c.setCursor(0, 0);
-  //  lcd_i2c.print("Water: 20");
-  //  lcd_i2c.setCursor(0, 1);
-  //  lcd_i2c.print("Fertilizer: 20%");
-  
-  // DateTime now = rtc.now();
+  DateTime dateTimeNow = rtc.now();
+  String dtNow = String(now.hour(), DEC) + ":" + String(now.minute(), DEC) 
 
   if(autoIrrigationStatus == false && irrigationStatus == false && fertigationStatus == "off"){
     if((double)moistureVal <= (double)(0.3*idealMoisture)){
-        Serial.println("Nyala1");
-        // Nyalain pompa sama solenoid valve
+        Serial.println("Pompa penampung air menyala");
+        digitalWrite(PUMP_RELAY_2, HIGH);
         autoIrrigationStatus = true;
         delay(10000);
         if(waterLevelVal < 700){
@@ -331,14 +313,14 @@ void loop() {
 
   if(irrigationStatus == false && autoIrrigationStatus == false && fertigationStatus == "off"){
     if(fertigationDays > 1){
-      if(lastDayFertigation == 0){
+      if(lastDayFertigation == dtNow){
         StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
         int itemCount = fertigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = fertigationTimesSplitter->getItemAtIndex(i);
-          if(item == "10:57"){           
-            // digitalWrite(PUMP_RELAY_1, HIGH);
-            // Nyalain pompa sama solenoid valve
+          if(item == String(dateTimeNow..)){
+            Serial.println("Pompa penampung air menyala");
+            digitalWrite(PUMP_RELAY_2, HIGH);
             fertigationStatus = "irrigation1";
             lastFertigation = millis();
             if(i == 0){
@@ -352,15 +334,15 @@ void loop() {
         }
       } else {
         unsigned long elapsedTime = millis() - lastDayFertigation;
-//        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
-//        if(dayCounter >= lastFertigation){
-        if (elapsedTime >= 120000UL) {
+        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
+        if(dayCounter >= lastFertigation){
           StringSplitter *fertigationTimesSplitter = new StringSplitter(fertigationTimes, ',', 3);
           int itemCount = fertigationTimesSplitter->getItemCount();
           for(int i = 0; i < itemCount; i++){
             String item = fertigationTimesSplitter->getItemAtIndex(i);
             if(item == "10:57"){
-              // Nyalain pompa sama solenoid valve
+              Serial.println("Pompa penampung air menyala");
+              digitalWrite(PUMP_RELAY_2, HIGH);
               fertigationStatus = true;
               lastFertigation = millis();
               if(i == 0){
@@ -379,9 +361,9 @@ void loop() {
       int itemCount = fertigationTimesSplitter->getItemCount();
       for(int i = 0; i < itemCount; i++){
         String item = fertigationTimesSplitter->getItemAtIndex(i);
-        if(item == "10:57"){           
-          Serial.println("Nyala3");
-          // Nyalain pompa sama solenoid valve
+        if(item == dtNow){
+          Serial.println("Pompa penampung air menyala");
+          digitalWrite(PUMP_RELAY_2, HIGH);
           fertigationStatus = "irrigation1";
           lastFertigation = millis();
           delay(10000);
@@ -400,9 +382,10 @@ void loop() {
         int itemCount = irrigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = irrigationTimesSplitter->getItemAtIndex(i);
-          if(item == "10:57"){
+          if(item == dtNow){
             if(moistureVal > idealMoisture){
-              // Nyalain pompa sama solenoid valve
+              Serial.println("Pompa penampung air menyala");
+              digitalWrite(PUMP_RELAY_2, HIGH);
               irrigationStatus = true;
               lastIrrigation = millis();
               if(i == 0){
@@ -419,15 +402,15 @@ void loop() {
         }
       } else {
         unsigned long elapsedTime = millis() - lastDayIrrigation;
-//        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
-//        if(dayCounter >= lastIrrigation){
-        if (elapsedTime >= 120000UL) {
+        unsigned long dayCounter = elapsedTime / (1000UL * 60UL * 60UL * 24UL);
+        if(dayCounter >= lastIrrigation){
           StringSplitter *irrigationTimesSplitter = new StringSplitter(irrigationTimes, ',', 3);
           int itemCount = irrigationTimesSplitter->getItemCount();
           for(int i = 0; i < itemCount; i++){
             String item = irrigationTimesSplitter->getItemAtIndex(i);
-            if(item == "10:57"){            
-              // Nyalain pompa sama solenoid valve
+            if(item == dtNow){
+              Serial.println("Pompa penampung air menyala");
+              digitalWrite(PUMP_RELAY_2, HIGH);
               irrigationStatus = true;
               lastIrrigation = millis();
               if(i == 0){
@@ -446,8 +429,9 @@ void loop() {
       int itemCount = irrigationTimesSplitter->getItemCount();
       for(int i = 0; i < itemCount; i++){
         String item = irrigationTimesSplitter->getItemAtIndex(i);
-        if(item == "10:57"){          
-          // Nyalain pompa sama solenoid valve
+        if(item == dtNow){          
+          Serial.println("Pompa penampung air menyala");
+          digitalWrite(PUMP_RELAY_2, HIGH);
           irrigationStatus = true;
           lastIrrigation = millis();
           delay(10000);
@@ -462,45 +446,45 @@ void loop() {
   if(autoIrrigationStatus == true && irrigationStatus == false && fertigationStatus == "off"){
     if(moistureVal >= idealMoisture){
       irrigationStatus = false;
-      // Matiin pompa sama solenoid valve      
+      Serial.println("Pompa penampung air mati");
+      digitalWrite(PUMP_RELAY_2, LOW);
     }
   }
 
   if(irrigationStatus == true && autoIrrigationStatus == false && fertigationStatus == "off"){
-    // if(millis() >= (lastIrrigation+(irrigationDuration * 1000))){
-    if(millis() >= (lastIrrigation+120000UL)){
-      Serial.println("Mati");
+    if(millis() >= (lastIrrigation+(irrigationDuration * 1000))){
+      Serial.println("Pompa penampung air mati");
+      digitalWrite(PUMP_RELAY_2, LOW);
       irrigationStatus = false;
-      // Matiin pompa sama solenoid valve
     }
   }
 
   if(fertigationStatus == "irrigation1" && autoIrrigationStatus == false && irrigationStatus == false){
-    // if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
-    if(millis() >= (lastFertigation+120000UL)){
+    if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
       fertigationStatus = "fertigation";
       lastFertigation = millis();
-      // Matiin pompa sama solenoid valve
+      Serial.println("Pompa penampung air mati dan pompa penampung larutan pupuk menyala");
+      digitalWrite(PUMP_RELAY_2, LOW);
+      digitalWrite(PUMP_RELAY_1, HIGH);      
     }
   }
 
   if(fertigationStatus == "fertigation" && autoIrrigationStatus == false && irrigationStatus == false){
-    // if(millis() >= (lastFertigation+(fertigationDuration * 1000))){
-    if(millis() >= (lastFertigation+120000UL)){
-      Serial.println("Mati");
+    if(millis() >= (lastFertigation+(fertigationDuration * 1000))){
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
-      // Matiin solenoid valve air dan nyalain solenoid valve pupuk
+      Serial.println("Pompa penampung larutan pupuk mati dan pompa penampung air menyala");
+      digitalWrite(PUMP_RELAY_1, LOW);
+      digitalWrite(PUMP_RELAY_2, HIGH);      
     }
   }
 
   if(fertigationStatus == "irrigation2" && autoIrrigationStatus == false && irrigationStatus == false){
-    // if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
-    if(millis() >= (lastFertigation+120000UL)){
-      Serial.println("Mati");
+    if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
-      // Matiin pompa sama solenoid valve
+      Serial.println("Pompa penampung air mati");
+      digitalWrite(PUMP_RELAY_2, LOW);
     }
   }
 
@@ -511,6 +495,31 @@ void loop() {
   if(timeFromRTC - timeFromLib >= 60){
     sendNotification("Waktu Telat", "segera cek kemungkinan kerusakan pada sensor RTC");
   }
-  
+
+  lcd_i2c.clear(); 
+  lcd_i2c.setCursor(0, 0); 
+  lcd_i2c.print("E  &L  "); 
+  lcd_i2c.setCursor(1, 0); 
+  lcd_i2c.print(waterTank); 
+  lcd_i2c.setCursor(1, 2); 
+  lcd_i2c.print(“&”); 
+  lcd_i2c.setCursor(1, 3); 
+  lcd_i2c.print(fertilizerTank); 
+
   delay(2000);
+
+  lcd_i2c.clear(); 
+  lcd_i2c.setCursor(0, 0); 
+  lcd_i2c.print("M  &W   &T    "); 
+  lcd_i2c.setCursor(1, 0); 
+  lcd_i2c.print(moisture + "%"); 
+  lcd_i2c.setCursor(1, 3); 
+  lcd_i2c.print(“&”); 
+  lcd_i2c.setCursor(1, 4); 
+  lcd_i2c.print(waterLevel); 
+  lcd_i2c.setCursor(1, 8); 
+  lcd_i2c.print(“&”); 
+  lcd_i2c.setCursor(1, 9); 
+  lcd_i2c.print(currentTime); 
+
 }
