@@ -184,8 +184,8 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
                 binding.valFertilizingStatus.text = primaryDevice[0].fertilizingStatus
                 binding.valFertilizerPumpStatus.text = primaryDevice[0].fertilizerPumpStatus
                 binding.valWaterPumpStatus.text = primaryDevice[0].waterPumpStatus
-                binding.valFertilizerTank.text = if (primaryDevice[0].waterTank != 0) primaryDevice[0].fertilizerTank.toString() + "%" else "N/A"
-                binding.valWaterTank.text = if (primaryDevice[0].waterTank != 0) primaryDevice[0].waterTank.toString() + "%" else "N/A"
+                binding.valFertilizerTank.text = primaryDevice[0].fertilizerTank.toString() + "%"
+                binding.valWaterTank.text = primaryDevice[0].waterTank.toString() + "%"
                 binding.valDataTaken.text = "Taken at " + primaryDevice[0].takenAt
             }
         }
@@ -198,7 +198,7 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
                     waterLevel += monitor.waterLevel
                 }
                 binding.valMoisture.text = if (monitorDevice[0].moisture != 0) (moisture / monitorDevice.size).toString() + "%" else "N/A"
-                binding.valWaterLevel.text = if (monitorDevice[0].waterLevel != 0) (waterLevel / monitorDevice.size).toDouble().toString() else "N/A"
+                binding.valWaterLevel.text = if (monitorDevice[0].waterLevel != 0) (waterLevel / monitorDevice.size).toString() else "N/A"
             }
             showMainField()
         }

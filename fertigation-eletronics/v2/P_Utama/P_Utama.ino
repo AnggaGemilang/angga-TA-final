@@ -66,12 +66,13 @@ void sendMessage() {
   waterTankVal =  waterTank();
 
   DateTime now = rtc.now();
-  String formattedDateTime = String(now.day(), DEC) + "-" + String(now.month(), DEC) + "-" + String(now.year(), DEC) + " " + String(now.hour(), DEC) + ":" + String(now.minute(), DEC);
+  char formattedDateTime[18];
+  sprintf(formattedDateTime, "%02d-%02d-%02d %02d:%02d", now.day(), now.month(), now.year(), now.hour(), now.minute());
 
   Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "takenAt", formattedDateTime);
   Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "fertilizerTank", fertilizerTankVal);
   if(Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "waterTank", waterTankVal)){
-    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d takenAt=%s\n", fertilizerTankVal, waterTankVal, formattedDateTime.c_str());
+    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d takenAt=%s\n", fertilizerTankVal, waterTankVal, formattedDateTime);
   } else {
     Serial.println(fbdo.errorReason());
   }

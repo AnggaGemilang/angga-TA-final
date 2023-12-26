@@ -132,11 +132,10 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.valPresetNamePlaceholder.visibility = View.VISIBLE
         binding.valFieldLocPlaceholder.visibility = View.VISIBLE
         binding.valFertilizingStatusPlaceholder.visibility = View.VISIBLE
-        binding.valPumpStatusPlaceholder.visibility = View.VISIBLE
+        binding.valWaterPumpStatusPlaceholder.visibility = View.VISIBLE
         binding.valWaterTankPlaceholder.visibility = View.VISIBLE
         binding.valFertilizerTankPlaceholder.visibility = View.VISIBLE
-        binding.valWaterValveStatusPlaceholder.visibility = View.VISIBLE
-        binding.valFertilizerValveStatusPlaceholder.visibility = View.VISIBLE
+        binding.valFertilizerPumpStatusPlaceholder.visibility = View.VISIBLE
         binding.valTakenAtPlaceholder.visibility = View.VISIBLE
         binding.valWateringStatus.visibility = View.GONE
         binding.valFertilizingStatus.visibility = View.GONE
@@ -145,7 +144,7 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.valFertilizerTank.visibility = View.GONE
         binding.valFieldLoc.visibility = View.GONE
         binding.valFertilizerPumpStatus.visibility = View.GONE
-        binding.valFertilizerValveStatus.visibility = View.GONE
+        binding.valWaterPumpStatus.visibility = View.GONE
         binding.valPresetName.visibility = View.GONE
         binding.valTakenAt.visibility = View.GONE
     }
@@ -158,9 +157,8 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.valTakenAtPlaceholder.visibility = View.GONE
         binding.valWaterTankPlaceholder.visibility = View.GONE
         binding.valFertilizerTankPlaceholder.visibility = View.GONE
-        binding.valPumpStatusPlaceholder.visibility = View.GONE
-        binding.valWaterValveStatusPlaceholder.visibility = View.GONE
-        binding.valFertilizerValveStatusPlaceholder.visibility = View.GONE
+        binding.valWaterPumpStatusPlaceholder.visibility = View.GONE
+        binding.valFertilizerPumpStatusPlaceholder.visibility = View.GONE
         binding.valWateringStatus.visibility = View.VISIBLE
         binding.valFertilizingStatus.visibility = View.VISIBLE
         binding.valWaterPumpStatus.visibility = View.VISIBLE
@@ -168,7 +166,7 @@ class DetailMainDeviceActivity : AppCompatActivity() {
         binding.valWaterTank.visibility = View.VISIBLE
         binding.valFieldLoc.visibility = View.VISIBLE
         binding.valFertilizerPumpStatus.visibility = View.VISIBLE
-        binding.valFertilizerValveStatus.visibility = View.VISIBLE
+        binding.valWaterPumpStatus.visibility = View.VISIBLE
         binding.valPresetName.visibility = View.VISIBLE
         binding.valTakenAt.visibility = View.VISIBLE
     }

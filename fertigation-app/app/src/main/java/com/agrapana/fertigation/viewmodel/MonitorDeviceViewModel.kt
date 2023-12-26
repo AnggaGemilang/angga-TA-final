@@ -35,7 +35,7 @@ class MonitorDeviceViewModel: ViewModel() {
     }
 
     fun fetchMonitoringData(ownerId: String, fieldId: String) {
-        dbMonitoring.child(ownerId).child(fieldId).child("monitorDevice").addListenerForSingleValueEvent(valueEventListener)
+        dbMonitoring.child(ownerId).child(fieldId).child("monitorDevice").addValueEventListener(valueEventListener)
     }
 
 }
