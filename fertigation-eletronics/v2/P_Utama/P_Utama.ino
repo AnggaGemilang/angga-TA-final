@@ -15,9 +15,9 @@
 #define WATER_TRIG_PIN 33
 #define WATER_ECHO_PIN 32
 #define SOUND_SPEED 0.034
-#define TANK_SURFACE_AREA 81
-#define TANK_HEIGHT 26
-#define TANK_MAX_VOLUME 2106
+#define TANK_SURFACE_AREA 531
+#define TANK_HEIGHT 12
+#define TANK_MAX_VOLUME 6372
 #define LCD_COLUMNS 16
 #define LCD_ROWS 2
 #define PUMP_RELAY_1 14 // Pupuk
@@ -28,10 +28,10 @@
 #define FCM_URL "https://fcm.googleapis.com/fcm/send"
 #define FCM_API_KEY "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X"
 #define DEVICE_FCM_KEY "e0tQlw-Az2A:APA91bHtEdYptmOYWWCzEWUepfhGyq10VONGUl7ToUf91-TxWRlVUEM2ClsgE2P9GmTVGVLrnlDMNx5WY-0U4MYw7gqCr9f2MKOTWYltqC34jB8LzFd8-Pl54xwVEdxx-vCDWoyl7LPq"
-#define WIFI_SSID "SPEEDY"
-#define WIFI_PASSWORD "suherman"
-// #define WIFI_SSID "Galaxy M33 5G"
-// #define WIFI_PASSWORD "anggaganteng"
+// #define WIFI_SSID "SPEEDY"
+// #define WIFI_PASSWORD "suherman"
+#define WIFI_SSID "Galaxy M33 5G"
+#define WIFI_PASSWORD "anggaganteng"
 
 RTC_DS3231 rtc;
 LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
@@ -66,12 +66,12 @@ void sendMessage() {
   waterTankVal =  waterTank();
 
   DateTime now = rtc.now();
-  String formattedDateTime = now.toString("dd/MM/yyyy HH:mm");
+  String formattedDateTime = String(now.day(), DEC) + "-" + String(now.month(), DEC) + "-" + String(now.year(), DEC) + " " + String(now.hour(), DEC) + ":" + String(now.minute(), DEC);
 
   Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "takenAt", formattedDateTime);
   Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "fertilizerTank", fertilizerTankVal);
   if(Firebase.RTDB.setInt(&fbdo, BASE_URL_MONITORING + "waterTank", waterTankVal)){
-    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d\n", fertilizerTankVal, waterTankVal);
+    Serial.printf("Upload to primary device msgFTank=%d msgFTank=%d takenAt=%s\n", fertilizerTankVal, waterTankVal, formattedDateTime.c_str());
   } else {
     Serial.println(fbdo.errorReason());
   }
@@ -312,6 +312,22 @@ void loop() {
   DateTime dateTimeNow = rtc.now();
   String dtNow = String(dateTimeNow.hour(), DEC) + ":" + String(dateTimeNow.minute(), DEC);
 
+  lcd_i2c.clear(); 
+  lcd_i2c.setCursor(0, 0); 
+  lcd_i2c.print("M   &W   &T"); 
+  lcd_i2c.setCursor(0, 1); 
+  lcd_i2c.print(String(moistureValTotal) + "%"); 
+  lcd_i2c.setCursor(4, 1); 
+  lcd_i2c.print("&"); 
+  lcd_i2c.setCursor(5, 1); 
+  lcd_i2c.print(String(waterLevelValTotal) + "%"); 
+  lcd_i2c.setCursor(9, 1); 
+  lcd_i2c.print("&"); 
+  lcd_i2c.setCursor(10, 1); 
+  lcd_i2c.print(dtNow); 
+
+  delay(2000);
+
   if(autoIrrigationStatus == false && irrigationStatus == false && fertigationStatus == "off"){
     if((double)moistureVal <= (double)(0.3*idealMoisture)){
         Serial.println("Pompa penampung air menyala");
@@ -491,6 +507,16 @@ void loop() {
     }    
   }
 
+  lcd_i2c.clear(); 
+  lcd_i2c.setCursor(0, 0); 
+  lcd_i2c.print("wtrT &frtlzerT"); 
+  lcd_i2c.setCursor(0, 1); 
+  lcd_i2c.print(String(waterTankVal) + "%"); 
+  lcd_i2c.setCursor(5, 1); 
+  lcd_i2c.print("&"); 
+  lcd_i2c.setCursor(6, 1); 
+  lcd_i2c.print(String(fertilizerTankVal) + "%");
+
   if(autoIrrigationStatus == true && irrigationStatus == false && fertigationStatus == "off"){
     if(moistureValTotal >= idealMoisture){
       irrigationStatus = false;
@@ -561,33 +587,7 @@ void loop() {
   StringSplitter *RTCtime = new StringSplitter(r_time, ',', 2);
   int timeFromRTC = RTCtime->getItemAtIndex(0).toInt() * 60 + RTCtime->getItemAtIndex(1).toInt();
   if(timeFromRTC - timeFromLib >= 60){
+    Serial.println("RTC tidak akurat");
     sendNotification("There is a time difference of more than 1 minute", "Immediately check for possible damage to the RTC sensor");
   }
-
-  lcd_i2c.clear(); 
-  lcd_i2c.setCursor(0, 0); 
-  lcd_i2c.print("E  &L  "); 
-  lcd_i2c.setCursor(1, 0); 
-  lcd_i2c.print(String(waterTankVal).concat("%")); 
-  lcd_i2c.setCursor(1, 2); 
-  lcd_i2c.print("&"); 
-  lcd_i2c.setCursor(1, 3); 
-  lcd_i2c.print(String(fertilizerTankVal).concat("%")); 
-
-  delay(2000);
-
-  lcd_i2c.clear(); 
-  lcd_i2c.setCursor(0, 0); 
-  lcd_i2c.print("M  &W   &T    "); 
-  lcd_i2c.setCursor(1, 0); 
-  lcd_i2c.print(String(moistureValTotal).concat("%")); 
-  lcd_i2c.setCursor(1, 3); 
-  lcd_i2c.print("&"); 
-  lcd_i2c.setCursor(1, 4); 
-  lcd_i2c.print(String(waterLevelValTotal).concat("%")); 
-  lcd_i2c.setCursor(1, 8); 
-  lcd_i2c.print("&"); 
-  lcd_i2c.setCursor(1, 9); 
-  lcd_i2c.print(dtNow); 
-
 }
