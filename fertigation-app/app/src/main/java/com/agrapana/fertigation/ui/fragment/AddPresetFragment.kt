@@ -180,9 +180,9 @@ class AddPresetFragment : RoundedBottomSheetDialogFragment(), OperationListener 
             val fertigationAgeList: LinearLayout = view.findViewById(R.id.fertigation_doses_list) as LinearLayout
             var fertigationAgeVal: String = binding.plantAgeFertigation.text.toString().trim()
             var fertigationDoseVal: String = binding.fertigationDose.text.toString().trim()
-            irrigationAgeList.forEachIndexed { index, _ ->
+            fertigationAgeList.forEachIndexed { index, _ ->
                 val editTextAge = fertigationAgeList.getChildAt(index).findViewById(R.id.plant_age_fertigation) as EditText
-                val editTextDose = irrigationAgeList.getChildAt(index).findViewById(R.id.irrigation_dose) as EditText
+                val editTextDose = fertigationAgeList.getChildAt(index).findViewById(R.id.fertigation_dose) as EditText
                 fertigationAgeVal += "," + editTextAge.text.toString().trim()
                 fertigationDoseVal += "," + editTextDose.text.toString().trim()
             }
