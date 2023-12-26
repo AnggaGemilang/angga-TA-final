@@ -198,7 +198,7 @@ class HomeFragment: Fragment(), ChangeFieldListener, OperationListener {
                     waterLevel += monitor.waterLevel
                 }
                 binding.valMoisture.text = if (monitorDevice[0].moisture != 0) (moisture / monitorDevice.size).toString() + "%" else "N/A"
-                binding.valWaterLevel.text = if (monitorDevice[0].waterLevel != 0) (waterLevel / monitorDevice.size).toString() else "N/A"
+                binding.valWaterLevel.text = (waterLevel / monitorDevice.size).toString()
             }
             showMainField()
         }

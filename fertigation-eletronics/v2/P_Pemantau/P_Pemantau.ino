@@ -2,8 +2,10 @@
 #include <TaskScheduler.h>
 #include <WiFi.h>
 
-#define WIFI_SSID "SPEEDY"
-#define WIFI_PASSWORD "suherman"
+// #define WIFI_SSID "SPEEDY"
+// #define WIFI_PASSWORD "suherman"
+#define WIFI_SSID "Galaxy M33 5G"
+#define WIFI_PASSWORD "anggaganteng"
 #define SOIL_MOISTURE_PIN A0
 #define WATER_LEVEL_PIN A3
 #define DATABASE_URL "https://fertigation-system-389e8-default-rtdb.firebaseio.com/"

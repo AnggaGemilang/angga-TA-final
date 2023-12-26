@@ -1,7 +1,7 @@
 int waterLevel() {
-  // int sensorValue = analogRead(WATER_LEVEL_PIN);
+  int sensorValue = analogRead(WATER_LEVEL_PIN);
   // Serial.print("Water Level = ");
   // Serial.println(sensorValue);
-  return random(1, 5);
+  return sensorValue;
   delay(1000);
 }
