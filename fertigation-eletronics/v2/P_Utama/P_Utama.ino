@@ -59,7 +59,7 @@ void sendMessage();
 void readControlData();
 
 Task taskSendMessage( userInterval , TASK_FOREVER, &sendMessage );
-Task taskReadControlData( TASK_SECOND * 18 , TASK_FOREVER, &readControlData );
+Task taskReadControlData( TASK_SECOND * 10, TASK_FOREVER, &readControlData );
 
 void sendMessage() {
   fertilizerTankVal = fertilizerTank();
@@ -181,7 +181,7 @@ void readControlData(){
 
   Serial.printf("Get data Controlling mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDoses=%s FerDoses=%s UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDoses, fertigationDoses, userInterval);
   Serial.printf("Get data Monitor Device mois=%d waterLevel=%d\n", moistureValTotal, waterLevelValTotal);
-  taskReadControlData.setInterval((TASK_SECOND * 18));    
+  taskReadControlData.setInterval((TASK_SECOND * 10));    
 }
 
 void sendNotification(String title, String body) {
@@ -330,7 +330,7 @@ void loop() {
 
   if(autoIrrigationStatus == false && irrigationStatus == false && fertigationStatus == "off"){
     if((double)moistureVal <= (double)(0.3*idealMoisture)){
-        Serial.println("Pompa penampung air menyala");
+        Serial.println("Irigasi otomatis berjalan dan pompa penampung air menyala");
         digitalWrite(PUMP_RELAY_2, HIGH);
         autoIrrigationStatus = true;
         delay(7000);
@@ -353,7 +353,7 @@ void loop() {
         for(int i = 0; i < itemCount; i++){
           String item = fertigationTimesSplitter->getItemAtIndex(i);
           if(item == dtNow){
-            Serial.println("Pompa penampung air menyala");
+            Serial.println("Irigasi jadwal berjalan dan Pompa penampung air menyala");
             digitalWrite(PUMP_RELAY_2, HIGH);
             fertigationStatus = "irrigation1";
             lastFertigation = millis();
@@ -380,7 +380,7 @@ void loop() {
           for(int i = 0; i < itemCount; i++){
             String item = fertigationTimesSplitter->getItemAtIndex(i);
             if(item == dtNow){
-              Serial.println("Pompa penampung air menyala");
+              Serial.println("Irigasi jadwal berjalan dan Pompa penampung air menyala");
               digitalWrite(PUMP_RELAY_2, HIGH);
               fertigationStatus = "irrigation1";
               lastFertigation = millis();
@@ -406,7 +406,7 @@ void loop() {
       for(int i = 0; i < itemCount; i++){
         String item = fertigationTimesSplitter->getItemAtIndex(i);
         if(item == dtNow){
-          Serial.println("Pompa penampung air menyala");
+          Serial.println("Irigasi jadwal berjalan dan Pompa penampung air menyala");
           digitalWrite(PUMP_RELAY_2, HIGH);
           fertigationStatus = "irrigation1";
           lastFertigation = millis();
@@ -433,7 +433,7 @@ void loop() {
           String item = irrigationTimesSplitter->getItemAtIndex(i);
           if(item == dtNow){
             if(moistureValTotal > idealMoisture){
-              Serial.println("Pompa penampung air menyala");
+              Serial.println("Fertigasi jadwal berjalan dan Pompa penampung air menyala");
               digitalWrite(PUMP_RELAY_2, HIGH);
               irrigationStatus = true;
               lastIrrigation = millis();
@@ -463,7 +463,7 @@ void loop() {
           for(int i = 0; i < itemCount; i++){
             String item = irrigationTimesSplitter->getItemAtIndex(i);
             if(item == dtNow){
-              Serial.println("Pompa penampung air menyala");
+              Serial.println("Fertigasi jadwal berjalan Pompa penampung air menyala");
               digitalWrite(PUMP_RELAY_2, HIGH);
               irrigationStatus = true;
               lastIrrigation = millis();
@@ -489,7 +489,7 @@ void loop() {
       for(int i = 0; i < itemCount; i++){
         String item = irrigationTimesSplitter->getItemAtIndex(i);
         if(item == dtNow){          
-          Serial.println("Pompa penampung air menyala");
+          Serial.println("Fertigasi jadwal berjalan Pompa penampung air menyala");
           digitalWrite(PUMP_RELAY_2, HIGH);
           irrigationStatus = true;
           lastIrrigation = millis();
@@ -520,7 +520,7 @@ void loop() {
   if(autoIrrigationStatus == true && irrigationStatus == false && fertigationStatus == "off"){
     if(moistureValTotal >= idealMoisture){
       irrigationStatus = false;
-      Serial.println("Pompa penampung air mati");
+      Serial.println("Irigasi otomatis mati dan Pompa penampung air mati");
       digitalWrite(PUMP_RELAY_2, LOW);
       Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "Off");
       if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "Off")){
@@ -531,7 +531,7 @@ void loop() {
 
   if(irrigationStatus == true && autoIrrigationStatus == false && fertigationStatus == "off"){
     if(millis() >= (lastIrrigation+(irrigationDuration * 1000))){
-      Serial.println("Pompa penampung air mati");
+      Serial.println("Irigasi jadwal mati dan Pompa penampung air mati");
       digitalWrite(PUMP_RELAY_2, LOW);
       irrigationStatus = false;
       Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "Off");
@@ -545,7 +545,7 @@ void loop() {
     if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
       fertigationStatus = "fertigation";
       lastFertigation = millis();
-      Serial.println("Pompa penampung air mati dan pompa penampung larutan pupuk menyala");
+      Serial.println("Fertigasi sedang berjalan dan Pompa penampung air mati dan pompa penampung larutan pupuk menyala");
       digitalWrite(PUMP_RELAY_2, LOW);
       digitalWrite(PUMP_RELAY_1, HIGH);
       Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "Off");      
@@ -559,7 +559,7 @@ void loop() {
     if(millis() >= (lastFertigation+(fertigationDuration * 1000))){
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
-      Serial.println("Pompa penampung larutan pupuk mati dan pompa penampung air menyala");
+      Serial.println("Fertigasi sedang berjalan dan Pompa penampung larutan pupuk mati dan pompa penampung air menyala");
       digitalWrite(PUMP_RELAY_1, LOW);
       digitalWrite(PUMP_RELAY_2, HIGH);      
       Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On");      
@@ -573,7 +573,7 @@ void loop() {
     if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
-      Serial.println("Pompa penampung air mati");
+      Serial.println("Fertigasi mati dan Pompa penampung air mati");
       digitalWrite(PUMP_RELAY_2, LOW);
       Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "Off");      
       if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "Off")){
