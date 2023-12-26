@@ -3,14 +3,16 @@
 
 HTTPClient HttpClient;
 
-const char* SSID = "SPEEDY";
-const char* PASSWORD = "suherman";
+// #define WIFI_SSID "SPEEDY"
+// #define WIFI_PASSWORD "suherman"
+#define WIFI_SSID "Galaxy M33 5G"
+#define WIFI_PASSWORD "anggaganteng"
 
 int statusnya = 0;
 
 void setup() {
   Serial.begin(115200);
-  WiFi.begin(SSID, PASSWORD);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.setSleep(false);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -22,7 +24,7 @@ void setup() {
 }
 
 void sendNotification(String title, String body) {
-  String DEVICE_FCM_KEY = "e0tQlw-Az2A:APA91bHtEdYptmOYWWCzEWUepfhGyq10VONGUl7ToUf91-TxWRlVUEM2ClsgE2P9GmTVGVLrnlDMNx5WY-0U4MYw7gqCr9f2MKOTWYltqC34jB8LzFd8-Pl54xwVEdxx-vCDWoyl7LPq";
+  String DEVICE_FCM_KEY = "euYSAs3taVg:APA91bFo6BZdV6c3XHN3TJrxTCIDz8WG1X2P9PL6HzrQ1v9YcToLKE27ScZMxOsDMMwMVOVEZfG4mt7HnED4X-uSjoLG2FI0YVWuMRdUzkzv_gOvJpiJPqKrnNP0iLI0uTCCr-2-MWYD";
   String FCM_API_KEY = "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X";
   String FCM_URL = "https://fcm.googleapis.com/fcm/send";
 
@@ -54,8 +56,14 @@ void sendNotification(String title, String body) {
 }
 
 void loop() {
-  if(statusnya == 0){
-     sendNotification("Lorem Ipsum is simply", "Lorem Ipsum is simply dummy text of the printing and typesetting industry");
-     statusnya = 1; 
-  }
+//  if(statusnya == 0){
+//     sendNotification("Lorem Ipsum is simply", "Lorem Ipsum is simply dummy text of the printing and typesetting industry");
+//     statusnya = 1; 
+//  }
+
+//  sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+//  sendNotification("Soil moisture level has reached the ideal limit", "The irrigation activity is skipped");
+  sendNotification("There is a time difference of more than 1 minute", "Immediately check for possible damage to the RTC sensor");
+  delay(200000);
+  
 }

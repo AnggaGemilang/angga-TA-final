@@ -6,13 +6,11 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import com.agrapana.fertigation.R
 import com.agrapana.fertigation.ui.activity.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -23,6 +21,10 @@ class FCMService : FirebaseMessagingService() {
 
     private var NOTIFICATION_CHANNEL_ID = "kota203.fertigation.notification"
     private val NOTIFICATION_ID = 100
+
+    override fun onNewToken(token: String) {
+        Log.d("FCM Token", "Refreshed token: $token")
+    }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
