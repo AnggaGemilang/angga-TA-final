@@ -44,11 +44,11 @@ class OnboardingActivity : AppCompatActivity() {
         }
         
         val onboardingData: MutableList<OnboardingData> = ArrayList()
-        onboardingData.add(OnboardingData("Mudahkan Hidup", "Sistem ini membuat kegiatan penyiraman dan pemupukan dapat dilakukan secara efisien, dengan memungkinkan pemantauan dan pengendalian jarak jauh",
+        onboardingData.add(OnboardingData("Simplify Life", "This system enables irrigation and fertilization activities to be carried out efficiently, allowing for remote monitoring and control",
             R.drawable.onboarding_4, 420, 420,  0, 200, 0, 50))
-        onboardingData.add(OnboardingData("Teknologi Canggih", "Sistem ini memungkinkan penggunaan preset secara dinamis dengan parameter yang dapat petani atur, didukung dengan teknologi yang murah dan berkualitas",
+        onboardingData.add(OnboardingData("Advanced Technology", "This system allows dynamic use of presets with parameters that farmers can adjust, supported by cost-effective and quality technology",
             R.drawable.onboarding_2, 580, 580, -20, -20, 0, -200))
-        onboardingData.add(OnboardingData("Kebermanfaatan", "Pengembangan sistem dilakukan berdasarkan proses observasi yang panjang terhadap narasumber dan literatur, sehingga menciptakan kesesuaian penerapan",
+        onboardingData.add(OnboardingData("High Utility", "The system is developed through long process with careful observation of informants and literature, creating a fitting implementation",
             R.drawable.onboarding_5, 380, 380, -20, 260, 0, 50))
         setOnBoardingViewPagerAdapter(onboardingData)
 
