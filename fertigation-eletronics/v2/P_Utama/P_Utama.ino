@@ -126,13 +126,19 @@ void readControlData(){
     if(fbdo.dataType() == "string"){
       irrigationAge = fbdo.stringData();
       StringSplitter *irrigationAgeSplitter = new StringSplitter(irrigationAge, ',', 3);
-      int itemCount2 = irrigationAgeSplitter->getItemCount();
-      for(int i = itemCount2; i >= 1; i--){
-        if(plantAgeNow >= irrigationAgeSplitter->getItemAtIndex(i).toInt()){
-          StringSplitter *irrigationDosesSplitter = new StringSplitter(irrigationDoses, ',', 3);
-          irrigationDose = irrigationDosesSplitter->getItemAtIndex(i).toInt();
-        }
+      StringSplitter *irrigationDosesSplitter = new StringSplitter(irrigationDoses, ',', 3);
+      int itemCount = irrigationAgeSplitter->getItemCount();
+      if(itemCount == 1){
+        irrigationDose = irrigationDosesSplitter->getItemAtIndex(0).toInt();        
+      } else {
+        for(int i = itemCount; i >= 1; i--){
+          if(plantAgeNow >= irrigationAgeSplitter->getItemAtIndex(i).toInt()){
+            irrigationDose = irrigationDosesSplitter->getItemAtIndex(i).toInt();
+          }
+        }        
       }
+      irrigationDuration = (int)((((float)irrigationDose / (float)160) / (float)58.3) * (float)3600);
+      Serial.println("Dose Irrigation:" + String(irrigationDose) + " Duration: " + String(irrigationDuration));      
     }
   }
 
@@ -140,13 +146,19 @@ void readControlData(){
     if(fbdo.dataType() == "string"){
       fertigationAge = fbdo.stringData();
       StringSplitter *fertigationAgeSplitter = new StringSplitter(fertigationAge, ',', 3);
-      int itemCount2 = fertigationAgeSplitter->getItemCount();
-      for(int i = itemCount2; i >= 1; i--){
-        if(plantAgeNow >= fertigationAgeSplitter->getItemAtIndex(i).toInt()){
-          StringSplitter *fertigationDosesSplitter = new StringSplitter(fertigationDoses, ',', 3);
-          fertigationDose = fertigationDosesSplitter->getItemAtIndex(i).toInt();
-        }
-      }      
+      StringSplitter *fertigationDosesSplitter = new StringSplitter(fertigationDoses, ',', 3);
+      int itemCount = fertigationAgeSplitter->getItemCount();
+      if(itemCount == 1){
+        fertigationDose = fertigationDosesSplitter->getItemAtIndex(0).toInt();
+      } else {
+        for(int i = itemCount; i >= 1; i--){
+          if(plantAgeNow >= fertigationAgeSplitter->getItemAtIndex(i).toInt()){
+            fertigationDose = fertigationDosesSplitter->getItemAtIndex(i).toInt();
+          }
+        }        
+      } 
+      fertigationDuration = (int)((((float)fertigationDose / (float)160) / (float)58.3) * (float)3600);
+      Serial.println("Dose Fertigation:" + String(fertigationDose) + " Duration: " + String(fertigationDuration));                 
     }
   }
 
@@ -180,7 +192,7 @@ void readControlData(){
     }
   }
 
-  Serial.printf("Get data Controlling mois=%d irrDays=%d FerDays=%d IrrTimes=%s FerTimes=%s IrrDoses=%s FerDoses=%s UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, irrigationTimes, fertigationTimes, irrigationDoses, fertigationDoses, userInterval);
+  Serial.printf("Get data Controlling mois=%d irrDays=%d FerDays=%d FerAge=%s IrAge=%s IrrTimes=%s FerTimes=%s IrrDoses=%s FerDoses=%s UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, fertigationAge, irrigationAge, irrigationTimes, fertigationTimes, irrigationDoses, fertigationDoses, userInterval);
   Serial.printf("Get data Monitor Device mois=%d waterLevel=%d\n", moistureValTotal, waterLevelValTotal);
   taskReadControlData.setInterval((TASK_SECOND * 10));    
 }
@@ -311,27 +323,27 @@ void loop() {
   userScheduler.execute();
 
   DateTime dateTimeNow = rtc.now();
-  String dtNow = String(dateTimeNow.hour(), DEC) + ":" + String(dateTimeNow.minute(), DEC);
+  char dtNow[6];
+  sprintf(dtNow, "%02d:%02d", dateTimeNow.hour(), dateTimeNow.minute());
 
   lcd_i2c.clear(); 
   lcd_i2c.setCursor(0, 0); 
-  lcd_i2c.print("M   &W   &T"); 
+  lcd_i2c.print("M   &W    &T"); 
   lcd_i2c.setCursor(0, 1); 
   lcd_i2c.print(String(moistureValTotal) + "%"); 
   lcd_i2c.setCursor(4, 1); 
   lcd_i2c.print("&"); 
   lcd_i2c.setCursor(5, 1); 
-  lcd_i2c.print(String(waterLevelValTotal) + "%"); 
-  lcd_i2c.setCursor(9, 1); 
-  lcd_i2c.print("&"); 
+  lcd_i2c.print(String(waterLevelValTotal)); 
   lcd_i2c.setCursor(10, 1); 
+  lcd_i2c.print("&"); 
+  lcd_i2c.setCursor(11, 1); 
   lcd_i2c.print(dtNow); 
 
   delay(2000);
 
   if(autoIrrigationStatus == false && irrigationStatus == false && fertigationStatus == "off"){
     if((double)moistureVal <= (double)(0.3*idealMoisture)){
-        Serial.println("Irigasi otomatis berjalan dan pompa penampung air menyala");
         digitalWrite(PUMP_RELAY_2, HIGH);
         autoIrrigationStatus = true;
         delay(7000);
@@ -340,7 +352,7 @@ void loop() {
         } else {
           Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
           if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-            Serial.printf("Irigasi berjalan dan pompa untuk penampung air menyala\n");
+            Serial.printf("Irigasi otomatis berjalan dan pompa untuk penampung air menyala\n");
           }
         }
     }
@@ -353,8 +365,7 @@ void loop() {
         int itemCount = fertigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = fertigationTimesSplitter->getItemAtIndex(i);
-          if(item == dtNow){
-            Serial.println("Irigasi jadwal berjalan dan Pompa penampung air menyala");
+          if(item == String(dtNow)){
             digitalWrite(PUMP_RELAY_2, HIGH);
             fertigationStatus = "irrigation1";
             lastFertigation = millis();
@@ -367,7 +378,7 @@ void loop() {
             } else {
               Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
               if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                Serial.printf("Fertigasi berjalan dan pompa untuk penampung air menyala\n");
+                Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
               }              
             }
           }
@@ -380,8 +391,7 @@ void loop() {
           int itemCount = fertigationTimesSplitter->getItemCount();
           for(int i = 0; i < itemCount; i++){
             String item = fertigationTimesSplitter->getItemAtIndex(i);
-            if(item == dtNow){
-              Serial.println("Irigasi jadwal berjalan dan Pompa penampung air menyala");
+            if(item == String(dtNow)){
               digitalWrite(PUMP_RELAY_2, HIGH);
               fertigationStatus = "irrigation1";
               lastFertigation = millis();
@@ -394,7 +404,7 @@ void loop() {
               } else {
                 Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
                 if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                  Serial.printf("Fertigasi berjalan dan pompa untuk penampung air menyala\n");
+                  Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
                 }
               }
             }
@@ -406,8 +416,7 @@ void loop() {
       int itemCount = fertigationTimesSplitter->getItemCount();
       for(int i = 0; i < itemCount; i++){
         String item = fertigationTimesSplitter->getItemAtIndex(i);
-        if(item == dtNow){
-          Serial.println("Irigasi jadwal berjalan dan Pompa penampung air menyala");
+        if(item == String(dtNow)){
           digitalWrite(PUMP_RELAY_2, HIGH);
           fertigationStatus = "irrigation1";
           lastFertigation = millis();
@@ -417,7 +426,7 @@ void loop() {
           } else {
             Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
             if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-              Serial.printf("Fertigasi berjalan dan pompa untuk penampung air menyala\n");
+              Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
             }            
           }
         }
@@ -432,9 +441,8 @@ void loop() {
         int itemCount = irrigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = irrigationTimesSplitter->getItemAtIndex(i);
-          if(item == dtNow){
+          if(item == String(dtNow)){
             if(moistureValTotal > idealMoisture){
-              Serial.println("Fertigasi jadwal berjalan dan Pompa penampung air menyala");
               digitalWrite(PUMP_RELAY_2, HIGH);
               irrigationStatus = true;
               lastIrrigation = millis();
@@ -447,7 +455,7 @@ void loop() {
               } else {
                 Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
                 if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                  Serial.printf("Irigasi berjalan dan pompa untuk penampung air menyala\n");
+                  Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
                 }                
               }
             } else {
@@ -463,8 +471,7 @@ void loop() {
           int itemCount = irrigationTimesSplitter->getItemCount();
           for(int i = 0; i < itemCount; i++){
             String item = irrigationTimesSplitter->getItemAtIndex(i);
-            if(item == dtNow){
-              Serial.println("Fertigasi jadwal berjalan Pompa penampung air menyala");
+            if(item == String(dtNow)){
               digitalWrite(PUMP_RELAY_2, HIGH);
               irrigationStatus = true;
               lastIrrigation = millis();
@@ -477,7 +484,7 @@ void loop() {
               } else {
                 Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
                 if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                  Serial.printf("Irigasi berjalan dan pompa untuk penampung air menyala\n");
+                  Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
                 }
               }
             }
@@ -489,8 +496,7 @@ void loop() {
       int itemCount = irrigationTimesSplitter->getItemCount();
       for(int i = 0; i < itemCount; i++){
         String item = irrigationTimesSplitter->getItemAtIndex(i);
-        if(item == dtNow){          
-          Serial.println("Fertigasi jadwal berjalan Pompa penampung air menyala");
+        if(item == String(dtNow)){          
           digitalWrite(PUMP_RELAY_2, HIGH);
           irrigationStatus = true;
           lastIrrigation = millis();
@@ -500,7 +506,7 @@ void loop() {
           } else {
             Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
             if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-              Serial.printf("Irigasi berjalan dan pompa untuk penampung air menyala\n");
+              Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
             }            
           }
         }
@@ -543,6 +549,7 @@ void loop() {
   }
 
   if(fertigationStatus == "irrigation1" && autoIrrigationStatus == false && irrigationStatus == false){
+    Serial.println("waktu millis() irr1 " + String(millis()));
     if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
       fertigationStatus = "fertigation";
       lastFertigation = millis();
@@ -557,6 +564,7 @@ void loop() {
   }
 
   if(fertigationStatus == "fertigation" && autoIrrigationStatus == false && irrigationStatus == false){
+    Serial.println("waktu millis() fert " + String(millis()));
     if(millis() >= (lastFertigation+(fertigationDuration * 1000))){
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
@@ -564,13 +572,14 @@ void loop() {
       digitalWrite(PUMP_RELAY_1, LOW);
       digitalWrite(PUMP_RELAY_2, HIGH);      
       Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On");      
-      if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizerPumpStatus", "Of")){
+      if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizerPumpStatus", "Off")){
         Serial.printf("Fertigasi sedang berjalan dan pompa untuk penampung air dinyalakan\n");
       }
     }
   }
 
   if(fertigationStatus == "irrigation2" && autoIrrigationStatus == false && irrigationStatus == false){
+    Serial.println("waktu millis() irr2 " + String(millis()));
     if(millis() >= (lastFertigation+(irrigationDuration * 1000))){
       fertigationStatus = "irrigation2";
       lastFertigation = millis();
