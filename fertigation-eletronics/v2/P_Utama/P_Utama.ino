@@ -637,7 +637,7 @@ void loop() {
     }
   }
 
-  if((millis() - lastRTCChecking) > 100000 || lastRTCChecking == 0){
+  if((millis() - lastRTCChecking) > 200000 || lastRTCChecking == 0){
     time_t t = now();
     unsigned long timeFromLib = timeClient.getHours()*60*60 + timeClient.getMinutes()*60 + timeClient.getSeconds();
     String r_time = "02:54:10";
