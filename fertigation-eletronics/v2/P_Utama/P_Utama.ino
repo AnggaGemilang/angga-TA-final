@@ -46,7 +46,7 @@ String irrigationDoses, fertigationDoses, irrigationAge, fertigationAge, initial
 int fertilizerTankVal, waterTankVal, idealMoisture, plantAgeNow, initialPlantAge;
 int irrigationDays, fertigationDays, userInterval, fertigationDose;
 int irrigationDuration, fertigationDuration, irrigationDose, moistureVal, waterLevelVal, moistureValTotal, waterLevelValTotal;
-unsigned long lastIrrigation = 0, lastFertigation = 0, lastDayIrrigation = 0, lastDayFertigation = 0;
+unsigned long lastIrrigation = 0, lastFertigation = 1000, lastDayIrrigation = 0, lastDayFertigation = 0;
 bool irrigationStatus = false, autoIrrigationStatus = false;
 String BASE_URL_MONITORING = "/monitoring/2X0JeST2hUe8K5qLpk5f6gCC0zO2/13kjh123kj1h3j12h21312kjhasdasd/primaryDevice/1/";
 String BASE_URL_CONTROLLING = "/controlling/2X0JeST2hUe8K5qLpk5f6gCC0zO2/parameter/13kjh123kj1h3j12h21312kjhasdasd/";
@@ -194,6 +194,7 @@ void readControlData(){
 
   Serial.printf("Get data Controlling mois=%d irrDays=%d FerDays=%d FerAge=%s IrAge=%s IrrTimes=%s FerTimes=%s IrrDoses=%s FerDoses=%s UsrInt=%d\n", idealMoisture, irrigationDays, fertigationDays, fertigationAge, irrigationAge, irrigationTimes, fertigationTimes, irrigationDoses, fertigationDoses, userInterval);
   Serial.printf("Get data Monitor Device mois=%d waterLevel=%d\n", moistureValTotal, waterLevelValTotal);
+  Serial.printf("plantAgeNow=%d\n", plantAgeNow);
   taskReadControlData.setInterval((TASK_SECOND * 10));    
 }
 
@@ -292,14 +293,15 @@ void setup() {
       tanggalAwal.Day = plantPlantingSplitter->getItemAtIndex(0).toInt();
       tanggalAwal.Month = plantPlantingSplitter->getItemAtIndex(1).toInt();
       tanggalAwal.Year = plantPlantingSplitter->getItemAtIndex(2).toInt() - 1970;
-      
+
+      DateTime now = rtc.now();  
       tmElements_t tanggalAkhir;
-      tanggalAkhir.Second = 45;
-      tanggalAkhir.Minute = 30;
-      tanggalAkhir.Hour = 12;
-      tanggalAkhir.Day = 5;
-      tanggalAkhir.Month = 1;
-      tanggalAkhir.Year = 2023 - 1970; 
+      tanggalAkhir.Second = now.second();
+      tanggalAkhir.Minute = now.minute();
+      tanggalAkhir.Hour = now.hour();
+      tanggalAkhir.Day = now.day();
+      tanggalAkhir.Month = now.month();
+      tanggalAkhir.Year = now.year() - 1970; 
             
       int perbedaan = getDifferenceDays(tanggalAwal, tanggalAkhir);
       plantAgeNow = initialPlantAge + perbedaan;
@@ -346,7 +348,7 @@ void loop() {
     if((double)moistureVal <= (double)(0.3*idealMoisture)){
         digitalWrite(PUMP_RELAY_2, HIGH);
         autoIrrigationStatus = true;
-        delay(7000);
+        delay(4000);
         if(waterLevelValTotal < 700){
           sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
         } else {
@@ -365,22 +367,24 @@ void loop() {
         int itemCount = fertigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = fertigationTimesSplitter->getItemAtIndex(i);
-          if(item == String(dtNow)){
-            digitalWrite(PUMP_RELAY_2, HIGH);
-            fertigationStatus = "irrigation1";
-            lastFertigation = millis();
-            if(i == 0){
-              lastDayFertigation = millis();
-            }
-            delay(7000);
-            if(waterLevelValTotal < 700){
-              sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
-            } else {
-              Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
-              if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
-              }              
-            }
+          if((millis() - lastFertigation) > 70000 || lastFertigation == 0){
+            if(item == String(dtNow)){
+              digitalWrite(PUMP_RELAY_2, HIGH);
+              fertigationStatus = "irrigation1";
+              lastFertigation = millis();
+              if(i == 0){
+                lastDayFertigation = millis();
+              }
+              delay(4000);
+              if(waterLevelValTotal < 700){
+                sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+              } else {
+                Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
+                if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
+                  Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+                }              
+              }
+            }            
           }
         }
       } else {
@@ -391,22 +395,24 @@ void loop() {
           int itemCount = fertigationTimesSplitter->getItemCount();
           for(int i = 0; i < itemCount; i++){
             String item = fertigationTimesSplitter->getItemAtIndex(i);
-            if(item == String(dtNow)){
-              digitalWrite(PUMP_RELAY_2, HIGH);
-              fertigationStatus = "irrigation1";
-              lastFertigation = millis();
-              if(i == 0){
-                lastDayFertigation = millis();
-              }
-              delay(7000);
-              if(waterLevelValTotal < 700){
-                sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
-              } else {
-                Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
-                if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                  Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+            if((millis() - lastFertigation) > 70000 || lastFertigation == 0){
+              if(item == String(dtNow)){
+                digitalWrite(PUMP_RELAY_2, HIGH);
+                fertigationStatus = "irrigation1";
+                lastFertigation = millis();
+                if(i == 0){
+                  lastDayFertigation = millis();
                 }
-              }
+                delay(4000);
+                if(waterLevelValTotal < 700){
+                  sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+                } else {
+                  Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
+                  if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
+                    Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+                  }
+                }
+              }              
             }
           }
         }
@@ -416,19 +422,21 @@ void loop() {
       int itemCount = fertigationTimesSplitter->getItemCount();
       for(int i = 0; i < itemCount; i++){
         String item = fertigationTimesSplitter->getItemAtIndex(i);
-        if(item == String(dtNow)){
-          digitalWrite(PUMP_RELAY_2, HIGH);
-          fertigationStatus = "irrigation1";
-          lastFertigation = millis();
-          delay(7000);          
-          if(waterLevelValTotal < 700){
-            sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
-          } else {
-            Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
-            if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-              Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
-            }            
-          }
+        if((millis() - lastFertigation) > 70000 || lastFertigation == 0){
+          if(item == String(dtNow)){
+            digitalWrite(PUMP_RELAY_2, HIGH);
+            fertigationStatus = "irrigation1";
+            lastFertigation = millis();
+            delay(4000);          
+            if(waterLevelValTotal < 700){
+              sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+            } else {
+              Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "fertilizingStatus", "On");
+              if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
+                Serial.printf("Fertigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+              }            
+            }
+          }          
         }
       }
     }    
@@ -441,26 +449,28 @@ void loop() {
         int itemCount = irrigationTimesSplitter->getItemCount();
         for(int i = 0; i < itemCount; i++){
           String item = irrigationTimesSplitter->getItemAtIndex(i);
-          if(item == String(dtNow)){
-            if(moistureValTotal > idealMoisture){
-              digitalWrite(PUMP_RELAY_2, HIGH);
-              irrigationStatus = true;
-              lastIrrigation = millis();
-              if(i == 0){
-                lastDayIrrigation = millis();
-              }
-              delay(7000);
-              if(waterLevelValTotal < 700){
-                sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+          if((millis() - lastIrrigation) > 70000 || lastIrrigation == 0){
+            if(item == String(dtNow)){
+              if((double)moistureValTotal > (double)(0.3 * idealMoisture)){
+                digitalWrite(PUMP_RELAY_2, HIGH);
+                irrigationStatus = true;
+                lastIrrigation = millis();
+                if(i == 0){
+                  lastDayIrrigation = millis();
+                }
+                delay(4000);
+                if(waterLevelValTotal < 700){
+                  sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+                } else {
+                  Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
+                  if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
+                    Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+                  }                
+                }
               } else {
-                Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
-                if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                  Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
-                }                
+                sendNotification("Soil moisture level has reached the ideal limit", "The irrigation activity is skipped");
               }
-            } else {
-              sendNotification("Soil moisture level has reached the ideal limit", "The irrigation activity is skipped");
-            }
+            }            
           }
         }
       } else {
@@ -471,22 +481,28 @@ void loop() {
           int itemCount = irrigationTimesSplitter->getItemCount();
           for(int i = 0; i < itemCount; i++){
             String item = irrigationTimesSplitter->getItemAtIndex(i);
-            if(item == String(dtNow)){
-              digitalWrite(PUMP_RELAY_2, HIGH);
-              irrigationStatus = true;
-              lastIrrigation = millis();
-              if(i == 0){
-                lastDayIrrigation = millis();
-              }
-              delay(7000);
-              if(waterLevelValTotal < 700){
-                sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
-              } else {
-                Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
-                if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-                  Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+            if((millis() - lastIrrigation) > 70000 || lastIrrigation == 0){
+              if(item == String(dtNow)){
+                if((double)moistureValTotal > (double)(0.3 * idealMoisture)){
+                  digitalWrite(PUMP_RELAY_2, HIGH);
+                  irrigationStatus = true;
+                  lastIrrigation = millis();
+                  if(i == 0){
+                    lastDayIrrigation = millis();
+                  }
+                  delay(4000);
+                  if(waterLevelValTotal < 700){
+                    sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+                  } else {
+                    Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
+                    if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
+                      Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+                    }
+                  }                
+                } else {
+                  sendNotification("Soil moisture level has reached the ideal limit", "The irrigation activity is skipped");
                 }
-              }
+              }              
             }
           }
         }
@@ -496,19 +512,25 @@ void loop() {
       int itemCount = irrigationTimesSplitter->getItemCount();
       for(int i = 0; i < itemCount; i++){
         String item = irrigationTimesSplitter->getItemAtIndex(i);
-        if(item == String(dtNow)){          
-          digitalWrite(PUMP_RELAY_2, HIGH);
-          irrigationStatus = true;
-          lastIrrigation = millis();
-          delay(7000);
-          if(waterLevelValTotal < 700){
-            sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
-          } else {
-            Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
-            if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
-              Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
-            }            
-          }
+        if((millis() - lastIrrigation) > 70000 || lastIrrigation == 0){
+          if(item == String(dtNow)){
+            if((double)moistureValTotal > (double)(0.3 * idealMoisture)){
+              digitalWrite(PUMP_RELAY_2, HIGH);
+              irrigationStatus = true;
+              lastIrrigation = millis();
+              delay(4000);
+              if(waterLevelValTotal < 700){
+                sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
+              } else {
+                Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "wateringStatus", "On");
+                if(Firebase.RTDB.setString(&fbdo, BASE_URL_MONITORING + "waterPumpStatus", "On")){
+                  Serial.printf("Irigasi jadwal berjalan dan pompa untuk penampung air menyala\n");
+                }            
+              }            
+            } else {
+              sendNotification("Soil moisture level has reached the ideal limit", "The irrigation activity is skipped");
+            }
+          }          
         }
       }
     }    
