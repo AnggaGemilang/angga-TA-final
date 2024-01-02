@@ -29,7 +29,7 @@
 #define API_KEY "AIzaSyBZvwV5-74YkBUlphAYpuyFsHIQVyfRHW4"
 #define FCM_URL "https://fcm.googleapis.com/fcm/send"
 #define FCM_API_KEY "key=AAAAx7B7jBc:APA91bEL6FTL_bKgKLOFIteAL7c9iXI54Le2-D7tegps_shgzI-5c5Mqtblou5bPpQGayfYJrxhLcmrF8rZe5LqMv5rnbb2SKd71BvbStSNaaS9vfW6T1rItbIZEMtHObvAbHF55aF4X"
-#define DEVICE_FCM_KEY "euYSAs3taVg:APA91bFo6BZdV6c3XHN3TJrxTCIDz8WG1X2P9PL6HzrQ1v9YcToLKE27ScZMxOsDMMwMVOVEZfG4mt7HnED4X-uSjoLG2FI0YVWuMRdUzkzv_gOvJpiJPqKrnNP0iLI0uTCCr-2-MWYD"
+#define DEVICE_FCM_KEY "cPFSCAdox0c:APA91bFqIi5GmXr6mZlNKyit_aEzoziBthPI9ALs9qZo2NokA94ECEQo10XJtr5oyOfwzV8p5PehGplcug6jyyK0C4Ji02Gj1HUF4xaXBprrDKR3qa8m4D1jR0HgcDL-zqucMFSQwb3O"
 #define ntpServer "pool.ntp.org"
 #define gmtOffset_sec 25200
 #define daylightOffset_sec 0
@@ -244,11 +244,17 @@ void setup() {
   pinMode(PUMP_RELAY_1, OUTPUT);
   pinMode(PUMP_RELAY_2, OUTPUT);
 
+//  lcd_i2c.clear();
+//  lcd_i2c.setCursor(3, 0);
+//  lcd_i2c.print("Welcome To");
+//  lcd_i2c.setCursor(0, 1);
+//  lcd_i2c.print("*** KoTA 203 ***");
+
   lcd_i2c.clear();
-  lcd_i2c.setCursor(3, 0);
-  lcd_i2c.print("Welcome To");
+  lcd_i2c.setCursor(0, 0);
+  lcd_i2c.print("irr &fer &wP &fP");
   lcd_i2c.setCursor(0, 1);
-  lcd_i2c.print("*** KoTA 203 ***");
+  lcd_i2c.print("Y   &N   &Y  &N");
 
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
@@ -342,11 +348,11 @@ void loop() {
   lcd_i2c.setCursor(0, 0); 
   lcd_i2c.print("M   &W    &T"); 
   lcd_i2c.setCursor(0, 1); 
-  lcd_i2c.print(String(moistureValTotal) + "%"); 
+  lcd_i2c.print("80%"); 
   lcd_i2c.setCursor(4, 1); 
   lcd_i2c.print("&"); 
   lcd_i2c.setCursor(5, 1); 
-  lcd_i2c.print(String(waterLevelValTotal)); 
+  lcd_i2c.print("1400"); 
   lcd_i2c.setCursor(10, 1); 
   lcd_i2c.print("&"); 
   lcd_i2c.setCursor(11, 1); 
@@ -468,7 +474,8 @@ void loop() {
           String item = irrigationTimesSplitter->getItemAtIndex(i);
           if((millis() - lastIrrigation) > 70000 || lastIrrigation == 0){
             if(item == String(dtNow)){
-              if((double)moistureValTotal >= (double)(0.3 * idealMoisture)){
+              Serial.println("status : " + ((double)moistureValTotal >= (double)(0.3 * idealMoisture) && moistureValTotal <= idealMoisture));
+              if((double)moistureValTotal >= (double)(0.3 * idealMoisture) && moistureValTotal <= idealMoisture){
                 delay(4000);
                 if(waterLevelValTotal < 700){
                   sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
@@ -502,7 +509,8 @@ void loop() {
             String item = irrigationTimesSplitter->getItemAtIndex(i);
             if((millis() - lastIrrigation) > 70000 || lastIrrigation == 0){
               if(item == String(dtNow)){
-                if((double)moistureValTotal >= (double)(0.3 * idealMoisture)){
+                Serial.println("status : " + ((double)moistureValTotal >= (double)(0.3 * idealMoisture) && moistureValTotal <= idealMoisture));
+                if((double)moistureValTotal >= (double)(0.3 * idealMoisture) && moistureValTotal <= idealMoisture){
                   delay(4000);
                   if(waterLevelValTotal < 700){
                     sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
@@ -535,7 +543,8 @@ void loop() {
         String item = irrigationTimesSplitter->getItemAtIndex(i);
         if((millis() - lastIrrigation) > 70000 || lastIrrigation == 0){
           if(item == String(dtNow)){
-            if((double)moistureValTotal >= (double)(0.3 * idealMoisture)){
+            Serial.println("status : " + ((double)moistureValTotal >= (double)(0.3 * idealMoisture) && moistureValTotal <= idealMoisture));
+            if((double)moistureValTotal >= (double)(0.3 * idealMoisture) && moistureValTotal <= idealMoisture){
               delay(4000);
               if(waterLevelValTotal < 700){
                 sendNotification("Water doesn't reach the ideal high limit", "Immediately check for possible damage to the pump");
@@ -640,13 +649,13 @@ void loop() {
   if((millis() - lastRTCChecking) > 200000 || lastRTCChecking == 0){
     time_t t = now();
     unsigned long timeFromLib = timeClient.getHours()*60*60 + timeClient.getMinutes()*60 + timeClient.getSeconds();
-    String r_time = "02:54:10";
+    String r_time = "04:41:10";
     StringSplitter *RTCtime = new StringSplitter(r_time, ':', 3);
     unsigned long timeFromRTC = RTCtime->getItemAtIndex(0).toInt()*60*60 + RTCtime->getItemAtIndex(1).toInt()*60 + RTCtime->getItemAtIndex(2).toInt();
-//    Serial.println("waktu Lib : " + String(timeFromLib));
-//    Serial.println("waktu RTC : " + String(timeFromRTC));
-//    Serial.println("Perbedaan : " + String(timeFromLib - timeFromRTC));
-    if(timeFromLib - timeFromRTC >= 60){
+    // Serial.println("waktu Lib : " + String(timeFromLib));
+    // Serial.println("waktu RTC : " + String(timeFromRTC));
+    // Serial.println("Perbedaan : " + String(timeFromLib - timeFromRTC));
+    if(timeFromLib - timeFromRTC >= 1800){
       Serial.println("RTC tidak akurat");
       sendNotification("There is a time difference of more than 1 minute", "Immediately check for possible damage to the RTC sensor");
       lastRTCChecking = millis();

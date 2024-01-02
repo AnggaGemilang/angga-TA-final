@@ -19,50 +19,51 @@
 #define TANK_HEIGHT 26
 #define TANK_MAX_VOLUME 2106
 
-RTC_DS3231 rtc;
-LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
+// RTC_DS3231 rtc;
+// LiquidCrystal_I2C lcd_i2c(0x27, 16, 2);  
 
-String timeNow();
-int waterTank();
-int fertilizerTank();
+// String timeNow();
+// int waterTank();
+// int fertilizerTank();
 
 void setup() {
   Serial.begin(115200);
 
-  lcd_i2c.init();
-  lcd_i2c.backlight();
+//  lcd_i2c.init();
+//  lcd_i2c.backlight();
   
-  pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
-  pinMode(FERTILIZER_ECHO_PIN, INPUT);
+//  pinMode(FERTILIZER_TRIG_PIN, OUTPUT);
+//  pinMode(FERTILIZER_ECHO_PIN, INPUT);
   pinMode(VALVE_RELAY_1, OUTPUT);
   pinMode(VALVE_RELAY_2, OUTPUT);
-  pinMode(WATER_TRIG_PIN, OUTPUT);
-  pinMode(WATER_ECHO_PIN, INPUT);
+//  pinMode(WATER_TRIG_PIN, OUTPUT);
+//  pinMode(WATER_ECHO_PIN, INPUT);
 
-  lcd_i2c.clear();
-  lcd_i2c.setCursor(3, 0);
-  lcd_i2c.print("Welcome To");
-  lcd_i2c.setCursor(0, 1);
-  lcd_i2c.print("*** KoTA 203 ***");
-
-  if (!rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    while(1);
-  }
-
-  rtc.adjust(DateTime(__DATE__, __TIME__));
+//  lcd_i2c.clear();
+//  lcd_i2c.setCursor(3, 0);
+//  lcd_i2c.print("Welcome To");
+//  lcd_i2c.setCursor(0, 1);
+//  lcd_i2c.print("*** KoTA 203 ***");
+//
+//  if (!rtc.begin()) {
+//    Serial.println("Couldn't find RTC");
+//    while(1);
+//  }
+//
+//  rtc.adjust(DateTime(__DATE__, __TIME__));
 }
 
 void loop() {
+  digitalWrite(VALVE_RELAY_2, HIGH);
   digitalWrite(VALVE_RELAY_1, HIGH);
 
-  delay(5000);
-
-  digitalWrite(VALVE_RELAY_1, LOW);
-  digitalWrite(VALVE_RELAY_2, HIGH);
-
-  delay(5000);
-  digitalWrite(VALVE_RELAY_2, LOW);
+  delay(20000);
+//
+//  digitalWrite(VALVE_RELAY_1, LOW);
+//  digitalWrite(VALVE_RELAY_2, HIGH);
+//
+//  delay(5000);
+//  digitalWrite(VALVE_RELAY_2, LOW);
   
   //  lcd_i2c.clear();
   //  lcd_i2c.setCursor(0, 0);
@@ -84,12 +85,12 @@ void loop() {
   //  lcd_i2c.setCursor(0, 1);
   //  lcd_i2c.print("Fertilizer: 20%");
   
-  Serial.print("Waktu: ");
-  Serial.println(timeNow());
-  Serial.print("Fertilizer Tank: ");
-  Serial.println(fertilizerTank());
-  Serial.print("Water Tank: ");
-  Serial.println(waterTank());    
-  Serial.println("============");
-  delay(2000);
+//  Serial.print("Waktu: ");
+//  Serial.println(timeNow());
+//  Serial.print("Fertilizer Tank: ");
+//  Serial.println(fertilizerTank());
+//  Serial.print("Water Tank: ");
+//  Serial.println(waterTank());    
+//  Serial.println("============");
+//  delay(2000);
 }
